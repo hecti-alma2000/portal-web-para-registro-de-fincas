@@ -1,0 +1,51 @@
+export const importantPoints = [
+  {
+    id: 1,
+    name: "Finca La Gloria",
+    image: "/maps/finca_la_gloria.jpg",
+    position: { lat: 20.869128, lng: -76.653746 },
+    icon: "1",
+  },
+  {
+    id: 2,
+    name: "Finca El Troncón y El Carmen",
+    image: "/maps/finca_el_troncon.jpg",
+    position: { lat: 20.86979227902078, lng: -76.65062229885747 },
+    icon: "2",
+  },
+  {
+    id: 3,
+    name: "Finca La Bendecida",
+    image: "/maps/finca_la_bendecida.jpg",
+    position: { lat: 20.88586, lng: -76.66603 },
+    icon: "3",
+  },
+  {
+    id: 4,
+    name: "Finca Las Maravillas",
+    image: "/maps/finca_las_maravillas.jpg",
+    position: { lat: 20.86202, lng: -76.62822 },
+    icon: "4",
+  },
+  {
+    id: 5,
+    name: "Finca La Próspera",
+    image: "/maps/finca_la_prospera.jpg",
+    position: { lat: 20.90925, lng: -76.6241 },
+    icon: "5",
+  },
+  {
+    id: 6,
+    name: "Finca La Alegría",
+    image: "/maps/finca_la_alegria.jpg",
+    position: { lat: 20.85272, lng: -76.52072 },
+    icon: "6",
+  },
+  {
+    id: 7,
+    name: "Finca La Margarita",
+    image: "/maps/finca_la_margarita.jpg",
+    position: { lat: 20.90083, lng: -76.53986 },
+    icon: "7",
+  },
+];
