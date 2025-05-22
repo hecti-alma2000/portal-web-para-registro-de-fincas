@@ -4,7 +4,6 @@ import { Marker, Popup, Tooltip, useMap } from "react-leaflet";
 import { icon } from "leaflet";
 import { FaMapMarkerAlt } from "react-icons/fa";
 import Image from "next/image";
-import Link from "next/link";
 import { usePositionsStore } from "@/store/map/positions.store";
 import { MarkerTrailsProps } from "./markerTrails.types";
 
@@ -98,14 +97,14 @@ export const MarkerTrails = (props: MarkerTrailsProps) => {
                   />
                 </div>
               )}
-              {/* Opcional: Puedes añadir más contenido o un enlace aquí */}
-              {/* {point.link && (
-                <div className="mt-2 text-center">
-                  <Link href={point.link} className="text-blue-600 hover:underline">
-                    Ver detalles
-                  </Link>
-                </div>
-              )} */}
+              <h1 className="text-2xl mt-3">Simbología:</h1>
+              <hr />
+              <h2 className="font-bold">Límite del Area de la Finca</h2>
+              {point.simbology.map((item, index) => (
+                <ul key={index}>
+                  <li>{item}</li>
+                </ul>
+              ))}
             </Popup>
             <Tooltip
               permanent // Hace que el tooltip este siempre visible

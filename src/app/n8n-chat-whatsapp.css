@@ -1,0 +1,233 @@
+.n8n-chat-root {
+  font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif !important;
+  border-radius: 16px !important;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.20) !important;
+  background: #ece5dd url('https://www.transparenttextures.com/patterns/diamond-upholstery.png');
+  border: none !important;
+  max-width: 380px;
+  min-width: 320px;
+  min-height: 500px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+@media (max-width: 480px) {
+  .n8n-chat-root {
+    max-width: 100vw;
+    min-width: 0;
+    min-height: 100vh;
+    border-radius: 0 !important;
+  }
+}
+
+.n8n-chat-root::-webkit-scrollbar {
+  width: 8px;
+  background: #ece5dd;
+}
+.n8n-chat-root::-webkit-scrollbar-thumb {
+  background: #bdbdbd;
+  border-radius: 8px;
+}
+
+.n8n-chat-header {
+  background: #075e54 !important;
+  color: #fff !important;
+  border-radius: 16px 16px 0 0 !important;
+  font-weight: 600 !important;
+  padding: 10px 12px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px;
+  position: relative;
+  min-height: 56px;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.04);
+}
+.n8n-chat-header__info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.n8n-chat-header__name {
+  font-size: 17px;
+  font-weight: 600;
+  color: #fff;
+  line-height: 1.2;
+}
+.n8n-chat-header__status {
+  font-size: 13px;
+  color: #d1fae5;
+  font-weight: 400;
+  line-height: 1;
+}
+.n8n-chat-header svg {
+  color: #25d366 !important;
+  margin-right: 8px;
+  display: none;
+}
+
+.n8n-chat-messages {
+  background: #ece5dd !important;
+  padding: 12px !important;
+  flex: 1 1 auto;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.n8n-chat-message {
+  border-radius: 8px !important;
+  margin-bottom: 6px !important;
+  padding: 8px 12px !important;
+  max-width: 80% !important;
+  font-size: 15px !important;
+  box-shadow: none !important;
+}
+.n8n-chat-message.user {
+  background: #dcf8c6 !important;
+  align-self: flex-end !important;
+  color: #222 !important;
+  border-radius: 8px 8px 2px 8px !important;
+  margin-left: 40px !important;
+  margin-bottom: 4px !important;
+  position: relative;
+  box-shadow: 0 1px 0.5px rgba(0,0,0,0.07);
+  animation: fadeInRight 0.3s;
+  font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif !important;
+}
+.n8n-chat-message.user .whatsapp-double-check {
+  display: inline-block;
+  margin-left: 6px;
+  vertical-align: middle;
+  width: 18px;
+  height: 18px;
+  background: url('data:image/svg+xml;utf8,<svg fill="%2325d366" viewBox="0 0 20 20" width="18" height="18" xmlns="http://www.w3.org/2000/svg"><path d="M7.2 13.3l-3.5-3.6a1 1 0 0 1 1.4-1.4l2.8 2.9 6.8-7.1a1 1 0 1 1 1.4 1.4l-7.5 7.8a1 1 0 0 1-1.4 0z"/></svg>') no-repeat center/contain;
+}
+
+.n8n-chat-message.user::after {
+  content: '';
+  position: absolute;
+  right: -8px;
+  bottom: 0px;
+  width: 12px;
+  height: 20px;
+  background: url('data:image/svg+xml;utf8,<svg width="12" height="20" xmlns="http://www.w3.org/2000/svg"><path d="M0,0 Q12,10 0,20 Z" fill="%23dcf8c6"/></svg>') no-repeat;
+  background-size: contain;
+}
+
+.n8n-chat-message.bot {
+  background: #fff !important;
+  align-self: flex-start !important;
+  color: #222 !important;
+  border-radius: 8px 8px 8px 2px !important;
+  margin-right: 40px !important;
+  margin-bottom: 4px !important;
+  position: relative;
+  box-shadow: 0 1px 0.5px rgba(0,0,0,0.07);
+  animation: fadeInLeft 0.3s;
+  display: flex;
+  align-items: flex-end;
+  font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif !important;
+}
+
+
+.n8n-chat-message.bot::before {
+  content: '';
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  background: url('https://randomuser.me/api/portraits/men/32.jpg') no-repeat center/cover;
+  border-radius: 50%;
+  margin-right: 8px;
+  margin-left: -40px;
+  border: 2px solid #ece5dd;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.10);
+}
+
+
+.n8n-chat-message.bot::after {
+  content: '';
+  position: absolute;
+  left: -8px;
+  bottom: 0px;
+  width: 12px;
+  height: 20px;
+  background: url('data:image/svg+xml;utf8,<svg width="12" height="20" xmlns="http://www.w3.org/2000/svg"><path d="M12,0 Q0,10 12,20 Z" fill="%23fff"/></svg>') no-repeat;
+  background-size: contain;
+}
+
+.n8n-chat-footer {
+  background: #f7f7f7 !important;
+  border-radius: 0 0 16px 16px !important;
+  padding: 10px 12px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px;
+  border-top: 1px solid #ece5dd;
+}
+
+
+.n8n-chat-input {
+  border-radius: 24px !important;
+  border: 1px solid #ece5dd !important;
+  padding: 10px 16px !important;
+  font-size: 15px !important;
+  width: 100% !important;
+  margin-right: 8px !important;
+  outline: none;
+  transition: border 0.2s;
+  background: #fff;
+  color: #222;
+  font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif !important;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.02);
+}
+
+.n8n-chat-input:focus {
+  border-color: #25d366 !important;
+  background: #f4fdf6;
+}
+
+.n8n-chat-send-btn {
+  background: #25d366 !important;
+  color: #fff !important;
+  border-radius: 50% !important;
+  width: 42px !important;
+  height: 42px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: none !important;
+  font-size: 22px !important;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(37,211,102,0.08);
+  cursor: pointer;
+}
+
+.n8n-chat-send-btn:active {
+  background: #128c7e !important;
+  box-shadow: 0 1px 4px rgba(18,140,126,0.12);
+}
+
+.n8n-chat-send-btn:hover {
+  background: #128c7e !important;
+}
+.n8n-chat-root .n8n-chat-footer .n8n-chat-input:focus {
+  border-color: #25d366 !important;
+  box-shadow: 0 0 0 2px #25d36633;
+}
+
+.n8n-chat-root .n8n-chat-message {
+  word-break: break-word;
+  line-height: 1.45;
+  padding-bottom: 2px !important;
+}
+
+@keyframes fadeInRight {
+  from { opacity: 0; transform: translateX(40px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes fadeInLeft {
+  from { opacity: 0; transform: translateX(-40px); }
+  to { opacity: 1; transform: translateX(0); }
+}

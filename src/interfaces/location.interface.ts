@@ -9,4 +9,5 @@ export interface Location {
   image: string;
   position: Position;
   icon: string;
+  simbology: string[];
 }
