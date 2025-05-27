@@ -46,7 +46,7 @@ export default function TrailsPage() {
             chatSessionKey: 'sessionId',
             metadata: {},
             showWelcomeScreen: false,
-         initialMessages: [
+          initialMessages: [
                 'Hola 👋',
                 'Soy tu guía de agroturismo. ¿En qué puedo ayudarte hoy?'
             ],
@@ -75,7 +75,10 @@ export default function TrailsPage() {
         <DynamicLocationMap />
       </div>
       {/* Chat mejorado de n8n usando @n8n/chat CDN */}
-      <div id="n8n-chat" style={{ position: "fixed", bottom: 20, right: 20, zIndex: 1000 }}></div>
+      <div
+        id="n8n-chat"
+        style={{ position: "fixed", bottom: 20, right: 20, zIndex: 1000 }}
+      ></div>
     </div>
   );
 }

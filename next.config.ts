@@ -2,8 +2,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  reactStrictMode: true, // Activa el modo estricto de React
-  swcMinify: true, // Usa SWC para builds y minificación más rápidas
+  reactStrictMode: false, // Activa el modo estricto de React
   images: {
     domains: ["example.com"], // Dominios permitidos para imágenes
   },
