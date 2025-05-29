@@ -26,7 +26,7 @@ export default function TrailsPage() {
     // Inyectar el CSS personalizado tipo WhatsApp
     const customStyle = document.createElement("link");
     customStyle.rel = "stylesheet";
-    customStyle.href = "/n8n-chat-whatsapp.css";
+    customStyle.href = "/n8n-chat-whatsapp.css"; // Cambiar a la ruta pública
     document.head.appendChild(customStyle);
 
     // Cargar el script del chat
@@ -35,7 +35,7 @@ export default function TrailsPage() {
     script.innerHTML = `
       import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
       createChat({
-        webhookUrl: 'https://tinoof2.app.n8n.cloud/webhook/63f5c60b-cdac-4087-afa9-820343805dde/chat',
+        webhookUrl: 'https://tinoof2.app.n8n.cloud/webhook/63f5c60b-cdac-4087-afa9-820343805dde/chat', // <-- Cambia esta URL si tu webhook ha cambiado o no existe
         webhookConfig: {
                 method: 'POST',
                 headers: {}
