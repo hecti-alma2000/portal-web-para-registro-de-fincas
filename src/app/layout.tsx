@@ -1,5 +1,6 @@
 import "./globals.css";
 import Providers from "./providers";
+import MainNav from "../components/MainNav";
 
 export const metadata = {
   title: "Portal web para el registro de fincas",
@@ -15,6 +16,7 @@ export default function RootLayout({
     <html lang="es">
       <head />
       <body>
+        <MainNav />
         <Providers>{children}</Providers>
       </body>
     </html>

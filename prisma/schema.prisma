@@ -1,0 +1,86 @@
+// Esquema actualizado de Prisma para el CRUD de fincas
+// Incluye el modelo detallado de Finca, el enum TipoPropiedad y el modelo InfraestructuraFinca
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Definimos un enumerador para el tipo de propiedad, 
+// lo que garantiza la consistencia de los datos.
+enum TipoPropiedad {
+  ESTATAL
+  PRIVADA
+}
+
+// Modelo principal para la Finca
+model Finca {
+  id                          Int      @id @default(autoincrement())
+  nombre                      String   @unique
+  descripcion                 String?
+  localizacion                String
+  propietario                 String
+  tipoPropiedad               TipoPropiedad
+  entidadPertenece            String?
+  usoActual                   String?
+  estadoConservacion          String?
+  problematicaDetectada       String?
+  tradicionesHistoria         String?
+  disponibilidadAnual         Boolean  @default(false)
+  ofreceAlojamiento           Boolean  @default(false)
+  entornoLimpioSeguro         Boolean  @default(false)
+  infraestructura             InfraestructuraFinca?
+  createdAt                   DateTime @default(now())
+  updatedAt                   DateTime @updatedAt
+
+  // Relaciones normalizadas
+  elementosInteres            ElementoInteres[]
+  actividadesAgroturisticas   ActividadAgroturistica[]
+  principiosSustentabilidad   PrincipioSustentabilidad[]
+  accionesAmbientales         AccionAmbiental[]
+}
+
+model ElementoInteres {
+  id        Int    @id @default(autoincrement())
+  nombre    String
+  finca     Finca  @relation(fields: [fincaId], references: [id], onDelete: Cascade)
+  fincaId   Int
+}
+
+model ActividadAgroturistica {
+  id        Int    @id @default(autoincrement())
+  nombre    String
+  finca     Finca  @relation(fields: [fincaId], references: [id], onDelete: Cascade)
+  fincaId   Int
+}
+
+model PrincipioSustentabilidad {
+  id        Int    @id @default(autoincrement())
+  nombre    String
+  finca     Finca  @relation(fields: [fincaId], references: [id], onDelete: Cascade)
+  fincaId   Int
+}
+
+model AccionAmbiental {
+  id        Int    @id @default(autoincrement())
+  nombre    String
+  finca     Finca  @relation(fields: [fincaId], references: [id], onDelete: Cascade)
+  fincaId   Int
+}
+
+// Modelo relacionado para la infraestructura complementaria
+model InfraestructuraFinca {
+  id                    Int     @id @default(autoincrement())
+  fincaId               Int     @unique
+  finca                 Finca   @relation(fields: [fincaId], references: [id], onDelete: Cascade)
+  transporteAccesible   Boolean @default(false)
+  coberturaTelefonica   Boolean @default(false)
+  tieneRestaurante      Boolean @default(false)
+  conexionSaneamiento   Boolean @default(false)
+  sistemaTratamientoAguas Boolean @default(false)
+  usoEnergiasRenovables Boolean @default(false)
+}
