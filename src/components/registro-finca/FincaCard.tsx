@@ -1,0 +1,159 @@
+import { FaChevronDown, FaChevronUp, FaEdit, FaTrash } from "react-icons/fa";
+import { useState } from "react";
+
+interface FincaCardProps {
+  finca: any;
+  onEdit: () => void;
+  onDelete: () => void;
+}
+
+export default function FincaCard({ finca, onEdit, onDelete }: FincaCardProps) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className="bg-white rounded shadow p-4 w-full max-w-2xl mx-auto transition-all">
+      <div
+        className="flex justify-between items-center cursor-pointer"
+        onClick={() => setOpen((v) => !v)}
+      >
+        <div>
+          <div className="font-bold text-lg">{finca.nombre}</div>
+          <div className="text-gray-600 text-sm">
+            Ubicación: {finca.ubicacion || finca.localizacion}
+          </div>
+          <div className="text-gray-600 text-sm">
+            Propietario: {finca.propietario}
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            className="p-2 text-blue-600 hover:text-blue-800"
+            title="Editar finca"
+            onClick={(e) => {
+              e.stopPropagation();
+              onEdit();
+            }}
+          >
+            <FaEdit />
+          </button>
+          <button
+            className="p-2 text-red-600 hover:text-red-800"
+            title="Eliminar finca"
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete();
+            }}
+          >
+            <FaTrash />
+          </button>
+          <span className="ml-2">
+            {open ? <FaChevronUp /> : <FaChevronDown />}
+          </span>
+        </div>
+      </div>
+      {open && (
+        <div className="mt-4 border-t pt-4 text-sm space-y-2">
+          {finca.descripcion && (
+            <div>
+              <span className="font-semibold">Descripción:</span>{" "}
+              {finca.descripcion}
+            </div>
+          )}
+          {finca.tipoPropiedad && (
+            <div>
+              <span className="font-semibold">Tipo de propiedad:</span>{" "}
+              {finca.tipoPropiedad}
+            </div>
+          )}
+          {finca.entidadPertenece && (
+            <div>
+              <span className="font-semibold">Entidad a la que pertenece:</span>{" "}
+              {finca.entidadPertenece}
+            </div>
+          )}
+          {finca.usoActual && (
+            <div>
+              <span className="font-semibold">Uso actual:</span>{" "}
+              {finca.usoActual}
+            </div>
+          )}
+          {finca.estadoConservacion && (
+            <div>
+              <span className="font-semibold">Estado de conservación:</span>{" "}
+              {finca.estadoConservacion}
+            </div>
+          )}
+          {finca.problematicaDetectada && (
+            <div>
+              <span className="font-semibold">Problemática detectada:</span>{" "}
+              {finca.problematicaDetectada}
+            </div>
+          )}
+          {finca.tradicionesHistoria && (
+            <div>
+              <span className="font-semibold">Tradiciones e historia:</span>{" "}
+              {finca.tradicionesHistoria}
+            </div>
+          )}
+          <div className="flex flex-wrap gap-2">
+            {finca.elementosInteres?.length > 0 && (
+              <div>
+                <span className="font-semibold">Elementos de interés:</span>
+                <ul className="list-disc ml-5">
+                  {finca.elementosInteres.map((el: any, i: number) => (
+                    <li key={i}>{el.nombre || el}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {finca.actividadesAgroturisticas?.length > 0 && (
+              <div>
+                <span className="font-semibold">
+                  Actividades agroturísticas:
+                </span>
+                <ul className="list-disc ml-5">
+                  {finca.actividadesAgroturisticas.map((el: any, i: number) => (
+                    <li key={i}>{el.nombre || el}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {finca.principiosSustentabilidad?.length > 0 && (
+              <div>
+                <span className="font-semibold">
+                  Principios de sustentabilidad:
+                </span>
+                <ul className="list-disc ml-5">
+                  {finca.principiosSustentabilidad.map((el: any, i: number) => (
+                    <li key={i}>{el.nombre || el}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {finca.accionesAmbientales?.length > 0 && (
+              <div>
+                <span className="font-semibold">Acciones ambientales:</span>
+                <ul className="list-disc ml-5">
+                  {finca.accionesAmbientales.map((el: any, i: number) => (
+                    <li key={i}>{el.nombre || el}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+          <div className="flex flex-wrap gap-4 mt-2">
+            <span className="bg-gray-100 px-2 py-1 rounded">
+              Disponibilidad anual: {finca.disponibilidadAnual ? "Sí" : "No"}
+            </span>
+            <span className="bg-gray-100 px-2 py-1 rounded">
+              Ofrece alojamiento: {finca.ofreceAlojamiento ? "Sí" : "No"}
+            </span>
+            <span className="bg-gray-100 px-2 py-1 rounded">
+              Entorno limpio y seguro: {finca.entornoLimpioSeguro ? "Sí" : "No"}
+            </span>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

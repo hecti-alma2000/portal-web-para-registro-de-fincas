@@ -8,8 +8,9 @@ import { useRegistroFincaModalStore } from "../../store/modal/registroFincaModal
 import RegistroFincaModal from "../../components/registro-finca/RegistroFincaModal";
 import { useState, useTransition, useEffect } from "react";
 import Swal from "sweetalert2";
-import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
+import { FaPlus } from "react-icons/fa";
 import { useFincaEditStore } from "../../store/modal/fincaEdit.store";
+import FincaCard from "../../components/registro-finca/FincaCard";
 
 export default function RegistroFincaPage({ fincas }: { fincas: any[] }) {
   const open = useRegistroFincaModalStore((state) => state.open);
@@ -84,54 +85,26 @@ export default function RegistroFincaPage({ fincas }: { fincas: any[] }) {
         ) : (
           <ul className="space-y-4">
             {fincasList.map((finca) => (
-              <li
-                key={finca.id}
-                className="bg-white rounded shadow p-4 flex justify-between items-center"
-              >
-                <div>
-                  <div className="font-bold text-lg">{finca.nombre}</div>
-                  <div className="text-gray-600 text-sm">
-                    Ubicación: {finca.ubicacion}
-                  </div>
-                  <div className="text-gray-600 text-sm">
-                    Propietario: {finca.propietario}
-                  </div>
-                  {finca.descripcion && (
-                    <div className="text-gray-500 text-xs mt-1">
-                      {finca.descripcion}
-                    </div>
-                  )}
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    className="p-2 text-blue-600 hover:text-blue-800"
-                    title="Editar finca"
-                    onClick={() => {
-                      Swal.fire({
-                        title: "¿Editar finca?",
-                        text: "¿Deseas editar esta finca?",
-                        icon: "question",
-                        showCancelButton: true,
-                        confirmButtonText: "Sí, editar",
-                        cancelButtonText: "Cancelar",
-                      }).then((result) => {
-                        if (result.isConfirmed) {
-                          useFincaEditStore.getState().setFincaToEdit(finca);
-                          open();
-                        }
-                      });
-                    }}
-                  >
-                    <FaEdit />
-                  </button>
-                  <button
-                    className="p-2 text-red-600 hover:text-red-800"
-                    title="Eliminar finca"
-                    onClick={() => handleDelete(finca.id)}
-                  >
-                    <FaTrash />
-                  </button>
-                </div>
+              <li key={finca.id}>
+                <FincaCard
+                  finca={finca}
+                  onEdit={() => {
+                    Swal.fire({
+                      title: "¿Editar finca?",
+                      text: "¿Deseas editar esta finca?",
+                      icon: "question",
+                      showCancelButton: true,
+                      confirmButtonText: "Sí, editar",
+                      cancelButtonText: "Cancelar",
+                    }).then((result) => {
+                      if (result.isConfirmed) {
+                        useFincaEditStore.getState().setFincaToEdit(finca);
+                        open();
+                      }
+                    });
+                  }}
+                  onDelete={() => handleDelete(finca.id)}
+                />
               </li>
             ))}
           </ul>
