@@ -1,42 +1,108 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { motion } from "framer-motion";
-import { FaHome, FaSearch, FaPlusCircle } from "react-icons/fa";
+import { useState, Fragment } from "react";
+import {
+  FaHome,
+  FaSearch,
+  FaPlusCircle,
+  FaBars,
+  FaTimes,
+} from "react-icons/fa";
+import { Transition } from "@headlessui/react";
 
-const navItems = [
-  { href: "/", label: "Inicio", icon: <FaHome /> },
-  { href: "/explorar", label: "Explorar", icon: <FaSearch /> },
-  { href: "/registro-finca", label: "Registrar", icon: <FaPlusCircle /> },
+const navigation = [
+  { href: "/", name: "Inicio", icon: FaHome },
+  { href: "/explorar", name: "Explorar", icon: FaSearch },
+  { href: "/registro-finca", name: "Registrar", icon: FaPlusCircle },
 ];
 
 export default function MainNav() {
   const pathname = usePathname();
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
-    <nav className="fixed top-0 left-0 w-full bg-white shadow z-40">
-      <ul className="flex justify-center gap-8 py-3">
-        {navItems.map((item) => (
-          <li key={item.href}>
-            <Link href={item.href}>
-              <motion.div
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                className={`flex flex-col items-center px-3 py-1 rounded transition-colors duration-200 ${
-                  pathname === item.href
-                    ? "text-green-600 font-bold"
-                    : "text-gray-600"
-                }`}
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4 }}
+    <>
+      <div className="relative bg-nav">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            {/* Logo */}
+            <div className="flex-shrink-0 flex items-center">
+              <Link href="/">
+                <span className="text-white text-2xl font-bold">
+                  Turismo Agroecológico
+                </span>
+              </Link>
+            </div>
+            {/* Navegación para escritorio */}
+            <div className="hidden lg:flex lg:space-x-8 items-center">
+              {navigation.map((item) => (
+                <Link key={item.name} href={item.href}>
+                  <span
+                    className={`flex flex-col items-center px-3 py-1 rounded transition-colors duration-200 text-xl mb-1 ${
+                      pathname === item.href
+                        ? "text-green-600 font-bold"
+                        : "text-white hover:text-gray-300"
+                    }`}
+                  >
+                    {<item.icon />}
+                    <span className="text-xs mt-1">{item.name}</span>
+                  </span>
+                </Link>
+              ))}
+            </div>
+            <div className="hidden lg:flex lg:space-x-8 items-center">
+              {/* Un comentario para btn a futuro */}
+            </div>
+            {/* Botón del menú móvil */}
+            <div className="-mr-2 flex lg:hidden">
+              <button
+                onClick={() => setIsOpen(!isOpen)}
+                type="button"
+                id="menu-button"
+                className="inline-flex items-center justify-center p-2 rounded-md text-white hover:text-gray-300 focus:outline-none"
               >
-                <span className="text-xl mb-1">{item.icon}</span>
-                <span className="text-xs">{item.label}</span>
-              </motion.div>
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </nav>
+                {isOpen ? (
+                  <FaTimes className="h-6 w-6" aria-hidden="true" />
+                ) : (
+                  <FaBars className="h-6 w-6" aria-hidden="true" />
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+        {/* Menú móvil */}
+        <Transition
+          show={isOpen}
+          as={Fragment}
+          enter="transition ease-out duration-100 transform"
+          enterFrom="opacity-0 scale-95"
+          enterTo="opacity-100 scale-100"
+          leave="transition ease-in duration-75 transform"
+          leaveFrom="opacity-100 scale-100"
+          leaveTo="opacity-0 scale-95"
+        >
+          <div id="navbar-menu" className="lg:hidden bg-nav shadow-md">
+            <div className="flex flex-col items-start justify-start px-2 pt-2 pb-3 space-y-1 sm:px-3">
+              {navigation.map((item) => (
+                <Link key={item.name} href={item.href}>
+                  <span
+                    onClick={() => setIsOpen(false)}
+                    className={`flex flex-col items-center w-full px-3 py-2 rounded-md text-xl mb-1 transition-colors duration-200 ${
+                      pathname === item.href
+                        ? "text-green-600 font-bold"
+                        : "text-white hover:text-gray-300"
+                    }`}
+                  >
+                    {<item.icon />}
+                    <span className="text-xs mt-1">{item.name}</span>
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </Transition>
+      </div>
+    </>
   );
 }
