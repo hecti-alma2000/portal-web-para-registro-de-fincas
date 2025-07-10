@@ -23,14 +23,17 @@ export default function MainNav() {
 
   return (
     <>
-      <div className="relative bg-nav">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+      <div className="relative m-0 p-0 border-none shadow-none">
+        <div className="w-full">
+          <div className="flex justify-between items-center h-16 m-0 p-0">
             {/* Logo */}
-            <div className="flex-shrink-0 flex items-center">
+            <div className="flex-shrink-0 flex items-center gap-2">
               <Link href="/">
-                <span className="text-white text-2xl font-bold">
-                  Turismo Agroecológico
+                <span className="flex items-center ">
+                  <img src="/icons/logo.png" alt="Logo" className="h-18 w-18" />
+                  <span className="text-black text-2xl font-bold">
+                    Turismo Agroecológico
+                  </span>
                 </span>
               </Link>
             </div>
@@ -42,7 +45,7 @@ export default function MainNav() {
                     className={`flex flex-col items-center px-3 py-1 rounded transition-colors duration-200 text-xl mb-1 ${
                       pathname === item.href
                         ? "text-green-600 font-bold"
-                        : "text-white hover:text-gray-300"
+                        : "text-black hover:text-gray-300"
                     }`}
                   >
                     {<item.icon />}
@@ -91,7 +94,7 @@ export default function MainNav() {
                     className={`flex flex-col items-center w-full px-3 py-2 rounded-md text-xl mb-1 transition-colors duration-200 ${
                       pathname === item.href
                         ? "text-green-600 font-bold"
-                        : "text-white hover:text-gray-300"
+                        : "text-white-500 hover:text-gray-300"
                     }`}
                   >
                     {<item.icon />}

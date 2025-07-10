@@ -20,3 +20,18 @@ export async function deleteFinca(id: number) {
     return { ok: false, message: "No se pudo eliminar la finca" };
   }
 }
+
+export async function getFincaByName(nombre: string) {
+  try {
+    const finca = await prisma.finca.findFirst({
+      where: {
+        nombre: {
+          contains: nombre,
+        },
+      },
+    });
+    return finca;
+  } catch (error) {
+    return null;
+  }
+}

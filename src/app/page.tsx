@@ -1,9 +1,11 @@
 import Link from "next/link";
+import HeroBanner from "../components/HeroBanner";
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-8">
-      <h1 className="text-4xl font-bold mb-6">
+    <main className="flex flex-col items-center justify-center p-0 m-0">
+      <HeroBanner />
+      <h1 className="text-4xl font-bold mb-6 ">
         Bienvenido al Portal de Fincas
       </h1>
       <p className="mb-8 text-lg text-gray-700">
