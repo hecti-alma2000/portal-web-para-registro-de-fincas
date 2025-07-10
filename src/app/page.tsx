@@ -5,12 +5,9 @@ export default function Home() {
   return (
     <main className="flex flex-col items-center justify-center p-0 m-0">
       <HeroBanner />
-      <h1 className="text-4xl font-bold mb-6 ">
-        Bienvenido al Portal de Fincas
-      </h1>
-      <p className="mb-8 text-lg text-gray-700">
+      <h1 className="text-3xl font-bold mb-6 mt-5 ">
         Gestiona y explora fincas Agroturísticas.
-      </p>
+      </h1>
       <div className="flex gap-4">
         <Link
           href="/explorar"

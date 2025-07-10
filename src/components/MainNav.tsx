@@ -63,7 +63,7 @@ export default function MainNav() {
                 onClick={() => setIsOpen(!isOpen)}
                 type="button"
                 id="menu-button"
-                className="inline-flex items-center justify-center p-2 rounded-md text-white hover:text-gray-300 focus:outline-none"
+                className="inline-flex items-center justify-center p-2 rounded-md text-black hover:text-gray-300 focus:outline-none"
               >
                 {isOpen ? (
                   <FaTimes className="h-6 w-6" aria-hidden="true" />

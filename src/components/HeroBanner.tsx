@@ -88,15 +88,21 @@ export default function HeroBanner() {
 
   return (
     <section className="w-screen max-w-none relative flex flex-col items-center justify-start overflow-visible p-0 m-0 h-auto min-h-[340px] md:min-h-[400px] transition-all duration-300">
-      {/* Imagen de fondo */}
-      <img
-        src="/2505c393a0eba629a2b27c28bf625209.jpg"
-        alt="Imagen de fondo"
-        className="absolute inset-0 object-cover w-full h-full z-0 min-h-[340px] md:min-h-[400px]"
-        style={{ minHeight: "340px" }}
-      />
+      {/* Imagen de fondo con desvanecidos arriba y abajo */}
+      <div className="absolute inset-0 w-full h-full z-0">
+        <img
+          src="/imgs_bg/HT_Mountains.jpg"
+          alt="Imagen de fondo"
+          className="object-cover w-full h-full min-h-[340px] md:min-h-[400px]"
+          style={{ minHeight: "340px" }}
+        />
+        {/* Fade arriba: más suave y alto */}
+        <div className="absolute top-0 left-0 w-full h-28 md:h-40 bg-gradient-to-b from-white via-white/80 to-transparent pointer-events-none" />
+        {/* Fade abajo: más suave y alto */}
+        <div className="absolute bottom-0 left-0 w-full h-10 md:h-40 bg-gradient-to-t from-white via-white/10 to-transparent pointer-events-none" />
+      </div>
       {/* Overlay para mejorar contraste */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/10 to-white/0 z-10" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/10 to-white/0 z-10 pointer-events-none" />
       {/* Contenido centrado y más arriba */}
       <div className="relative z-20 flex flex-col items-center w-full px-2 mt-0 pt-10">
         <h1
