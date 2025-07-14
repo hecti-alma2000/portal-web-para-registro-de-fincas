@@ -91,7 +91,7 @@ export default function HeroBanner() {
       {/* Imagen de fondo con desvanecidos arriba y abajo */}
       <div className="absolute inset-0 w-full h-full z-0">
         <img
-          src="/imgs_bg/HT_Mountains.jpg"
+          src="/imgs_bg/pasadia-vinnales.webp"
           alt="Imagen de fondo"
           className="object-cover w-full h-full min-h-[340px] md:min-h-[400px]"
           style={{ minHeight: "340px" }}

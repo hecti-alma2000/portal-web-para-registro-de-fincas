@@ -34,7 +34,7 @@ export default function TrailsPage() {
     script.innerHTML = `
       import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
       createChat({
-        webhookUrl: 'https://tinoof2.app.n8n.cloud/webhook/63f5c60b-cdac-4087-afa9-820343805dde/chat',
+        webhookUrl: 'https://nochonelpepe2.app.n8n.cloud/webhook/5f1c0c82-0ff9-40c7-9e2e-b1a96ffe24cd/chat',
         webhookConfig: {
           method: 'POST',
         },
