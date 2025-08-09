@@ -32,7 +32,7 @@ export default function MainNav() {
                 <span className="flex items-center ">
                   <img src="/icons/logo.png" alt="Logo" className="h-18 w-18" />
                   <span className="text-black text-2xl font-bold">
-                    Turismo Agroecológico
+                    Turismo Rural
                   </span>
                 </span>
               </Link>

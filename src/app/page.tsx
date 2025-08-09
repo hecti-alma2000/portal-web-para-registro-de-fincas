@@ -6,7 +6,7 @@ export default function Home() {
     <main className="flex flex-col items-center justify-center p-0 m-0">
       <HeroBanner />
       <h1 className="text-3xl font-bold mb-6 mt-5 ">
-        Gestiona y explora fincas Agroturísticas.
+        Gestiona y explora fincas de turismo rural.
       </h1>
       <div className="flex gap-4">
         <Link

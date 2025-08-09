@@ -64,7 +64,7 @@ export default function RegistroFincaPage({ fincas }: { fincas: any[] }) {
   return (
     <main className="flex min-h-screen flex-col items-center p-8">
       <div className="w-full flex justify-between items-center mt-20">
-        <h1 className="text-3xl font-bold">Registro de Finca</h1>
+        <h1 className="text-3xl font-bold">Registro de Fincas</h1>
         <button
           className="bg-green-600 text-white p-2 rounded-full hover:bg-green-700 transition flex items-center justify-center"
           onClick={open}

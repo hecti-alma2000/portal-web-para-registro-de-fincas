@@ -187,7 +187,7 @@ export const LocationMap = () => {
   return (
     <div className="px-1 md:px-10 md:py-10">
       <h1 className="text-center text-black text-3xl mb-5 animate__animated animate__fadeIn">
-        Rutas Agroturísticas Municipio Calixto García
+        Rutas de Turismo Rural Municipio Calixto García
       </h1>
       <div className="flex flex-col md:flex-row md:items-center md:justify-between md:space-x-4 mb-2">
         <div className="w-full md:w-1/2">
