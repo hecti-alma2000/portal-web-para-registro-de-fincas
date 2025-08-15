@@ -1,16 +1,27 @@
 "use client";
 
-import {
-  getAllFincas,
-  deleteFinca,
-} from "@/actions/registro-finca/finca-actions";
+import { deleteFinca, getAllFincas } from "@/actions/registro-finca/finca-actions";
 import { useRegistroFincaModalStore } from "../../store/modal/registroFincaModal.store";
-import RegistroFincaModal from "../../components/registro-finca/RegistroFincaModal";
 import { useState, useTransition, useEffect } from "react";
 import Swal from "sweetalert2";
-import { FaPlus } from "react-icons/fa";
 import { useFincaEditStore } from "../../store/modal/fincaEdit.store";
-import FincaCard from "../../components/registro-finca/FincaCard";
+import { Plus } from "lucide-react";
+import dynamic from "next/dynamic";
+
+// Carga perezosa del componente FincaCard
+const FincaCard = dynamic(() => import("../../components/registro-finca/FincaCard"), {
+  loading: () => <p>Cargando fincas...</p>,
+  ssr: false, // Opcional: Deshabilita el renderizado del lado del servidor si es necesario
+});
+
+// Carga perezosa del componente del modal.
+const RegistroFincaModal = dynamic(
+  () => import("../../components/registro-finca/RegistroFincaModal"),
+  {
+    loading: () => null, // No muestra nada mientras carga el modal
+    ssr: false,
+  }
+);
 
 export default function RegistroFincaPage({ fincas }: { fincas: any[] }) {
   const open = useRegistroFincaModalStore((state) => state.open);
@@ -40,12 +51,10 @@ export default function RegistroFincaPage({ fincas }: { fincas: any[] }) {
     });
   };
 
-  // Recibe notificación de registro/edición y actualiza la lista
   useEffect(() => {
     const handler = (e: CustomEvent) => {
       if (e.detail && e.detail.finca) {
         setFincasList((prev) => {
-          // Si es edición, reemplaza; si es nuevo, agrega
           const idx = prev.findIndex((f) => f.id === e.detail.finca.id);
           if (idx !== -1) {
             const updated = [...prev];
@@ -57,8 +66,7 @@ export default function RegistroFincaPage({ fincas }: { fincas: any[] }) {
       }
     };
     window.addEventListener("finca-guardada", handler as EventListener);
-    return () =>
-      window.removeEventListener("finca-guardada", handler as EventListener);
+    return () => window.removeEventListener("finca-guardada", handler as EventListener);
   }, []);
 
   return (
@@ -70,10 +78,9 @@ export default function RegistroFincaPage({ fincas }: { fincas: any[] }) {
           onClick={open}
           title="Registrar nueva finca"
         >
-          <FaPlus size={20} />
+          <Plus size={20} />
         </button>
       </div>
-      {/* El botón de agregar finca siempre está visible arriba */}
       {fincasList.length !== 0 && (
         <h2 className="text-2xl font-bold mb-4">Lista de Fincas</h2>
       )}

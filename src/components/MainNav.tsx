@@ -2,19 +2,15 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, Fragment } from "react";
-import {
-  FaHome,
-  FaSearch,
-  FaPlusCircle,
-  FaBars,
-  FaTimes,
-} from "react-icons/fa";
+import { Home, Search, PlusCircle, Menu, X } from "lucide-react";
+import dynamic from "next/dynamic";
 import { Transition } from "@headlessui/react";
 
+// Navegación con los nuevos iconos de Lucide React
 const navigation = [
-  { href: "/", name: "Inicio", icon: FaHome },
-  { href: "/explorar", name: "Explorar", icon: FaSearch },
-  { href: "/registro-finca", name: "Registrar", icon: FaPlusCircle },
+  { href: "/", name: "Inicio", icon: Home },
+  { href: "/explorar", name: "Explorar", icon: Search },
+  { href: "/registro-finca", name: "Registrar", icon: PlusCircle },
 ];
 
 export default function MainNav() {
@@ -30,7 +26,13 @@ export default function MainNav() {
             <div className="flex-shrink-0 flex items-center gap-2">
               <Link href="/">
                 <span className="flex items-center ">
-                  <img src="/icons/logo.png" alt="Logo" className="h-18 w-18" />
+                  {/* Carga perezosa de la imagen del logo */}
+                  <img
+                    src="/icons/logo.png"
+                    alt="Logo"
+                    className="h-18 w-18"
+                    loading="lazy"
+                  />
                   <span className="text-black text-2xl font-bold">
                     Turismo Rural
                   </span>
@@ -66,9 +68,9 @@ export default function MainNav() {
                 className="inline-flex items-center justify-center p-2 rounded-md text-black hover:text-gray-300 focus:outline-none"
               >
                 {isOpen ? (
-                  <FaTimes className="h-6 w-6" aria-hidden="true" />
+                  <X className="h-6 w-6" aria-hidden="true" />
                 ) : (
-                  <FaBars className="h-6 w-6" aria-hidden="true" />
+                  <Menu className="h-6 w-6" aria-hidden="true" />
                 )}
               </button>
             </div>

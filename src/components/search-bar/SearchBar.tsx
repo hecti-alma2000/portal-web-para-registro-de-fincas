@@ -1,5 +1,7 @@
+"use client";
+
 import { useId } from "react";
-import { FaSearch, FaTimes } from "react-icons/fa";
+import { Search, X } from "lucide-react"; // Importamos los iconos de Lucide React
 
 interface SearchBarProps {
   value: string;
@@ -15,7 +17,7 @@ export const SearchBar = ({
   const inputId = useId();
 
   const handleClear = () => {
-    // Creamos un evento sintético para borrar el contenido
+    // onSearchChange espera un evento, por lo que creamos uno de forma manual
     onSearchChange({
       target: { value: "" },
     } as React.ChangeEvent<HTMLInputElement>);
@@ -28,10 +30,7 @@ export const SearchBar = ({
         className="bg-gray-200 p-2 rounded-l-md flex justify-center items-center"
         id={inputId}
       >
-        <FaSearch
-          className="text-gray-600"
-          style={{ width: "20px", height: "20px" }}
-        />
+        <Search className="text-gray-600 w-5 h-5" />
       </span>
       {/* Input de búsqueda */}
       <input
@@ -52,10 +51,7 @@ export const SearchBar = ({
           onClick={handleClear}
           className="bg-gray-200 p-2 rounded-r-md flex justify-center items-center"
         >
-          <FaTimes
-            className="text-gray-600 hover:cursor-pointer"
-            style={{ width: "20px", height: "20px" }}
-          />
+          <X className="text-gray-600 hover:cursor-pointer w-5 h-5" />
         </button>
       )}
     </div>

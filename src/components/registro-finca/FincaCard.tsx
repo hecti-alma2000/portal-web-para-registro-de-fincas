@@ -1,5 +1,8 @@
-import { FaChevronDown, FaChevronUp, FaEdit, FaTrash } from "react-icons/fa";
+"use client";
+
+import { ChevronDown, ChevronUp, Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
+import dynamic from "next/dynamic";
 
 interface FincaCardProps {
   finca: any;
@@ -7,7 +10,9 @@ interface FincaCardProps {
   onDelete: () => void;
 }
 
-export default function FincaCard({ finca, onEdit, onDelete }: FincaCardProps) {
+// Carga perezosa del componente, si se usa dentro de una lista muy larga
+// Esto no es estrictamente necesario, pero es una buena práctica para grandes listas
+const FincaCardComponent = ({ finca, onEdit, onDelete }: FincaCardProps) => {
   const [open, setOpen] = useState(false);
 
   return (
@@ -34,7 +39,7 @@ export default function FincaCard({ finca, onEdit, onDelete }: FincaCardProps) {
               onEdit();
             }}
           >
-            <FaEdit />
+            <Pencil />
           </button>
           <button
             className="p-2 text-red-600 hover:text-red-800"
@@ -44,10 +49,10 @@ export default function FincaCard({ finca, onEdit, onDelete }: FincaCardProps) {
               onDelete();
             }}
           >
-            <FaTrash />
+            <Trash2 />
           </button>
           <span className="ml-2">
-            {open ? <FaChevronUp /> : <FaChevronDown />}
+            {open ? <ChevronUp /> : <ChevronDown />}
           </span>
         </div>
       </div>
@@ -156,4 +161,6 @@ export default function FincaCard({ finca, onEdit, onDelete }: FincaCardProps) {
       )}
     </div>
   );
-}
+};
+
+export default FincaCardComponent;
