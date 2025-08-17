@@ -5,13 +5,10 @@ import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 
 const images = [
-  "/maps/finca_el_troncon.webp",
-  "/maps/finca_la_alegria.webp",
-  "/maps/finca_la_bendecida.webp",
-  "/maps/finca_la_gloria.webp",
-  "/maps/finca_la_margarita.webp",
-  "/maps/finca_la_prospera.webp",
-  "/maps/finca_las_maravillas.webp"
+  "/carrusel/1.webp",
+  "/carrusel/2.webp",
+  "/carrusel/3.webp",
+  "/carrusel/4.webp"
 ];
 
 const Carrusel = ({ swipeable = true }) => {
@@ -36,11 +33,10 @@ const Carrusel = ({ swipeable = true }) => {
               src={src}
               alt={`Slide ${index}`}
               fill
-              style={{ objectFit: "cover" }}
-              // Asegúrate de que los 'sizes' reflejen el ancho real del carrusel
-              // en tu diseño para una carga óptima. Por ejemplo:
-              // Para un carrusel que es la mitad de la pantalla en md:
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              // ¡La corrección clave! Usamos "contain" para ver la imagen completa
+              style={{ objectFit: "contain" }} 
+              // Sugerencia para simplificar y optimizar el atributo 'sizes'
+              sizes="(max-width: 768px) 100vw, 640px"
               // Agrega 'priority' si esta imagen es importante para el rendimiento
               priority={index === 0}
             />
