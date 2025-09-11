@@ -18,6 +18,9 @@ export default function RegistroFincaForm({
   const [localizacion, setLocalizacion] = useState("");
   const [propietario, setPropietario] = useState("");
   const [descripcion, setDescripcion] = useState("");
+  const [fotoFile, setFotoFile] = useState<File | null>(null);
+  const [fotoPreview, setFotoPreview] = useState<string | null>(null);
+  const [fotoUrl, setFotoUrl] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState(false);
   const [isPending, startTransition] = useTransition();
   const setFincaToEdit = useFincaEditStore((state) => state.setFincaToEdit);
@@ -67,6 +70,8 @@ export default function RegistroFincaForm({
       setElementosInteres(
         fincaToEdit.elementosInteres?.map((e: any) => e.nombre) || []
       );
+  setFotoPreview(fincaToEdit.fotoUrl || null);
+  setFotoUrl(fincaToEdit.fotoUrl || undefined);
       setActividadesAgroturisticas(
         fincaToEdit.actividadesAgroturisticas?.map((a: any) => a.nombre) || []
       );
@@ -111,12 +116,30 @@ export default function RegistroFincaForm({
       if (!result.isConfirmed) return;
       setLoading(true);
       startTransition(async () => {
+        // Si se seleccionó un archivo nuevo, subirlo primero
+        let uploadedUrl: string | undefined = fotoUrl;
+        if (fotoFile) {
+          try {
+            const fd = new FormData();
+            fd.append('file', fotoFile);
+            const resUp = await fetch('/api/uploads', { method: 'POST', body: fd });
+            const j = await resUp.json();
+            if (j.ok) {
+              uploadedUrl = j.url;
+              setFotoUrl(j.url);
+              setFotoPreview(j.url);
+            }
+          } catch (err) {
+            // ignore, continue without fotoUrl
+          }
+        }
         const res = await updateFinca({
           id: fincaToEdit.id,
           nombre,
           localizacion,
           propietario,
           descripcion,
+          fotoUrl: uploadedUrl,
           tipoPropiedad,
           entidadPertenece,
           usoActual,
@@ -166,11 +189,28 @@ export default function RegistroFincaForm({
     if (!result.isConfirmed) return;
     setLoading(true);
     startTransition(async () => {
+        let uploadedUrl: string | undefined = fotoUrl;
+        if (fotoFile) {
+          try {
+            const fd = new FormData();
+            fd.append('file', fotoFile);
+            const resUp = await fetch('/api/uploads', { method: 'POST', body: fd });
+            const j = await resUp.json();
+            if (j.ok) {
+              uploadedUrl = j.url;
+              setFotoUrl(j.url);
+              setFotoPreview(j.url);
+            }
+          } catch (err) {
+            // seguir sin foto
+          }
+        }
       const res = await createFinca({
         nombre,
         localizacion,
         propietario,
         descripcion,
+          fotoUrl: uploadedUrl,
         tipoPropiedad,
         entidadPertenece,
         usoActual,
@@ -222,6 +262,47 @@ export default function RegistroFincaForm({
           value={nombre}
           onChange={(e) => setNombre(e.target.value)}
         />
+      </div>
+      {/* Imagen */}
+      <div className="col-span-1 md:col-span-2">
+        <label className="block text-gray-700">Foto (opcional)</label>
+        <div className="flex items-center gap-4 mt-2">
+          {/* hidden file input triggered by button */}
+          <input
+            id="foto-input"
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => {
+              const f = e.target.files?.[0] || null;
+              setFotoFile(f);
+              if (f) setFotoPreview(URL.createObjectURL(f));
+              else setFotoPreview(null);
+            }}
+          />
+          <label htmlFor="foto-input" className="inline-flex items-center gap-2 bg-gray-200 px-3 py-2 rounded cursor-pointer hover:bg-gray-300">
+            Examinar
+          </label>
+          {fotoFile && <span className="text-sm text-gray-600">{fotoFile.name}</span>}
+          {!fotoFile && fotoPreview && (
+            <img src={fotoPreview} alt="preview" className="w-32 h-20 object-cover rounded" />
+          )}
+          {fotoFile && (
+            <button
+              type="button"
+              className="text-red-500 ml-2"
+              onClick={() => {
+                setFotoFile(null);
+                setFotoPreview(fincaToEdit?.fotoUrl || null);
+                // clear input value
+                const el = document.getElementById('foto-input') as HTMLInputElement | null;
+                if (el) el.value = '';
+              }}
+            >
+              Eliminar
+            </button>
+          )}
+        </div>
       </div>
       <div className="col-span-1">
         <label className="block text-gray-700">Localización</label>

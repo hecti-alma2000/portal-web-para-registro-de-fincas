@@ -17,6 +17,17 @@ const FincaCardComponent = ({ finca, onEdit, onDelete }: FincaCardProps) => {
 
   return (
     <div className="bg-white rounded shadow p-4 w-full max-w-2xl mx-auto transition-all">
+      <div className="flex gap-4 items-start mb-2">
+        {finca.fotoUrl ? (
+          <img src={finca.fotoUrl} alt={finca.nombre} className="w-32 h-20 object-cover rounded" />
+        ) : (
+          <div className="w-32 h-20 bg-gray-100 rounded flex items-center justify-center text-gray-400">
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V7M8 7V5a4 4 0 018 0v2" />
+            </svg>
+          </div>
+        )}
+      </div>
       <div
         className="flex justify-between items-center cursor-pointer"
         onClick={() => setOpen((v) => !v)}

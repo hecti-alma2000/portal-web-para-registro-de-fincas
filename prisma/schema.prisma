@@ -24,6 +24,8 @@ model Finca {
   descripcion                 String?
   localizacion                String
   propietario                 String
+  // URL pública opcional a la foto de la finca (guardada en /public/uploads)
+  fotoUrl                     String?
   tipoPropiedad               TipoPropiedad
   entidadPertenece            String?
   usoActual                   String?

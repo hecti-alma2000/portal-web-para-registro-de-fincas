@@ -6,6 +6,7 @@ export interface FincaInput {
   localizacion: string;
   propietario: string;
   descripcion?: string;
+  fotoUrl?: string;
   tipoPropiedad: "ESTATAL" | "PRIVADA";
   entidadPertenece?: string;
   usoActual?: string;
@@ -23,34 +24,36 @@ export interface FincaInput {
 
 export async function createFinca(data: FincaInput) {
   try {
-    const finca = await prisma.finca.create({
-      data: {
-        nombre: data.nombre,
-        localizacion: data.localizacion,
-        propietario: data.propietario,
-        descripcion: data.descripcion,
-        tipoPropiedad: data.tipoPropiedad,
-        entidadPertenece: data.entidadPertenece,
-        usoActual: data.usoActual,
-        estadoConservacion: data.estadoConservacion,
-        problematicaDetectada: data.problematicaDetectada,
-        tradicionesHistoria: data.tradicionesHistoria,
-        disponibilidadAnual: data.disponibilidadAnual,
-        ofreceAlojamiento: data.ofreceAlojamiento,
-        entornoLimpioSeguro: data.entornoLimpioSeguro,
-        elementosInteres: {
-          create: data.elementosInteres.map((nombre) => ({ nombre })),
-        },
-        actividadesAgroturisticas: {
-          create: data.actividadesAgroturisticas.map((nombre) => ({ nombre })),
-        },
-        principiosSustentabilidad: {
-          create: data.principiosSustentabilidad.map((nombre) => ({ nombre })),
-        },
-        accionesAmbientales: {
-          create: data.accionesAmbientales.map((nombre) => ({ nombre })),
-        },
+    const createData: any = {
+      nombre: data.nombre,
+      localizacion: data.localizacion,
+      propietario: data.propietario,
+      descripcion: data.descripcion,
+      tipoPropiedad: data.tipoPropiedad,
+      entidadPertenece: data.entidadPertenece,
+      usoActual: data.usoActual,
+      estadoConservacion: data.estadoConservacion,
+      problematicaDetectada: data.problematicaDetectada,
+      tradicionesHistoria: data.tradicionesHistoria,
+      disponibilidadAnual: data.disponibilidadAnual,
+      ofreceAlojamiento: data.ofreceAlojamiento,
+      entornoLimpioSeguro: data.entornoLimpioSeguro,
+      elementosInteres: {
+        create: data.elementosInteres.map((nombre) => ({ nombre })),
       },
+      actividadesAgroturisticas: {
+        create: data.actividadesAgroturisticas.map((nombre) => ({ nombre })),
+      },
+      principiosSustentabilidad: {
+        create: data.principiosSustentabilidad.map((nombre) => ({ nombre })),
+      },
+      accionesAmbientales: {
+        create: data.accionesAmbientales.map((nombre) => ({ nombre })),
+      },
+    };
+    if (data.fotoUrl) createData.fotoUrl = data.fotoUrl;
+    const finca = await prisma.finca.create({
+      data: createData,
       include: {
         elementosInteres: true,
         actividadesAgroturisticas: true,
