@@ -29,7 +29,7 @@ export const Footer = () => {
               Portal de Agroturismo Holguín
             </h2>
             <p className="mt-1 text-base text-gray-600">
-              Conectando fincas con viajeros.
+              Descubre las maravillas del agroturismo en el municipio holguinero de Calixto García.
             </p>
           </div>
 
@@ -61,10 +61,10 @@ export const Footer = () => {
         {/* Sección de información de proyecto y derechos */}
         <div className="text-center text-gray-500 text-sm">
           <p>
-            Este proyecto forma parte de una tesis doctoral sobre el desarrollo del turismo rural en la región de Holguín.
+            Este proyecto forma parte de la tesis doctoral <strong>Fincas con potencial agrotrístico en el contexto del desarrollo territorial.</strong>
           </p>
           <p className="mt-1">
-            Realizado con el apoyo y colaboración de <strong>cuanticosurl.com</strong>.
+            Realizada por <strong>Lisbet Eunice Pérez Anzardo</strong> con el apoyo y colaboración de <strong>cuanticosurl.com</strong>.
           </p>
           <p className="mt-4 text-xs">
             © {new Date().getFullYear()}Todos los derechos reservados.
