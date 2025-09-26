@@ -2,8 +2,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, Fragment } from "react";
-import { Home, Search, PlusCircle, Menu, X } from "lucide-react";
-import dynamic from "next/dynamic";
+import { Home, Search, PlusCircle, Menu, X, LibraryBig, ShieldCheck } from "lucide-react";
 import { Transition } from "@headlessui/react";
 
 // Navegación con los nuevos iconos de Lucide React
@@ -11,6 +10,8 @@ const navigation = [
   { href: "/", name: "Inicio", icon: Home },
   { href: "/explorar", name: "Explorar", icon: Search },
   { href: "/registro-finca", name: "Registrar", icon: PlusCircle },
+  { href: "/info", name: "Información", icon: LibraryBig },
+  { href: "/certificacion", name: "Certificación", icon: ShieldCheck },
 ];
 
 export default function MainNav() {
