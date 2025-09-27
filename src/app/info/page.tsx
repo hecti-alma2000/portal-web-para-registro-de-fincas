@@ -45,7 +45,7 @@ export default function AgroturismoInfoPage() {
             El agroturismo no es solo visitar una finca; es una experiencia inmersiva que conecta al visitante con la tierra, la producción de alimentos y la cultura rural. Es un pilar clave para el desarrollo sostenible, ofreciendo una fuente de ingresos adicional para los agricultores y educando a la sociedad sobre el origen de sus alimentos.
           </p>
           <img
-            src="/images/campo-introduccion.jpg" // Usa el tag para la imagen
+            src="/campo-introduccion.jpg" // Usa el tag para la imagen
             alt="Paisaje campestre con agricultores y visitantes"
             className="rounded-xl shadow-lg my-6 max-h-96 object-cover w-full border border-gray-100"
           />
