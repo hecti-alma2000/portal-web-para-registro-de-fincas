@@ -1,10 +1,11 @@
 // app/info/page.tsx
 
+import Link from 'next/link';
 import { ActivityCard } from '@/components/ui/ActivityCard';
 import { ContentSection } from '@/components/ui/ContentSection';
 import { FAQSection } from '@/components/ui/FAQSection';
 import { SidebarNav } from '@/components/ui/SidebarNav';
-import Link from 'next/link';
+import Image from 'next/image';
 
 /**
  * Página principal de "Información sobre Agroturismo".
@@ -18,7 +19,7 @@ export default function AgroturismoInfoPage() {
   </svg>
 );
   return (
-    <div className="flex w-full bg-white min-h-screen">
+    <div className="flex w-full  min-h-screen">
       
       {/* 1. Columna Izquierda: Menú de Navegación (Solo en desktop) */}
       <aside className="hidden lg:block w-1/5 pt-10 px-6">
@@ -35,7 +36,7 @@ export default function AgroturismoInfoPage() {
             Descubre el Agroturismo
           </h1>
           <p className="text-xl text-gray-500 mt-2">
-            Tu guía completa para entender sus beneficios y oportunidades.
+            Guía para entender sus beneficios y oportunidades.
           </p>
         </header>
 

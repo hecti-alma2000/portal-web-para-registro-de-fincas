@@ -86,3 +86,40 @@ model InfraestructuraFinca {
   sistemaTratamientoAguas Boolean @default(false)
   usoEnergiasRenovables Boolean @default(false)
 }
+
+
+model Certificacion {
+  id                    String   @id @default(uuid())
+  createdAt             DateTime @default(now())
+  
+  // 1. Datos de Referencia (Necesario si la certificación se asocia a un usuario o una finca)
+  // fincaId               String?  // Relacionar con la finca si ya está registrada
+  // userId                String?  // O relacionar con el usuario que realiza la evaluación
+  
+  // 2. Parámetros Clave (Obligatorios)
+  accesibilidad         Boolean
+  permisoPropietario    Boolean
+  seguridadEntorno      Boolean
+  actividadAgricola     Boolean
+  serviciosBasicos      Boolean
+  
+  // 3. Parámetros Importantes (Potencial Alto)
+  produccionSostenible  Boolean
+  ofertaProductos       Boolean
+  ofertaActividades     Boolean
+  valorCultural         Boolean
+  infraestructuraAdic   Boolean
+  
+  // 4. Parámetros Adicionales (Distintivos)
+  ofertaAlojamiento     Boolean
+  gastronomiaLocal      Boolean
+  senalizacion          Boolean
+  elementosInteres      Boolean
+  
+  // 5. Resultado de la Evaluación
+  puntuacionTotal       Int
+  nivelPotencial        String   // "Gran Potencial", "Potencial con Mejoras", "No Apto"
+
+  // Indices para mejorar la búsqueda si fuera necesario
+  @@index([nivelPotencial])
+}

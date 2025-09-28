@@ -11,7 +11,7 @@ interface ContentSectionProps {
  * Componente que envuelve cada sección de contenido de la página informativa.
  * Establece el formato de título y margen para un diseño limpio.
  */
-export const ContentSection: React.FC<ContentSectionProps> = ({ id, title, children }) => {
+export const ContentSection = ({id, title, children}:ContentSectionProps) => {
   return (
     // 'pt-8' añade espacio superior para separar secciones, 'scroll-mt-24' es crucial para el desplazamiento
     // en la navegación de anclas, compensando una posible barra de navegación fija.

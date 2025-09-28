@@ -23,7 +23,7 @@ export const SidebarNav: React.FC = () => {
   
   return (
     <nav className="sticky top-24 pt-4"> {/* top-24 asumiendo que el Navbar ocupa espacio */}
-      <h3 className="text-lg font-semibold text-green-800 mb-4 border-b pb-2">
+      <h3 className="text-lg font-semibold text-green-800 mb-4 border-b border-green-800 pb-2">
         Índice de Contenidos
       </h3>
       <ul className="flex flex-col space-y-3">

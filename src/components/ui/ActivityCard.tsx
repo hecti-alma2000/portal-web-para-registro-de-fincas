@@ -19,7 +19,7 @@ const colorMap = {
 /**
  * Tarjeta simple para destacar una actividad agroturística.
  */
-export const ActivityCard: React.FC<ActivityCardProps> = ({ title, description, icon, color }) => {
+export const ActivityCard = ({ title, description, icon, color }:ActivityCardProps) => {
   const baseClasses = "flex flex-col items-center text-center p-6 rounded-xl border-t-4 shadow-sm hover:shadow-md transition duration-200";
   
   return (
