@@ -9,7 +9,7 @@ import { CertificacionForm } from "@/components/ui/CertificacionForm";
  */
 export default function CertificacionPage() {
     return (
-        <div className="py-12 px-4 min-h-screen bg-gray-100">
+        <div className="py-12 px-4 min-h-screen">
             <header className="text-center mb-10">
                 <h1 className="text-4xl font-extrabold text-gray-900">
                     Diagnóstico de Potencial Agroturístico

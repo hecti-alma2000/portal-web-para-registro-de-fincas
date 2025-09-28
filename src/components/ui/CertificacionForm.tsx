@@ -1,6 +1,7 @@
 // src/components/ui/CertificacionForm.tsx
 'use client';
 
+import React from 'react';
 import Swal from 'sweetalert2'; 
 import { useFormStatus } from 'react-dom';
 import { evaluarCertificacion } from '@/actions/registro-finca/certificacion';
@@ -9,38 +10,9 @@ import { evaluarCertificacion } from '@/actions/registro-finca/certificacion';
 type CheckboxColor = 'red' | 'amber' | 'green';
 
 // ----------------------------------------------------
-// CORRECCIÓN: Definición de la interfaz para el mapa de colores
+// Componente para el botón de envío
 // ----------------------------------------------------
 
-// Define la estructura de cada entrada de color
-interface ColorStyle {
-    baseBorder: string;
-    checkedRing: string;
-}
-
-// Define la estructura del mapa completo, asegurando que solo use claves de CheckboxColor
-type ColorMap = Record<CheckboxColor, ColorStyle>;
-
-// Mapa de colores de Tailwind para el BORDE del contenedor (la tarjeta)
-const colorMap: ColorMap = {
-    // 1. Requisitos Clave (ROJO)
-    red: { 
-        baseBorder: 'border-red-500', 
-        checkedRing: 'ring-red-300', // Un anillo sutil
-    },
-    // 2. Potencial Adicional (ÁMBAR/NARANJA)
-    amber: { 
-        baseBorder: 'border-amber-500', 
-        checkedRing: 'ring-amber-300',
-    },
-    // 3. Elementos Distintivos (VERDE)
-    green: { 
-        baseBorder: 'border-green-500', 
-        checkedRing: 'ring-green-300',
-    },
-};
-
-// Componente para el botón de envío
 const SubmitButton = () => {
     const { pending } = useFormStatus();
     return (
@@ -54,18 +26,39 @@ const SubmitButton = () => {
     );
 };
 
-// CheckboxInput
+/**
+ * CheckboxInput: Aplica las clases de color de forma condicional/ternaria 
+ * para asegurar que Tailwind compile los estilos dinámicos.
+ */
 const CheckboxInput: React.FC<{ name: string; label: string; color: CheckboxColor }> = ({ name, label, color }) => {
-    // TypeScript ahora sabe que 'color' es una clave válida en 'colorMap'
-    const colors = colorMap[color]; 
+    
+    // 1. Clases de color para el INPUT (color del check interno)
+    const inputColorClass = 
+        color === 'red' ? 'text-red-500 border-red-500' :
+        color === 'amber' ? 'text-amber-500 border-amber-500' :
+        'text-green-600 border-green-500'; 
+
+    // 2. CLAVE: Clases de color para el BORDE del LABEL cuando está marcado (persistencia)
+    const checkedBorderClass = 
+        color === 'red' ? 'has-[:checked]:border-red-500 has-[:checked]:ring-red-300' :
+        color === 'amber' ? 'has-[:checked]:border-amber-500 has-[:checked]:ring-amber-300' :
+        'has-[:checked]:border-green-500 has-[:checked]:ring-green-300';
+    
+    // 3. Clases de color para el BORDE del LABEL al hacer hover (visualización previa)
+    const hoverBorderClass = 
+        color === 'red' ? 'hover:border-red-300' :
+        color === 'amber' ? 'hover:border-amber-300' :
+        'hover:border-green-300';
+
 
     return (
+        // El label contenedor ahora tiene el borde y anillo condicionales
         <label 
             htmlFor={name} 
-            // has-[:checked] ahora activa el estilo del borde y el anillo
             className={`flex items-start space-x-3 p-4 bg-white rounded-lg border-2 border-gray-200 transition cursor-pointer shadow-sm
-                        has-[:checked]:border-2 has-[:checked]:${colors.baseBorder} 
-                        has-[:checked]:ring-4 has-[:checked]:${colors.checkedRing} 
+                        has-[:checked]:border-2 has-[:checked]:ring-4 
+                        ${checkedBorderClass} 
+                        ${hoverBorderClass} 
                         hover:shadow-md`}
         >
             
@@ -73,7 +66,8 @@ const CheckboxInput: React.FC<{ name: string; label: string; color: CheckboxColo
                 type="checkbox" 
                 id={name} 
                 name={name} 
-                className={`mt-1.5 h-5 w-5 rounded border-gray-300 text-current focus:ring-current`} 
+                // Aplicamos las clases ternarias explícitas al input nativo.
+                className={`mt-1.5 h-5 w-5 rounded border-gray-300 focus:ring-0 ${inputColorClass}`} 
                 value="on"
             />
             
@@ -128,7 +122,7 @@ export const CertificacionForm: React.FC = () => {
     };
 
     return (
-        <form action={handleSubmit} className="space-y-4 max-w-2xl mx-auto p-6 bg-gray-50 rounded-xl shadow-2xl">
+        <form action={handleSubmit} className="space-y-4 max-w-2xl mx-auto p-6  rounded-xl shadow-2xl">
             <p className="text-gray-700 text-lg mb-6 border-b pb-4 font-semibold">
                 Marca cada requisito que tu finca cumple actualmente para obtener un diagnóstico instantáneo.
             </p>
@@ -136,7 +130,7 @@ export const CertificacionForm: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 
                 {/* 1. Requisitos Clave (ROJO) */}
-                <CheckboxInput name="accesibilidad" label="Accesibilidad (Medios de transporte) - Mínimo" color="red"  />
+                <CheckboxInput name="accesibilidad" label="Accesibilidad (Medios de transporte) - Mínimo" color="red" />
                 <CheckboxInput name="permisoPropietario" label="Permiso del Propietario - Mínimo" color="red" />
                 <CheckboxInput name="seguridadEntorno" label="Entorno Seguro y Senderos Claros - Mínimo" color="red" />
                 <CheckboxInput name="actividadAgricola" label="Actividad Agrícola o Ganadera Activa - Mínimo" color="red" />
