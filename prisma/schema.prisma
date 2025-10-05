@@ -44,6 +44,7 @@ model Finca {
   actividadesAgroturisticas   ActividadAgroturistica[]
   principiosSustentabilidad   PrincipioSustentabilidad[]
   accionesAmbientales         AccionAmbiental[]
+  diagnosticos                Diagnostico[]
 }
 
 model ElementoInteres {
@@ -88,38 +89,33 @@ model InfraestructuraFinca {
 }
 
 
-model Certificacion {
-  id                    String   @id @default(uuid())
-  createdAt             DateTime @default(now())
+model Diagnostico {
+  id      String @id @default(cuid())
   
-  // 1. Datos de Referencia (Necesario si la certificación se asocia a un usuario o una finca)
-  // fincaId               String?  // Relacionar con la finca si ya está registrada
-  // userId                String?  // O relacionar con el usuario que realiza la evaluación
+  // Relación con Finca
+  // Relación con Finca: DEBE ser String
+  fincaId Int 
+  finca   Finca  @relation(fields: [fincaId], references: [id])
   
-  // 2. Parámetros Clave (Obligatorios)
-  accesibilidad         Boolean
-  permisoPropietario    Boolean
-  seguridadEntorno      Boolean
-  actividadAgricola     Boolean
-  serviciosBasicos      Boolean
+  // Resultado del cálculo
+  puntuacionTotal Float // Suma de (VI * PI)
+  resultadoFinal  String  // "Apta" o "No apta" (basado en el umbral de 2.02)
   
-  // 3. Parámetros Importantes (Potencial Alto)
-  produccionSostenible  Boolean
-  ofertaProductos       Boolean
-  ofertaActividades     Boolean
-  valorCultural         Boolean
-  infraestructuraAdic   Boolean
+  // Respuestas del Cuestionario (Valoración Int - VI)
+  // Utilizamos los códigos (A, B, C...) como nombres de campos.
+  criterioA Int // Existencia de una casa rural o rancho campestre (Max 2)
+  criterioB Int // Capacidad de recibir clientes (Max 2)
+  criterioC Int // Accesibilidad (Max 3)
+  criterioD Int // Distribución de las áreas según su uso agropecuario (Max 3)
+  criterioE Int // Sustentabilidad agrícola (Max 4)
+  criterioF Int // Categorización del espacio rural circundante (Max 3)
+  criterioG Int // Manejo sostenible de las tierras (Max 4)
+  criterioH Int // Aprovechamiento de los recursos naturales o construidos (Max 4)
+  criterioI Int // Infraestructura disponible (Max 4)
+  criterioJ Int // Cercanía a sitios con valores socioculturales y centros nodales (Max 4)
+  criterioK Int // Entorno atractivo (Max 4)
   
-  // 4. Parámetros Adicionales (Distintivos)
-  ofertaAlojamiento     Boolean
-  gastronomiaLocal      Boolean
-  senalizacion          Boolean
-  elementosInteres      Boolean
-  
-  // 5. Resultado de la Evaluación
-  puntuacionTotal       Int
-  nivelPotencial        String   // "Gran Potencial", "Potencial con Mejoras", "No Apto"
+  createdAt DateTime @default(now())
 
-  // Indices para mejorar la búsqueda si fuera necesario
-  @@index([nivelPotencial])
+  @@index([fincaId])
 }
