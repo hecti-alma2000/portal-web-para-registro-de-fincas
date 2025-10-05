@@ -35,7 +35,7 @@ export default function MainNav() {
                     loading="lazy"
                   />
                   <span className="text-black text-2xl font-bold">
-                    Turismo Rural
+                    Turismo Alternativo
                   </span>
                 </span>
               </Link>

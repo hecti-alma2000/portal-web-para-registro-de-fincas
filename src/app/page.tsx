@@ -29,16 +29,16 @@ export default function Home() {
         </h1>
         <div className="mb-10 flex flex-col items-center justify-center gap-4 md:flex-row">
           <Link
-            href="/explorar"
-            className="bg-blue-600 px-6 py-2 text-white transition hover:bg-blue-700 rounded-lg"
-          >
-            Explorar fincas
-          </Link>
-          <Link
             href="/registro-finca"
             className="bg-green-600 px-6 py-2 text-white transition hover:bg-green-700 rounded-lg"
           >
             Registrar finca
+          </Link>
+          <Link
+            href="/explorar"
+            className="bg-blue-600 px-6 py-2 text-white transition hover:bg-blue-700 rounded-lg"
+          >
+            Explorar fincas
           </Link>
         </div>
         <Divider dividerTitle="Descubre el Agroturismo" />
@@ -56,7 +56,40 @@ export default function Home() {
             <LazyCarrusel />
           </div>
         </div>
-      </div>
+        <Divider dividerTitle='FPAT' />
+          <div className="my-10 grid grid-cols-1 gap-8 md:grid-cols-2">
+          <div className="animate__animated animate__lightSpeedInLeft flex flex-col justify-center">
+            <h2 className="mb-4 text-center text-2xl font-semibold md:text-left">
+              ¿En que conciste nuestro sistema de certificacion ?
+            </h2>
+            <p className="text-justify leading-relaxed text-gray-700">
+              Aqui va la explicacion
+            </p>
+          </div>
+          
+            <span className="flex items-center ">
+              {/* Carga perezosa de la imagen del logo */}
+              <img
+                src="/icons/logo.png"
+                alt="Logo"
+                className="h-28 w-28"
+                loading="lazy"
+              />
+              <div className='flex flex-col'>
+                <span className="text-black text-2xl font-bold">
+                  Fincas con Potencial Agroturístico
+                </span>
+                <Link
+            href="/certificacion"
+            className="bg-green-600 px-6 py-2  text-white transition hover:bg-green-700 rounded-lg"
+            >
+              Descubre si tu finca cuenta con el potencial agroturístico
+          </Link>
+              </div>
+            </span>
+          
+          </div>      
+        </div>
     </main>
   );
 }

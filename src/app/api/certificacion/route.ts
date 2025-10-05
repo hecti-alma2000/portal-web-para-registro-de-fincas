@@ -39,8 +39,19 @@ export async function POST(request: Request) {
       criterioK,
     };
 
+    // Buscar la finca para obtener su nombre
+    const finca = await prisma.finca.findUnique({ where: { id: Number(fincaId) }, select: { id: true, nombre: true } });
+
     // Ejecutar la evaluación (devuelve icon/title/message/puntuacion)
-    const resultado = await evaluarPotencialAgroturistico(datos);
+    const resultadoBase = await evaluarPotencialAgroturistico(datos);
+
+    // Añadir el nombre de la finca al título y mensaje si lo tenemos
+    const fincaNombre = finca?.nombre ?? `ID ${fincaId}`;
+    const resultado = {
+      ...resultadoBase,
+      title: `${resultadoBase.title} - ${fincaNombre}`,
+      message: `${resultadoBase.message} \nFinca: ${fincaNombre}`,
+    };
 
     // Guardar en la base de datos
     const diagnostico = await prisma.diagnostico.create({

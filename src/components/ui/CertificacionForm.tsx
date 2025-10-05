@@ -142,9 +142,21 @@ export const CertificacionForm: React.FC = () => {
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6 max-w-4xl mx-auto p-8 bg-gray-50 rounded-xl shadow-2xl">
-            <p className="text-gray-700 text-lg mb-6 border-b pb-4 font-semibold">
+            <div className="flex items-center justify-between flex-col sm:flex-row">
+              <p className="text-gray-700 text-lg mb-6 border-b pb-4 font-semibold">
                 Valora cada criterio para obtener el diagnóstico ponderado de potencial agroturístico.
-            </p>
+              </p>
+                <span className="flex items-center ">
+                  {/* Carga perezosa de la imagen del logo */}
+                  <img
+                    src="/icons/logo.png"
+                    alt="Logo"
+                    className="h-24 w-24"
+                    loading="lazy"
+                  />
+                </span>
+            </div>
+            
 
             <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-2">Selecciona la finca</label>
