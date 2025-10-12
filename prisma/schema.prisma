@@ -32,9 +32,6 @@ model Finca {
   estadoConservacion          String?
   problematicaDetectada       String?
   tradicionesHistoria         String?
-  disponibilidadAnual         Boolean  @default(false)
-  ofreceAlojamiento           Boolean  @default(false)
-  entornoLimpioSeguro         Boolean  @default(false)
   infraestructura             InfraestructuraFinca?
   createdAt                   DateTime @default(now())
   updatedAt                   DateTime @updatedAt

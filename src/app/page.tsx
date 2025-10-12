@@ -63,8 +63,12 @@ export default function Home() {
               ¿En que conciste nuestro sistema de certificacion ?
             </h2>
             <p className="text-justify leading-relaxed text-gray-700">
-              Aqui va la explicacion
-            </p>
+  Nuestro sistema de certificación se basa en el <b>Índice de Potencial Agroturístico (FPAT)</b>, una herramienta científica diseñada para medir la <b>viabilidad y calidad</b> de tu finca como destino turístico. 
+  <br /><br />
+  Este no es un simple cuestionario de Sí/No, sino un <b>método de asignación de puntaje ponderado</b>. Cada aspecto de tu finca (desde la accesibilidad y la sustentabilidad agrícola hasta la infraestructura y el atractivo del entorno) es evaluado y multiplicado por un <b>peso de importancia</b> único. La suma de estas calificaciones ponderadas ofrece una <b>puntuación precisa</b> de tu potencial.
+  <br /><br />
+  <b>El diagnóstico es claro:</b> si el valor resultante es <b>mayor a 2.02</b>, la finca se clasifica como <b>APTA</b> para el agroturismo, lo que significa un potencial real de generar ingresos y aportar al desarrollo local. Si es menor, se identifica como "No Apta", lo cual te proporciona una hoja de ruta clara para realizar mejoras estratégicas. Este sistema garantiza una clasificación justa y rigurosa, fundamental para el desarrollo sostenible del sector.
+</p>
           </div>
           
             <span className="flex items-center ">

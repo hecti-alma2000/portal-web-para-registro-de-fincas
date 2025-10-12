@@ -20,9 +20,6 @@ async function main() {
         estadoConservacion: "Buena",
         problematicaDetectada: "Falta de maquinaria",
         tradicionesHistoria: "Fundada en 1950, tradición cafetalera",
-        disponibilidadAnual: true,
-        ofreceAlojamiento: true,
-        entornoLimpioSeguro: true,
       },
       {
         nombre: "Finca El Troncón y El Carmen",
@@ -36,9 +33,6 @@ async function main() {
         estadoConservacion: "Regular",
         problematicaDetectada: "Acceso difícil en época de lluvias",
         tradicionesHistoria: "Herencia familiar desde 1975",
-        disponibilidadAnual: true,
-        ofreceAlojamiento: false,
-        entornoLimpioSeguro: true,
       },
       {
         nombre: "Finca La Bendecida",
@@ -52,9 +46,6 @@ async function main() {
         estadoConservacion: "Excelente",
         problematicaDetectada: "Falta de mano de obra",
         tradicionesHistoria: "Tradición de producción de miel",
-        disponibilidadAnual: true,
-        ofreceAlojamiento: true,
-        entornoLimpioSeguro: true,
       },
       {
         nombre: "Finca Las Maravillas",
@@ -68,9 +59,6 @@ async function main() {
         estadoConservacion: "Buena",
         problematicaDetectada: "Plagas en cultivos",
         tradicionesHistoria: "Fundada en 1980, tradición cañera",
-        disponibilidadAnual: false,
-        ofreceAlojamiento: false,
-        entornoLimpioSeguro: true,
       },
       {
         nombre: "Finca La Próspera",
@@ -84,9 +72,6 @@ async function main() {
         estadoConservacion: "Buena",
         problematicaDetectada: "Falta de riego",
         tradicionesHistoria: "Tradición de cultivos mixtos",
-        disponibilidadAnual: true,
-        ofreceAlojamiento: false,
-        entornoLimpioSeguro: false,
       },
       {
         nombre: "Finca La Alegría",
@@ -99,9 +84,6 @@ async function main() {
         estadoConservacion: "Regular",
         problematicaDetectada: "Falta de fertilizantes",
         tradicionesHistoria: "Fundada en 1995, tradición citrícola",
-        disponibilidadAnual: false,
-        ofreceAlojamiento: true,
-        entornoLimpioSeguro: true,
       },
       {
         nombre: "Finca La Margarita",
@@ -114,9 +96,6 @@ async function main() {
         estadoConservacion: "Excelente",
         problematicaDetectada: "Falta de herramientas",
         tradicionesHistoria: "Tradición de cultivos de limón",
-        disponibilidadAnual: true,
-        ofreceAlojamiento: true,
-        entornoLimpioSeguro: true,
       },
     ],
   });

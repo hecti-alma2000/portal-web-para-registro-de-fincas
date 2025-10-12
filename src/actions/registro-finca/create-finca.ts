@@ -13,9 +13,6 @@ export interface FincaInput {
   estadoConservacion?: string;
   problematicaDetectada?: string;
   tradicionesHistoria?: string;
-  disponibilidadAnual?: boolean;
-  ofreceAlojamiento?: boolean;
-  entornoLimpioSeguro?: boolean;
   elementosInteres: string[];
   actividadesAgroturisticas: string[];
   principiosSustentabilidad: string[];
@@ -35,9 +32,6 @@ export async function createFinca(data: FincaInput) {
       estadoConservacion: data.estadoConservacion,
       problematicaDetectada: data.problematicaDetectada,
       tradicionesHistoria: data.tradicionesHistoria,
-      disponibilidadAnual: data.disponibilidadAnual,
-      ofreceAlojamiento: data.ofreceAlojamiento,
-      entornoLimpioSeguro: data.entornoLimpioSeguro,
       elementosInteres: {
         create: data.elementosInteres.map((nombre) => ({ nombre })),
       },

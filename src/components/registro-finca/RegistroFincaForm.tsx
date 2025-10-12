@@ -217,9 +217,6 @@ export default function RegistroFincaForm({
         estadoConservacion,
         problematicaDetectada,
         tradicionesHistoria,
-        disponibilidadAnual,
-        ofreceAlojamiento,
-        entornoLimpioSeguro,
         elementosInteres,
         actividadesAgroturisticas,
         principiosSustentabilidad,
@@ -305,7 +302,7 @@ export default function RegistroFincaForm({
         </div>
       </div>
       <div className="col-span-1">
-        <label className="block text-gray-700">Localización</label>
+        <label className="block text-gray-700">dirección</label>
         <input
           type="text"
           className="mt-1 block w-full border rounded px-3 py-2"
@@ -325,7 +322,7 @@ export default function RegistroFincaForm({
         />
       </div>
       <div className="col-span-1 md:col-span-2">
-        <label className="block text-gray-700">Descripción</label>
+        <label className="block text-gray-700">Breve Descripción</label>
         <textarea
           className="mt-1 block w-full border rounded px-3 py-2"
           rows={3}
@@ -574,42 +571,6 @@ export default function RegistroFincaForm({
             </li>
           ))}
         </ul>
-      </div>
-      {/* Campos booleanos */}
-      <div className="col-span-1 md:col-span-2 flex gap-4">
-        <label className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            checked={disponibilidadAnual}
-            onChange={(e) => setDisponibilidadAnual(e.target.checked)}
-          />
-          Disponibilidad anual
-        </label>
-        <label className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            checked={ofreceAlojamiento}
-            onChange={(e) => setOfreceAlojamiento(e.target.checked)}
-          />
-          Ofrece alojamiento
-        </label>
-        <label className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            checked={entornoLimpioSeguro}
-            onChange={(e) => setEntornoLimpioSeguro(e.target.checked)}
-          />
-          Entorno limpio y seguro
-        </label>
-      </div>
-      <div className="col-span-1 md:col-span-2">
-        <label className="block text-gray-700">Tradiciones e historia</label>
-        <textarea
-          className="mt-1 block w-full border rounded px-3 py-2"
-          rows={2}
-          value={tradicionesHistoria}
-          onChange={(e) => setTradicionesHistoria(e.target.value)}
-        />
       </div>
       {/* Botón de submit ocupa toda la fila */}
       <div className="col-span-1 md:col-span-2">

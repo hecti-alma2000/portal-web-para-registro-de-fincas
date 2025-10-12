@@ -27,7 +27,7 @@ const SubmitButton = () => {
 };
 
 // ----------------------------------------------------
-// Nuevo Componente: RadioCriterioInput
+//  Componente: RadioCriterioInput
 // ----------------------------------------------------
 
 interface RadioCriterioInputProps {
