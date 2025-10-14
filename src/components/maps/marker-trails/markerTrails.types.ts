@@ -1,4 +1,4 @@
-import { Map } from "leaflet";
+import { Map } from 'leaflet';
 
 export type MarkerTrailsProps = {
   selectMarker: (position: positionType, fn: fnType) => void;

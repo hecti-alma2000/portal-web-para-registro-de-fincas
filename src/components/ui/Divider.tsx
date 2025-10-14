@@ -1,14 +1,12 @@
-"use client";
-import dynamic from "next/dynamic";
+'use client';
+import dynamic from 'next/dynamic';
 
 // =========================================================================
 // 1. Carga Dinámica del icono Leaf de Lucide React
 // =========================================================================
 
-const LazyLeaf = dynamic(() => import("lucide-react").then((mod) => mod.Leaf), {
-  loading: () => (
-    <div className="w-5 h-5 animate-pulse bg-gray-200 rounded-full mr-2"></div>
-  ),
+const LazyLeaf = dynamic(() => import('lucide-react').then((mod) => mod.Leaf), {
+  loading: () => <div className="w-5 h-5 animate-pulse bg-gray-200 rounded-full mr-2"></div>,
   ssr: false,
 });
 

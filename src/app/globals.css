@@ -1,5 +1,5 @@
-@import url("https://fonts.googleapis.com/css2?family=Pacifico&display=swap");
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+@import 'tailwindcss';
 
 @plugin "tailwindcss-animate";
 
@@ -9,8 +9,8 @@
 }
 
 body {
-  font-family: "Roboto";
-  background-image: url("/imgs_bg/gb_image.webp");
+  font-family: 'Roboto';
+  background-image: url('/imgs_bg/gb_image.webp');
 }
 
 .btn-primary {
@@ -28,7 +28,7 @@ body {
 }
 
 .bg-nav {
-  background-image: url("/Gemini_Generated_Image_9ewr9n9ewr9n9ewr.png");
+  background-image: url('/Gemini_Generated_Image_9ewr9n9ewr9n9ewr.png');
   background-size: cover;
   background-position: center;
 }

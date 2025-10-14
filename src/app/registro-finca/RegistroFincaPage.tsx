@@ -1,22 +1,22 @@
-"use client";
+'use client';
 
-import { deleteFinca, getAllFincas } from "@/actions/registro-finca/finca-actions";
-import { useRegistroFincaModalStore } from "../../store/modal/registroFincaModal.store";
-import { useState, useTransition, useEffect } from "react";
-import Swal from "sweetalert2";
-import { useFincaEditStore } from "../../store/modal/fincaEdit.store";
-import { Plus } from "lucide-react";
-import dynamic from "next/dynamic";
+import { deleteFinca, getAllFincas } from '@/actions/registro-finca/finca-actions';
+import { useRegistroFincaModalStore } from '../../store/modal/registroFincaModal.store';
+import { useState, useTransition, useEffect } from 'react';
+import Swal from 'sweetalert2';
+import { useFincaEditStore } from '../../store/modal/fincaEdit.store';
+import { Plus } from 'lucide-react';
+import dynamic from 'next/dynamic';
 
 // Carga perezosa del componente FincaCard
-const FincaCard = dynamic(() => import("../../components/registro-finca/FincaCard"), {
+const FincaCard = dynamic(() => import('../../components/registro-finca/FincaCard'), {
   loading: () => <p>Cargando fincas...</p>,
   ssr: false, // Opcional: Deshabilita el renderizado del lado del servidor si es necesario
 });
 
 // Carga perezosa del componente del modal.
 const RegistroFincaModal = dynamic(
-  () => import("../../components/registro-finca/RegistroFincaModal"),
+  () => import('../../components/registro-finca/RegistroFincaModal'),
   {
     loading: () => null, // No muestra nada mientras carga el modal
     ssr: false,
@@ -30,21 +30,21 @@ export default function RegistroFincaPage({ fincas }: { fincas: any[] }) {
 
   const handleDelete = (id: number) => {
     Swal.fire({
-      title: "¿Eliminar finca?",
-      text: "Esta acción no se puede deshacer",
-      icon: "warning",
+      title: '¿Eliminar finca?',
+      text: 'Esta acción no se puede deshacer',
+      icon: 'warning',
       showCancelButton: true,
-      confirmButtonText: "Sí, eliminar",
-      cancelButtonText: "Cancelar",
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
         startTransition(async () => {
           const res = await deleteFinca(id);
           if (res.ok) {
             setFincasList((prev) => prev.filter((f) => f.id !== id));
-            Swal.fire("Eliminada", "La finca fue eliminada.", "success");
+            Swal.fire('Eliminada', 'La finca fue eliminada.', 'success');
           } else {
-            Swal.fire("Error", res.message || "No se pudo eliminar.", "error");
+            Swal.fire('Error', res.message || 'No se pudo eliminar.', 'error');
           }
         });
       }
@@ -65,8 +65,8 @@ export default function RegistroFincaPage({ fincas }: { fincas: any[] }) {
         });
       }
     };
-    window.addEventListener("finca-guardada", handler as EventListener);
-    return () => window.removeEventListener("finca-guardada", handler as EventListener);
+    window.addEventListener('finca-guardada', handler as EventListener);
+    return () => window.removeEventListener('finca-guardada', handler as EventListener);
   }, []);
 
   return (
@@ -81,14 +81,10 @@ export default function RegistroFincaPage({ fincas }: { fincas: any[] }) {
           <Plus size={20} />
         </button>
       </div>
-      {fincasList.length !== 0 && (
-        <h2 className="text-2xl font-bold mb-4">Lista de Fincas</h2>
-      )}
+      {fincasList.length !== 0 && <h2 className="text-2xl font-bold mb-4">Lista de Fincas</h2>}
       <div className="w-full max-w-2xl">
         {fincasList.length === 0 ? (
-          <div className="text-center text-gray-500">
-            No hay fincas registradas.
-          </div>
+          <div className="text-center text-gray-500">No hay fincas registradas.</div>
         ) : (
           <ul className="space-y-4">
             {fincasList.map((finca) => (
@@ -97,12 +93,12 @@ export default function RegistroFincaPage({ fincas }: { fincas: any[] }) {
                   finca={finca}
                   onEdit={() => {
                     Swal.fire({
-                      title: "¿Editar finca?",
-                      text: "¿Deseas editar esta finca?",
-                      icon: "question",
+                      title: '¿Editar finca?',
+                      text: '¿Deseas editar esta finca?',
+                      icon: 'question',
                       showCancelButton: true,
-                      confirmButtonText: "Sí, editar",
-                      cancelButtonText: "Cancelar",
+                      confirmButtonText: 'Sí, editar',
+                      cancelButtonText: 'Cancelar',
                     }).then((result) => {
                       if (result.isConfirmed) {
                         useFincaEditStore.getState().setFincaToEdit(finca);

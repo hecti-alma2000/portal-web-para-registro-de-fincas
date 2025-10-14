@@ -1,17 +1,18 @@
-"use client";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useState, Fragment } from "react";
-import { Home, Search, PlusCircle, Menu, X, LibraryBig, ShieldCheck } from "lucide-react";
-import { Transition } from "@headlessui/react";
+'use client';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useState, Fragment } from 'react';
+import { Home, Search, PlusCircle, Menu, X, LibraryBig, ShieldCheck, Tractor } from 'lucide-react';
+import { Transition } from '@headlessui/react';
 
 // Navegación con los nuevos iconos de Lucide React
 const navigation = [
-  { href: "/", name: "Inicio", icon: Home },
-  { href: "/explorar", name: "Explorar", icon: Search },
-  { href: "/registro-finca", name: "Registrar", icon: PlusCircle },
-  { href: "/info", name: "Información", icon: LibraryBig },
-  { href: "/certificacion", name: "Certificación", icon: ShieldCheck },
+  { href: '/', name: 'Inicio', icon: Home },
+  { href: '/explorar', name: 'Explorar', icon: Search },
+  { href: '/registro-finca', name: 'Registrar', icon: PlusCircle },
+  { href: '/info', name: 'Información', icon: LibraryBig },
+  { href: '/fincas', name: 'Fincas', icon: Tractor },
+  { href: '/certificacion', name: 'Certificación', icon: ShieldCheck },
 ];
 
 export default function MainNav() {
@@ -28,15 +29,8 @@ export default function MainNav() {
               <Link href="/">
                 <span className="flex items-center ">
                   {/* Carga perezosa de la imagen del logo */}
-                  <img
-                    src="/icons/logo.png"
-                    alt="Logo"
-                    className="h-18 w-18"
-                    loading="lazy"
-                  />
-                  <span className="text-black text-2xl font-bold">
-                    Turismo Alternativo
-                  </span>
+                  <img src="/icons/logo.png" alt="Logo" className="h-18 w-18" loading="lazy" />
+                  <span className="text-black text-2xl font-bold">Turismo Alternativo</span>
                 </span>
               </Link>
             </div>
@@ -47,8 +41,8 @@ export default function MainNav() {
                   <span
                     className={`flex flex-col items-center px-3 py-1 rounded transition-colors duration-200 text-xl mb-1 ${
                       pathname === item.href
-                        ? "text-green-600 font-bold"
-                        : "text-black hover:text-gray-300"
+                        ? 'text-green-600 font-bold'
+                        : 'text-black hover:text-gray-300'
                     }`}
                   >
                     {<item.icon />}
@@ -96,8 +90,8 @@ export default function MainNav() {
                     onClick={() => setIsOpen(false)}
                     className={`flex flex-col items-center w-full px-3 py-2 rounded-md text-xl mb-1 transition-colors duration-200 ${
                       pathname === item.href
-                        ? "text-green-600 font-bold"
-                        : "text-white-500 hover:text-gray-300"
+                        ? 'text-green-600 font-bold'
+                        : 'text-white-500 hover:text-gray-300'
                     }`}
                   >
                     {<item.icon />}

@@ -1,8 +1,8 @@
 // src/components/maps/MapInitializer.tsx
-"use client";
+'use client';
 
-import { useEffect } from "react";
-import { useMap } from "react-leaflet";
+import { useEffect } from 'react';
+import { useMap } from 'react-leaflet';
 
 // Este componente no renderiza nada, solo realiza una acción sobre el mapa
 const MapInitializer = () => {

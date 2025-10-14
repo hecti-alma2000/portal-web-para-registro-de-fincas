@@ -1,6 +1,6 @@
-import { importantPoints } from "@/components/maps/marker-trails/markerTrails.data";
-import { Location, Position } from "@/interfaces";
-import { create } from "zustand";
+import { importantPoints } from '@/components/maps/marker-trails/markerTrails.data';
+import { Location, Position } from '@/interfaces';
+import { create } from 'zustand';
 
 export interface Zone {
   id: string;
@@ -128,17 +128,17 @@ export const usePositionsStore = create<Positions>((set, get) => ({
     // Aseg\u00FArate de que tus zonas est\u00E9n definidas aqu\u00ED.
     // Deber\u00EDas tener una zona para el centro de Calixto Garc\u00EDa.
     {
-      id: "calixto-garcia-centro",
-      name: "Centro de Calixto Garc\u00EDa",
+      id: 'calixto-garcia-centro',
+      name: 'Centro de Calixto Garc\u00EDa',
       coordinate: { lat: 20.886992464628573, lng: -76.5981011376514 },
-      headerText: "Municipio Calixto Garc\u00EDa",
+      headerText: 'Municipio Calixto Garc\u00EDa',
     },
     // ... el resto de tus zonas (incluyendo Finca Vig\u00EDa si es relevante para otra funci\u00F3n) ...
     {
-      id: "finca-vigia",
-      name: "Finca Vigía del Museo Hemingway",
+      id: 'finca-vigia',
+      name: 'Finca Vigía del Museo Hemingway',
       coordinate: { lat: 23.067046, lng: -82.296773 },
-      headerText: "Finca Vigía del Museo Hemingway",
+      headerText: 'Finca Vigía del Museo Hemingway',
     },
   ],
   currentZone: null, // Inicializa a null para que el MapFlyTo no vuele a Finca Vig\u00EDa al inicio

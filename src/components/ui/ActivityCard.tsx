@@ -19,20 +19,15 @@ const colorMap = {
 /**
  * Tarjeta simple para destacar una actividad agroturística.
  */
-export const ActivityCard = ({ title, description, icon, color }:ActivityCardProps) => {
-  const baseClasses = "flex flex-col items-center text-center p-6 rounded-xl border-t-4 shadow-sm hover:shadow-md transition duration-200";
-  
+export const ActivityCard = ({ title, description, icon, color }: ActivityCardProps) => {
+  const baseClasses =
+    'flex flex-col items-center text-center p-6 rounded-xl border-t-4 shadow-sm hover:shadow-md transition duration-200';
+
   return (
     <div className={`${baseClasses} ${colorMap[color]}`}>
-      <div className="text-4xl mb-3">
-        {icon}
-      </div>
-      <h3 className="text-xl font-bold mb-2">
-        {title}
-      </h3>
-      <p className="text-sm text-gray-700">
-        {description}
-      </p>
+      <div className="text-4xl mb-3">{icon}</div>
+      <h3 className="text-xl font-bold mb-2">{title}</h3>
+      <p className="text-sm text-gray-700">{description}</p>
     </div>
   );
 };

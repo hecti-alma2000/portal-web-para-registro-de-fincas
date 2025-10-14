@@ -1,13 +1,10 @@
-"use client";
-import React, { useState } from "react";
-import {
-  getFincaByName,
-  getAllFincas,
-} from "@/actions/registro-finca/finca-actions";
-import FincaCardSimple from "../components/registro-finca/FincaCardSimple";
+'use client';
+import React, { useState } from 'react';
+import { getFincaByName, getAllFincas } from '@/actions/registro-finca/finca-actions';
+import FincaCardSimple from '../components/registro-finca/FincaCardSimple';
 
 export default function HeroBanner() {
-  const [nombre, setNombre] = useState("");
+  const [nombre, setNombre] = useState('');
   const [finca, setFinca] = useState<any>(null);
   const [buscado, setBuscado] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -35,7 +32,7 @@ export default function HeroBanner() {
   }
 
   function handleLimpiar() {
-    setNombre("");
+    setNombre('');
     setFinca(null);
     setBuscado(false);
     setShowModal(false);
@@ -70,8 +67,8 @@ export default function HeroBanner() {
   // Cerrar el dropdown al hacer click fuera
   React.useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      const input = document.getElementById("input-finca-busqueda");
-      const dropdown = document.getElementById("dropdown-finca-busqueda");
+      const input = document.getElementById('input-finca-busqueda');
+      const dropdown = document.getElementById('dropdown-finca-busqueda');
       if (
         dropdownVisible &&
         !(
@@ -82,8 +79,8 @@ export default function HeroBanner() {
         setDropdownVisible(false);
       }
     }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [dropdownVisible]);
 
   return (
@@ -94,7 +91,7 @@ export default function HeroBanner() {
           src="/imgs_bg/pasadia-vinnales.webp"
           alt="Imagen de fondo"
           className="object-cover w-full h-full min-h-[340px] md:min-h-[400px]"
-          style={{ minHeight: "340px" }}
+          style={{ minHeight: '340px' }}
         />
         {/* Fade arriba: más suave y alto */}
         <div className="absolute top-0 left-0 w-full h-28 md:h-40 bg-gradient-to-b from-white via-white/80 to-transparent pointer-events-none" />
@@ -107,7 +104,7 @@ export default function HeroBanner() {
       <div className="relative z-20 flex flex-col items-center w-full px-2 mt-0 pt-10">
         <h1
           className="text-4xl md:text-5xl font-bold text-white drop-shadow-lg font-[cursive] tracking-widest mb-2 text-center"
-          style={{ fontFamily: "Pacifico, cursive" }}
+          style={{ fontFamily: 'Pacifico, cursive' }}
         >
           FINCAS Y Agroturismo
         </h1>
@@ -115,7 +112,7 @@ export default function HeroBanner() {
         <form
           className="bg-white/90 rounded-lg shadow flex flex-row items-center gap-2 px-4 py-3 w-full max-w-2xl mt-2 justify-center"
           onSubmit={handleBuscar}
-          style={{ position: "relative" }}
+          style={{ position: 'relative' }}
           autoComplete="off"
         >
           <div className="relative flex-1 flex items-center">
@@ -125,11 +122,9 @@ export default function HeroBanner() {
               placeholder="Nombre de la finca..."
               value={nombre}
               onChange={handleInputChange}
-              onFocus={() =>
-                nombre && sugerencias.length > 0 && setDropdownVisible(true)
-              }
+              onFocus={() => nombre && sugerencias.length > 0 && setDropdownVisible(true)}
               className="border border-gray-300 rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-green-400 text-left pr-10"
-              style={{ minWidth: "200px", maxWidth: "100%" }}
+              style={{ minWidth: '200px', maxWidth: '100%' }}
             />
             {/* Botón limpiar dentro del input */}
             {nombre && (
@@ -148,11 +143,7 @@ export default function HeroBanner() {
                   stroke="currentColor"
                   className="w-5 h-5"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M6 18L18 6M6 6l12 12"
-                  />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             )}
@@ -162,10 +153,10 @@ export default function HeroBanner() {
                 id="dropdown-finca-busqueda"
                 className="absolute left-0 top-full mt-1 w-full bg-white border border-gray-200 rounded shadow-lg z-30 animate-fade-in"
                 style={{
-                  maxHeight: "220px", // Menor altura para asegurar que no salga del HeroBanner
-                  overflowY: "auto",
-                  boxShadow: "0 8px 24px 0 rgba(0,0,0,0.10)",
-                  minWidth: "100%",
+                  maxHeight: '220px', // Menor altura para asegurar que no salga del HeroBanner
+                  overflowY: 'auto',
+                  boxShadow: '0 8px 24px 0 rgba(0,0,0,0.10)',
+                  minWidth: '100%',
                 }}
               >
                 {sugerencias.map((f, idx) => (
@@ -174,15 +165,9 @@ export default function HeroBanner() {
                     className="px-4 py-2 cursor-pointer hover:bg-green-100 text-gray-800 flex flex-col"
                     onClick={() => handleSelectFinca(f)}
                   >
-                    <span className="font-semibold text-green-700">
-                      {f.nombre}
-                    </span>
-                    <span className="text-xs text-gray-500">
-                      {f.ubicacion || f.localizacion}
-                    </span>
-                    <span className="text-xs text-gray-400">
-                      Propietario: {f.propietario}
-                    </span>
+                    <span className="font-semibold text-green-700">{f.nombre}</span>
+                    <span className="text-xs text-gray-500">{f.ubicacion || f.localizacion}</span>
+                    <span className="text-xs text-gray-400">Propietario: {f.propietario}</span>
                   </li>
                 ))}
               </ul>
@@ -236,18 +221,12 @@ export default function HeroBanner() {
                   stroke="currentColor"
                   className="w-6 h-6"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M6 18L18 6M6 6l12 12"
-                  />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
               <div className="p-6 flex flex-col items-center justify-center min-h-[200px] max-h-[80vh] overflow-y-auto">
                 {loading && <span className="text-gray-500">Buscando...</span>}
-                {buscado && !loading && finca && (
-                  <FincaCardSimple finca={finca} />
-                )}
+                {buscado && !loading && finca && <FincaCardSimple finca={finca} />}
                 {buscado && !loading && !finca && (
                   <div className="text-red-600 font-semibold text-center">
                     No se ha encontrado la finca

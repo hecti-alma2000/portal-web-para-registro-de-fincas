@@ -1,23 +1,20 @@
-"use client";
-import { useState, useTransition, useEffect } from "react";
-import Swal from "sweetalert2";
-import { createFinca } from "@/actions/registro-finca/create-finca";
-import { updateFinca } from "@/actions/registro-finca/update-finca";
-import { useFincaEditStore } from "@/store/modal/fincaEdit.store";
+'use client';
+import { useState, useTransition, useEffect } from 'react';
+import Swal from 'sweetalert2';
+import { createFinca } from '@/actions/registro-finca/create-finca';
+import { updateFinca } from '@/actions/registro-finca/update-finca';
+import { useFincaEditStore } from '@/store/modal/fincaEdit.store';
 
 interface RegistroFincaFormProps {
   onSuccess?: () => void;
   fincaToEdit?: any | null;
 }
 
-export default function RegistroFincaForm({
-  onSuccess,
-  fincaToEdit,
-}: RegistroFincaFormProps) {
-  const [nombre, setNombre] = useState("");
-  const [localizacion, setLocalizacion] = useState("");
-  const [propietario, setPropietario] = useState("");
-  const [descripcion, setDescripcion] = useState("");
+export default function RegistroFincaForm({ onSuccess, fincaToEdit }: RegistroFincaFormProps) {
+  const [nombre, setNombre] = useState('');
+  const [localizacion, setLocalizacion] = useState('');
+  const [propietario, setPropietario] = useState('');
+  const [descripcion, setDescripcion] = useState('');
   const [fotoFile, setFotoFile] = useState<File | null>(null);
   const [fotoPreview, setFotoPreview] = useState<string | null>(null);
   const [fotoUrl, setFotoUrl] = useState<string | undefined>(undefined);
@@ -26,72 +23,62 @@ export default function RegistroFincaForm({
   const setFincaToEdit = useFincaEditStore((state) => state.setFincaToEdit);
 
   // Cambiar tipoPropiedad a tipo "ESTATAL" | "PRIVADA"
-  const [tipoPropiedad, setTipoPropiedad] = useState<"ESTATAL" | "PRIVADA">(
-    "ESTATAL"
-  );
-  const [entidadPertenece, setEntidadPertenece] = useState("");
-  const [usoActual, setUsoActual] = useState("");
-  const [estadoConservacion, setEstadoConservacion] = useState("");
-  const [problematicaDetectada, setProblematicaDetectada] = useState("");
-  const [tradicionesHistoria, setTradicionesHistoria] = useState("");
+  const [tipoPropiedad, setTipoPropiedad] = useState<'ESTATAL' | 'PRIVADA'>('ESTATAL');
+  const [entidadPertenece, setEntidadPertenece] = useState('');
+  const [usoActual, setUsoActual] = useState('');
+  const [estadoConservacion, setEstadoConservacion] = useState('');
+  const [problematicaDetectada, setProblematicaDetectada] = useState('');
+  const [tradicionesHistoria, setTradicionesHistoria] = useState('');
   const [disponibilidadAnual, setDisponibilidadAnual] = useState(false);
   const [ofreceAlojamiento, setOfreceAlojamiento] = useState(false);
   const [entornoLimpioSeguro, setEntornoLimpioSeguro] = useState(false);
 
   // Arrays dinámicos
   const [elementosInteres, setElementosInteres] = useState<string[]>([]);
-  const [nuevoElementoInteres, setNuevoElementoInteres] = useState("");
-  const [actividadesAgroturisticas, setActividadesAgroturisticas] = useState<
-    string[]
-  >([]);
-  const [nuevaActividad, setNuevaActividad] = useState("");
-  const [principiosSustentabilidad, setPrincipiosSustentabilidad] = useState<
-    string[]
-  >([]);
-  const [nuevoPrincipio, setNuevoPrincipio] = useState("");
+  const [nuevoElementoInteres, setNuevoElementoInteres] = useState('');
+  const [actividadesAgroturisticas, setActividadesAgroturisticas] = useState<string[]>([]);
+  const [nuevaActividad, setNuevaActividad] = useState('');
+  const [principiosSustentabilidad, setPrincipiosSustentabilidad] = useState<string[]>([]);
+  const [nuevoPrincipio, setNuevoPrincipio] = useState('');
   const [accionesAmbientales, setAccionesAmbientales] = useState<string[]>([]);
-  const [nuevaAccion, setNuevaAccion] = useState("");
+  const [nuevaAccion, setNuevaAccion] = useState('');
 
   useEffect(() => {
     if (fincaToEdit) {
-      setNombre(fincaToEdit.nombre || "");
-      setLocalizacion(fincaToEdit.localizacion || "");
-      setPropietario(fincaToEdit.propietario || "");
-      setDescripcion(fincaToEdit.descripcion || "");
-      setTipoPropiedad(fincaToEdit.tipoPropiedad || "ESTATAL");
-      setEntidadPertenece(fincaToEdit.entidadPertenece || "");
-      setUsoActual(fincaToEdit.usoActual || "");
-      setEstadoConservacion(fincaToEdit.estadoConservacion || "");
-      setProblematicaDetectada(fincaToEdit.problematicaDetectada || "");
-      setTradicionesHistoria(fincaToEdit.tradicionesHistoria || "");
+      setNombre(fincaToEdit.nombre || '');
+      setLocalizacion(fincaToEdit.localizacion || '');
+      setPropietario(fincaToEdit.propietario || '');
+      setDescripcion(fincaToEdit.descripcion || '');
+      setTipoPropiedad(fincaToEdit.tipoPropiedad || 'ESTATAL');
+      setEntidadPertenece(fincaToEdit.entidadPertenece || '');
+      setUsoActual(fincaToEdit.usoActual || '');
+      setEstadoConservacion(fincaToEdit.estadoConservacion || '');
+      setProblematicaDetectada(fincaToEdit.problematicaDetectada || '');
+      setTradicionesHistoria(fincaToEdit.tradicionesHistoria || '');
       setDisponibilidadAnual(!!fincaToEdit.disponibilidadAnual);
       setOfreceAlojamiento(!!fincaToEdit.ofreceAlojamiento);
       setEntornoLimpioSeguro(!!fincaToEdit.entornoLimpioSeguro);
-      setElementosInteres(
-        fincaToEdit.elementosInteres?.map((e: any) => e.nombre) || []
-      );
-  setFotoPreview(fincaToEdit.fotoUrl || null);
-  setFotoUrl(fincaToEdit.fotoUrl || undefined);
+      setElementosInteres(fincaToEdit.elementosInteres?.map((e: any) => e.nombre) || []);
+      setFotoPreview(fincaToEdit.fotoUrl || null);
+      setFotoUrl(fincaToEdit.fotoUrl || undefined);
       setActividadesAgroturisticas(
         fincaToEdit.actividadesAgroturisticas?.map((a: any) => a.nombre) || []
       );
       setPrincipiosSustentabilidad(
         fincaToEdit.principiosSustentabilidad?.map((p: any) => p.nombre) || []
       );
-      setAccionesAmbientales(
-        fincaToEdit.accionesAmbientales?.map((a: any) => a.nombre) || []
-      );
+      setAccionesAmbientales(fincaToEdit.accionesAmbientales?.map((a: any) => a.nombre) || []);
     } else {
-      setNombre("");
-      setLocalizacion("");
-      setPropietario("");
-      setDescripcion("");
-      setTipoPropiedad("ESTATAL");
-      setEntidadPertenece("");
-      setUsoActual("");
-      setEstadoConservacion("");
-      setProblematicaDetectada("");
-      setTradicionesHistoria("");
+      setNombre('');
+      setLocalizacion('');
+      setPropietario('');
+      setDescripcion('');
+      setTipoPropiedad('ESTATAL');
+      setEntidadPertenece('');
+      setUsoActual('');
+      setEstadoConservacion('');
+      setProblematicaDetectada('');
+      setTradicionesHistoria('');
       setDisponibilidadAnual(false);
       setOfreceAlojamiento(false);
       setEntornoLimpioSeguro(false);
@@ -106,12 +93,12 @@ export default function RegistroFincaForm({
     e.preventDefault();
     if (fincaToEdit) {
       const result = await Swal.fire({
-        title: "¿Editar finca?",
-        text: "¿Estás seguro de guardar los cambios?",
-        icon: "question",
+        title: '¿Editar finca?',
+        text: '¿Estás seguro de guardar los cambios?',
+        icon: 'question',
         showCancelButton: true,
-        confirmButtonText: "Sí, guardar",
-        cancelButtonText: "Cancelar",
+        confirmButtonText: 'Sí, guardar',
+        cancelButtonText: 'Cancelar',
       });
       if (!result.isConfirmed) return;
       setLoading(true);
@@ -157,60 +144,58 @@ export default function RegistroFincaForm({
         setLoading(false);
         if (res.ok) {
           Swal.fire({
-            title: "¡Finca actualizada!",
-            text: "La finca se actualizó correctamente.",
-            icon: "success",
-            confirmButtonText: "OK",
+            title: '¡Finca actualizada!',
+            text: 'La finca se actualizó correctamente.',
+            icon: 'success',
+            confirmButtonText: 'OK',
           });
-          window.dispatchEvent(
-            new CustomEvent("finca-guardada", { detail: { finca: res.data } })
-          );
+          window.dispatchEvent(new CustomEvent('finca-guardada', { detail: { finca: res.data } }));
           setFincaToEdit(null);
           if (onSuccess) onSuccess();
         } else {
           Swal.fire({
-            title: "Error",
-            text: res.message || "No se pudo actualizar la finca.",
-            icon: "error",
-            confirmButtonText: "OK",
+            title: 'Error',
+            text: res.message || 'No se pudo actualizar la finca.',
+            icon: 'error',
+            confirmButtonText: 'OK',
           });
         }
       });
       return;
     }
     const result = await Swal.fire({
-      title: "¿Registrar finca?",
-      text: "¿Estás seguro de registrar esta finca?",
-      icon: "question",
+      title: '¿Registrar finca?',
+      text: '¿Estás seguro de registrar esta finca?',
+      icon: 'question',
       showCancelButton: true,
-      confirmButtonText: "Sí, registrar",
-      cancelButtonText: "Cancelar",
+      confirmButtonText: 'Sí, registrar',
+      cancelButtonText: 'Cancelar',
     });
     if (!result.isConfirmed) return;
     setLoading(true);
     startTransition(async () => {
-        let uploadedUrl: string | undefined = fotoUrl;
-        if (fotoFile) {
-          try {
-            const fd = new FormData();
-            fd.append('file', fotoFile);
-            const resUp = await fetch('/api/uploads', { method: 'POST', body: fd });
-            const j = await resUp.json();
-            if (j.ok) {
-              uploadedUrl = j.url;
-              setFotoUrl(j.url);
-              setFotoPreview(j.url);
-            }
-          } catch (err) {
-            // seguir sin foto
+      let uploadedUrl: string | undefined = fotoUrl;
+      if (fotoFile) {
+        try {
+          const fd = new FormData();
+          fd.append('file', fotoFile);
+          const resUp = await fetch('/api/uploads', { method: 'POST', body: fd });
+          const j = await resUp.json();
+          if (j.ok) {
+            uploadedUrl = j.url;
+            setFotoUrl(j.url);
+            setFotoPreview(j.url);
           }
+        } catch (err) {
+          // seguir sin foto
         }
+      }
       const res = await createFinca({
         nombre,
         localizacion,
         propietario,
         descripcion,
-          fotoUrl: uploadedUrl,
+        fotoUrl: uploadedUrl,
         tipoPropiedad,
         entidadPertenece,
         usoActual,
@@ -225,31 +210,26 @@ export default function RegistroFincaForm({
       setLoading(false);
       if (res.ok) {
         Swal.fire({
-          title: "¡Finca registrada!",
-          text: "La finca se registró correctamente.",
-          icon: "success",
-          confirmButtonText: "OK",
+          title: '¡Finca registrada!',
+          text: 'La finca se registró correctamente.',
+          icon: 'success',
+          confirmButtonText: 'OK',
         });
-        window.dispatchEvent(
-          new CustomEvent("finca-guardada", { detail: { finca: res.data } })
-        );
+        window.dispatchEvent(new CustomEvent('finca-guardada', { detail: { finca: res.data } }));
         if (onSuccess) onSuccess();
       } else {
         Swal.fire({
-          title: "Error",
-          text: res.message || "No se pudo registrar la finca.",
-          icon: "error",
-          confirmButtonText: "OK",
+          title: 'Error',
+          text: res.message || 'No se pudo registrar la finca.',
+          icon: 'error',
+          confirmButtonText: 'OK',
         });
       }
     });
   };
 
   return (
-    <form
-      className="space-y-4 grid grid-cols-1 md:grid-cols-2 gap-4"
-      onSubmit={handleSubmit}
-    >
+    <form className="space-y-4 grid grid-cols-1 md:grid-cols-2 gap-4" onSubmit={handleSubmit}>
       <div className="col-span-1">
         <label className="block text-gray-700">Nombre de la finca</label>
         <input
@@ -277,7 +257,10 @@ export default function RegistroFincaForm({
               else setFotoPreview(null);
             }}
           />
-          <label htmlFor="foto-input" className="inline-flex items-center gap-2 bg-gray-200 px-3 py-2 rounded cursor-pointer hover:bg-gray-300">
+          <label
+            htmlFor="foto-input"
+            className="inline-flex items-center gap-2 bg-gray-200 px-3 py-2 rounded cursor-pointer hover:bg-gray-300"
+          >
             Examinar
           </label>
           {fotoFile && <span className="text-sm text-gray-600">{fotoFile.name}</span>}
@@ -336,18 +319,14 @@ export default function RegistroFincaForm({
         <select
           className="mt-1 block w-full border rounded px-3 py-2"
           value={tipoPropiedad}
-          onChange={(e) =>
-            setTipoPropiedad(e.target.value as "ESTATAL" | "PRIVADA")
-          }
+          onChange={(e) => setTipoPropiedad(e.target.value as 'ESTATAL' | 'PRIVADA')}
         >
           <option value="ESTATAL">Estatal</option>
           <option value="PRIVADA">Privada</option>
         </select>
       </div>
       <div className="col-span-1">
-        <label className="block text-gray-700">
-          Entidad a la que pertenece
-        </label>
+        <label className="block text-gray-700">Entidad a la que pertenece</label>
         <input
           type="text"
           className="mt-1 block w-full border rounded px-3 py-2"
@@ -397,11 +376,8 @@ export default function RegistroFincaForm({
             className="bg-blue-500 text-white px-3 py-2 rounded"
             onClick={() => {
               if (nuevoElementoInteres) {
-                setElementosInteres([
-                  ...elementosInteres,
-                  nuevoElementoInteres,
-                ]);
-                setNuevoElementoInteres("");
+                setElementosInteres([...elementosInteres, nuevoElementoInteres]);
+                setNuevoElementoInteres('');
               }
             }}
           >
@@ -410,19 +386,12 @@ export default function RegistroFincaForm({
         </div>
         <ul className="flex flex-wrap gap-2">
           {elementosInteres.map((el, i) => (
-            <li
-              key={i}
-              className="bg-gray-200 px-2 py-1 rounded flex items-center gap-1"
-            >
+            <li key={i} className="bg-gray-200 px-2 py-1 rounded flex items-center gap-1">
               {el}
               <button
                 type="button"
                 className="text-red-500 ml-1"
-                onClick={() =>
-                  setElementosInteres(
-                    elementosInteres.filter((_, idx) => idx !== i)
-                  )
-                }
+                onClick={() => setElementosInteres(elementosInteres.filter((_, idx) => idx !== i))}
               >
                 ×
               </button>
@@ -431,9 +400,7 @@ export default function RegistroFincaForm({
         </ul>
       </div>
       <div className="col-span-1 md:col-span-2">
-        <label className="block text-gray-700">
-          Actividades agroturísticas
-        </label>
+        <label className="block text-gray-700">Actividades agroturísticas</label>
         <div className="flex gap-2 mb-2">
           <input
             type="text"
@@ -446,11 +413,8 @@ export default function RegistroFincaForm({
             className="bg-blue-500 text-white px-3 py-2 rounded"
             onClick={() => {
               if (nuevaActividad) {
-                setActividadesAgroturisticas([
-                  ...actividadesAgroturisticas,
-                  nuevaActividad,
-                ]);
-                setNuevaActividad("");
+                setActividadesAgroturisticas([...actividadesAgroturisticas, nuevaActividad]);
+                setNuevaActividad('');
               }
             }}
           >
@@ -459,10 +423,7 @@ export default function RegistroFincaForm({
         </div>
         <ul className="flex flex-wrap gap-2">
           {actividadesAgroturisticas.map((el, i) => (
-            <li
-              key={i}
-              className="bg-gray-200 px-2 py-1 rounded flex items-center gap-1"
-            >
+            <li key={i} className="bg-gray-200 px-2 py-1 rounded flex items-center gap-1">
               {el}
               <button
                 type="button"
@@ -480,9 +441,7 @@ export default function RegistroFincaForm({
         </ul>
       </div>
       <div className="col-span-1 md:col-span-2">
-        <label className="block text-gray-700">
-          Principios de sustentabilidad
-        </label>
+        <label className="block text-gray-700">Principios de sustentabilidad</label>
         <div className="flex gap-2 mb-2">
           <input
             type="text"
@@ -495,11 +454,8 @@ export default function RegistroFincaForm({
             className="bg-blue-500 text-white px-3 py-2 rounded"
             onClick={() => {
               if (nuevoPrincipio) {
-                setPrincipiosSustentabilidad([
-                  ...principiosSustentabilidad,
-                  nuevoPrincipio,
-                ]);
-                setNuevoPrincipio("");
+                setPrincipiosSustentabilidad([...principiosSustentabilidad, nuevoPrincipio]);
+                setNuevoPrincipio('');
               }
             }}
           >
@@ -508,10 +464,7 @@ export default function RegistroFincaForm({
         </div>
         <ul className="flex flex-wrap gap-2">
           {principiosSustentabilidad.map((el, i) => (
-            <li
-              key={i}
-              className="bg-gray-200 px-2 py-1 rounded flex items-center gap-1"
-            >
+            <li key={i} className="bg-gray-200 px-2 py-1 rounded flex items-center gap-1">
               {el}
               <button
                 type="button"
@@ -543,7 +496,7 @@ export default function RegistroFincaForm({
             onClick={() => {
               if (nuevaAccion) {
                 setAccionesAmbientales([...accionesAmbientales, nuevaAccion]);
-                setNuevaAccion("");
+                setNuevaAccion('');
               }
             }}
           >
@@ -552,18 +505,13 @@ export default function RegistroFincaForm({
         </div>
         <ul className="flex flex-wrap gap-2">
           {accionesAmbientales.map((el, i) => (
-            <li
-              key={i}
-              className="bg-gray-200 px-2 py-1 rounded flex items-center gap-1"
-            >
+            <li key={i} className="bg-gray-200 px-2 py-1 rounded flex items-center gap-1">
               {el}
               <button
                 type="button"
                 className="text-red-500 ml-1"
                 onClick={() =>
-                  setAccionesAmbientales(
-                    accionesAmbientales.filter((_, idx) => idx !== i)
-                  )
+                  setAccionesAmbientales(accionesAmbientales.filter((_, idx) => idx !== i))
                 }
               >
                 ×
@@ -581,11 +529,11 @@ export default function RegistroFincaForm({
         >
           {fincaToEdit
             ? loading || isPending
-              ? "Editando..."
-              : "Editar finca"
+              ? 'Editando...'
+              : 'Editar finca'
             : loading || isPending
-            ? "Registrando..."
-            : "Registrar finca"}
+            ? 'Registrando...'
+            : 'Registrar finca'}
         </button>
       </div>
     </form>

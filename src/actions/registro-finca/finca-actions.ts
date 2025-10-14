@@ -1,12 +1,12 @@
-"use server";
-import prisma from "@/lib/prisma";
+'use server';
+import prisma from '@/lib/prisma';
 import fs from 'fs';
 import path from 'path';
 
 export async function getAllFincas() {
   try {
     const fincas = await prisma.finca.findMany({
-      orderBy: { createdAt: "desc" },
+      orderBy: { createdAt: 'desc' },
     });
     return fincas;
   } catch (error) {
@@ -17,8 +17,8 @@ export async function getAllFincas() {
 export async function deleteFinca(id: number) {
   try {
     // intentar eliminar foto asociada
-  const finca: any = await prisma.finca.findUnique({ where: { id } });
-  if (finca?.fotoUrl) {
+    const finca: any = await prisma.finca.findUnique({ where: { id } });
+    if (finca?.fotoUrl) {
       try {
         // Normalize fotoUrl to a filename inside public/uploads
         let foto = String(finca.fotoUrl || '');
@@ -52,7 +52,7 @@ export async function deleteFinca(id: number) {
     await prisma.finca.delete({ where: { id } });
     return { ok: true };
   } catch (error) {
-    return { ok: false, message: "No se pudo eliminar la finca" };
+    return { ok: false, message: 'No se pudo eliminar la finca' };
   }
 }
 

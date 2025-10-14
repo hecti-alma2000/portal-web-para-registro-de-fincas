@@ -1,10 +1,10 @@
 // src/lib/authOptions.ts
-import { NextAuthOptions } from "next-auth";
-import prisma from "./prisma";
+import { NextAuthOptions } from 'next-auth';
+import prisma from './prisma';
 
 // Verifica que la variable esté definida, de lo contrario lanza un error
 if (!process.env.NEXTAUTH_SECRET) {
-  throw new Error("La variable de entorno NEXTAUTH_SECRET no está definida");
+  throw new Error('La variable de entorno NEXTAUTH_SECRET no está definida');
 }
 
 // Ahora TypeScript sabe que NEXTAUTH_SECRET es un string
@@ -12,7 +12,7 @@ const NEXTAUTH_SECRET: string = process.env.NEXTAUTH_SECRET;
 
 export const authOptions: NextAuthOptions = {
   session: {
-    strategy: "jwt",
+    strategy: 'jwt',
   },
   providers: [], // Eliminado el proveedor de credenciales
   callbacks: {
@@ -31,7 +31,7 @@ export const authOptions: NextAuthOptions = {
     },
   },
   pages: {
-    signIn: "/auth/login", // Ruta personalizada para el login
+    signIn: '/auth/login', // Ruta personalizada para el login
   },
   secret: NEXTAUTH_SECRET,
 };

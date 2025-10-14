@@ -40,7 +40,10 @@ export async function POST(request: Request) {
     };
 
     // Buscar la finca para obtener su nombre
-    const finca = await prisma.finca.findUnique({ where: { id: Number(fincaId) }, select: { id: true, nombre: true } });
+    const finca = await prisma.finca.findUnique({
+      where: { id: Number(fincaId) },
+      select: { id: true, nombre: true },
+    });
 
     // Ejecutar la evaluación (devuelve icon/title/message/puntuacion)
     const resultadoBase = await evaluarPotencialAgroturistico(datos);

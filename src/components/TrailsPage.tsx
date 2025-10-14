@@ -1,13 +1,10 @@
-"use client";
+'use client';
 
-import dynamic from "next/dynamic";
-import { useEffect } from "react";
+import dynamic from 'next/dynamic';
+import { useEffect } from 'react';
 
 const DynamicLocationMap = dynamic(
-  () =>
-    import("@/components/maps/location/LocationMap").then(
-      (mod) => mod.LocationMap
-    ),
+  () => import('@/components/maps/location/LocationMap').then((mod) => mod.LocationMap),
   {
     ssr: false,
     loading: () => <p>Cargando el mapa...</p>,
@@ -17,20 +14,20 @@ const DynamicLocationMap = dynamic(
 export default function TrailsPage() {
   useEffect(() => {
     // Cargar el CSS del chat
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.href = "https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css";
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css';
     document.head.appendChild(link);
 
     // Inyectar el CSS personalizado tipo WhatsApp
-    const customStyle = document.createElement("link");
-    customStyle.rel = "stylesheet";
-    customStyle.href = "/n8n-chat-whatsapp.css";
+    const customStyle = document.createElement('link');
+    customStyle.rel = 'stylesheet';
+    customStyle.href = '/n8n-chat-whatsapp.css';
     document.head.appendChild(customStyle);
 
     // Cargar el script del chat
-    const script = document.createElement("script");
-    script.type = "module";
+    const script = document.createElement('script');
+    script.type = 'module';
     script.innerHTML = `
       import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
       createChat({

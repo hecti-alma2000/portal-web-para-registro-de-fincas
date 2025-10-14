@@ -1,1 +1,1 @@
-export * from "./MarkerTrails";
+export * from './MarkerTrails';

@@ -12,7 +12,8 @@ export async function POST(req: Request) {
     if (contentType.includes('application/json')) {
       const body = await req.json();
       const { fileName, data } = body as { fileName: string; data: string };
-      if (!fileName || !data) return NextResponse.json({ ok: false, message: 'Invalid payload' }, { status: 400 });
+      if (!fileName || !data)
+        return NextResponse.json({ ok: false, message: 'Invalid payload' }, { status: 400 });
       const matches = data.match(/^data:(.+);base64,(.+)$/);
       let buffer: Buffer;
       let ext = path.extname(fileName) || '.png';
@@ -37,7 +38,10 @@ export async function POST(req: Request) {
       if (!file) return NextResponse.json({ ok: false, message: 'No file' }, { status: 400 });
       const arrayBuffer = await file.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
-      const safeName = `${Date.now()}-${(file as any).name || 'upload'}`.replace(/[^a-zA-Z0-9._-]/g, '-');
+      const safeName = `${Date.now()}-${(file as any).name || 'upload'}`.replace(
+        /[^a-zA-Z0-9._-]/g,
+        '-'
+      );
       const filePath = path.join(uploadsDir, safeName);
       fs.writeFileSync(filePath, buffer);
       const publicUrl = `/uploads/${safeName}`;

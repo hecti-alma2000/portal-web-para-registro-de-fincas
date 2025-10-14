@@ -1,10 +1,10 @@
 // src/utiles/MapFlyTo.tsx
-"use client";
+'use client';
 
-import { useEffect } from "react";
-import { useMap } from "react-leaflet";
-import { usePositionsStore } from "@/store/map/positions.store";
-import L from "leaflet";
+import { useEffect } from 'react';
+import { useMap } from 'react-leaflet';
+import { usePositionsStore } from '@/store/map/positions.store';
+import L from 'leaflet';
 
 interface MapFlyToProps {
   targetZoom: number; // Zoom al que volar
@@ -19,10 +19,7 @@ export function MapFlyTo({ targetZoom, duration = 1.5 }: MapFlyToProps) {
     // Use map.whenReady() to ensure the map is fully initialized
     map.whenReady(() => {
       if (currentZone?.coordinate) {
-        const targetLatLng = L.latLng(
-          currentZone.coordinate.lat,
-          currentZone.coordinate.lng
-        );
+        const targetLatLng = L.latLng(currentZone.coordinate.lat, currentZone.coordinate.lng);
 
         const tolerance = 0.00001; // Now map.getCenter() should be safe to call
 

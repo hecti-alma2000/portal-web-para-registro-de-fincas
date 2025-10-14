@@ -1,5 +1,5 @@
-"use server";
-import prisma from "@/lib/prisma";
+'use server';
+import prisma from '@/lib/prisma';
 
 export interface FincaInput {
   nombre: string;
@@ -7,7 +7,7 @@ export interface FincaInput {
   propietario: string;
   descripcion?: string;
   fotoUrl?: string;
-  tipoPropiedad: "ESTATAL" | "PRIVADA";
+  tipoPropiedad: 'ESTATAL' | 'PRIVADA';
   entidadPertenece?: string;
   usoActual?: string;
   estadoConservacion?: string;
@@ -57,6 +57,6 @@ export async function createFinca(data: FincaInput) {
     });
     return { ok: true, data: finca };
   } catch (error) {
-    return { ok: false, message: "No se pudo registrar la finca" };
+    return { ok: false, message: 'No se pudo registrar la finca' };
   }
 }

@@ -1,5 +1,4 @@
-
-import { type LucideIcon } from "lucide-react"; // Importamos el tipo
+import { type LucideIcon } from 'lucide-react'; // Importamos el tipo
 
 export interface Navigation {
   name: string;

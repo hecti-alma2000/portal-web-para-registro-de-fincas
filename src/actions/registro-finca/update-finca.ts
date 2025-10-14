@@ -1,5 +1,5 @@
-"use server";
-import prisma from "@/lib/prisma";
+'use server';
+import prisma from '@/lib/prisma';
 
 export interface FincaUpdateInput {
   id: number;
@@ -8,7 +8,7 @@ export interface FincaUpdateInput {
   propietario: string;
   descripcion?: string;
   fotoUrl?: string;
-  tipoPropiedad: "ESTATAL" | "PRIVADA";
+  tipoPropiedad: 'ESTATAL' | 'PRIVADA';
   entidadPertenece?: string;
   usoActual?: string;
   estadoConservacion?: string;
@@ -74,6 +74,6 @@ export async function updateFinca(data: FincaUpdateInput) {
     });
     return { ok: true, data: finca };
   } catch (error) {
-    return { ok: false, message: "No se pudo actualizar la finca" };
+    return { ok: false, message: 'No se pudo actualizar la finca' };
   }
 }
