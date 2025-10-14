@@ -69,28 +69,35 @@ export default function Home() {
         <div className="my-10 grid grid-cols-1 gap-8 md:grid-cols-2">
           <div className="animate__animated animate__lightSpeedInLeft flex flex-col justify-center">
             <h2 className="mb-4 text-center text-2xl font-semibold md:text-left">
-              ¿En que conciste nuestro sistema de certificacion ?
+              ¿En qué consiste nuestro sistema de certificación?
             </h2>
             <p className="text-justify leading-relaxed text-gray-700">
-              Nuestro sistema de certificación se basa en el{' '}
-              <b>Índice de Potencial Agroturístico (FPAT)</b>, una herramienta científica diseñada
-              para medir la <b>viabilidad y calidad</b> de tu finca como destino turístico.
+              Nuestro sistema de certificación se fundamenta en la aplicación del{' '}
+              <b className="text-blue-600">Índice de Potencial Agroturístico (FPAT)</b>, una
+              herramienta de evaluación diseñada para determinar la{' '}
+              <b className="text-blue-600">viabilidad y calidad</b> de una propiedad rural como
+              destino de agroturismo.
               <br />
               <br />
-              Este no es un simple cuestionario de Sí/No, sino un{' '}
-              <b>método de asignación de puntaje ponderado</b>. Cada aspecto de tu finca (desde la
-              accesibilidad y la sustentabilidad agrícola hasta la infraestructura y el atractivo
-              del entorno) es evaluado y multiplicado por un <b>peso de importancia</b> único. La
-              suma de estas calificaciones ponderadas ofrece una <b>puntuación precisa</b> de tu
-              potencial.
+              Este método consiste en un{' '}
+              <b className="text-green-600">proceso de asignación de puntaje ponderado</b>. Cada
+              dimensión de la finca—incluyendo factores como la accesibilidad, el manejo de la
+              sustentabilidad agrícola, la infraestructura disponible y el atractivo sociocultural
+              del entorno—es evaluada. Posteriormente, cada calificación es multiplicada por un{' '}
+              <b className="text-green-600">peso de importancia</b> específico. La suma de estas
+              puntuaciones ponderadas arroja un{' '}
+              <b className="text-green-600">diagnóstico preciso</b> sobre el potencial de la
+              propiedad.
               <br />
               <br />
-              <b>El diagnóstico es claro:</b> si el valor resultante es <b>mayor a 2.02</b>, la
-              finca se clasifica como <b>APTA</b> para el agroturismo, lo que significa un potencial
-              real de generar ingresos y aportar al desarrollo local. Si es menor, se identifica
-              como "No Apta", lo cual te proporciona una hoja de ruta clara para realizar mejoras
-              estratégicas. Este sistema garantiza una clasificación justa y rigurosa, fundamental
-              para el desarrollo sostenible del sector.
+              <b className="text-red-600">El resultado del diagnóstico es categórico:</b> si la
+              puntuación obtenida supera el umbral establecido por el índice, la propiedad se
+              clasifica como <b className="text-red-600">APTA</b> para el desarrollo agroturístico,
+              indicando un potencial sólido para la generación de ingresos y el desarrollo local. Si
+              la calificación es inferior, se declara "No Apta", proporcionando de manera inherente
+              una guía clara para la formulación de planes de mejora estratégicos. Este sistema
+              garantiza una certificación rigurosa y justa, esencial para el crecimiento sostenible
+              del sector.
             </p>
           </div>
 
