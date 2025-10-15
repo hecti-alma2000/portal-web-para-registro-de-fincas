@@ -81,9 +81,9 @@ export default function Home() {
               <br />
               Este método consiste en un{' '}
               <b className="text-green-600">proceso de asignación de puntaje ponderado</b>. Cada
-              dimensión de la finca—incluyendo factores como la accesibilidad, el manejo de la
+              dimensión de la finca incluyendo factores como la accesibilidad, el manejo de la
               sustentabilidad agrícola, la infraestructura disponible y el atractivo sociocultural
-              del entorno—es evaluada. Posteriormente, cada calificación es multiplicada por un{' '}
+              del entorno es evaluada. Posteriormente, cada calificación es multiplicada por un{' '}
               <b className="text-green-600">peso de importancia</b> específico. La suma de estas
               puntuaciones ponderadas arroja un{' '}
               <b className="text-green-600">diagnóstico preciso</b> sobre el potencial de la
