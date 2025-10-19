@@ -66,7 +66,9 @@ export const DropdownMenu = () => {
   const authenticatedOptions: DropdownOption[] = [
     { label: 'Mi Perfil', href: '/profile', icon: User },
   ];
-  const adminOptions: DropdownOption[] = [{ label: 'Usuarios', href: '/users', icon: Shield }];
+  const adminOptions: DropdownOption[] = [
+    { label: 'Usuarios', href: '/admin/users', icon: Shield },
+  ];
 
   const authAction: DropdownOption = isAuthenticated
     ? { label: 'Salir', href: '#', icon: LogOut, action: handleSignOut } // ⬅️ handleSignOut es accesible aquí
