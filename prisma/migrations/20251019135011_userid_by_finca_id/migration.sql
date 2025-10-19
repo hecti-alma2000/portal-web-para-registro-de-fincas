@@ -1,9 +1,8 @@
 /*
   Warnings:
 
-  - You are about to drop the column `disponibilidadAnual` on the `Finca` table. All the data in the column will be lost.
-  - You are about to drop the column `entornoLimpioSeguro` on the `Finca` table. All the data in the column will be lost.
-  - You are about to drop the column `ofreceAlojamiento` on the `Finca` table. All the data in the column will be lost.
+  - You are about to drop the column `fincaId` on the `Finca` table. All the data in the column will be lost.
+  - Added the required column `userId` to the `Finca` table without a default value. This is not possible if the table is not empty.
 
 */
 -- RedefineTables
@@ -23,7 +22,9 @@ CREATE TABLE "new_Finca" (
     "problematicaDetectada" TEXT,
     "tradicionesHistoria" TEXT,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" DATETIME NOT NULL
+    "updatedAt" DATETIME NOT NULL,
+    "userId" TEXT NOT NULL,
+    CONSTRAINT "Finca_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 INSERT INTO "new_Finca" ("createdAt", "descripcion", "entidadPertenece", "estadoConservacion", "fotoUrl", "id", "localizacion", "nombre", "problematicaDetectada", "propietario", "tipoPropiedad", "tradicionesHistoria", "updatedAt", "usoActual") SELECT "createdAt", "descripcion", "entidadPertenece", "estadoConservacion", "fotoUrl", "id", "localizacion", "nombre", "problematicaDetectada", "propietario", "tipoPropiedad", "tradicionesHistoria", "updatedAt", "usoActual" FROM "Finca";
 DROP TABLE "Finca";

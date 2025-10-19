@@ -3,6 +3,9 @@
 import { useFormStatus } from 'react-dom';
 import React, { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
+import { getFincasByUser } from '@/actions/registro-finca/get-fincas-by-user';
+import { auth } from '@/auth.config';
+import { getAllFincas } from '@/actions/registro-finca/finca-actions';
 
 // ... (Imports y SubmitButton se mantienen igual) ...
 
@@ -70,8 +73,10 @@ const RadioCriterioInput: React.FC<RadioCriterioInputProps> = ({ name, label, ma
 // ----------------------------------------------------
 // Componente principal CertificacionForm
 // ----------------------------------------------------
-
-export const CertificacionForm: React.FC = () => {
+interface CertificacionFormProps {
+  role: 'user' | 'admin';
+}
+export const CertificacionForm = ({ role }: CertificacionFormProps) => {
   const [fincas, setFincas] = useState<Array<{ id: number; nombre: string }>>([]);
   const [loadingFincas, setLoadingFincas] = useState(false);
 
@@ -79,9 +84,13 @@ export const CertificacionForm: React.FC = () => {
     const load = async () => {
       setLoadingFincas(true);
       try {
-        const res = await fetch('/api/fincas');
-        const json = await res.json();
-        if (json.ok) setFincas(json.data || []);
+        if (role === 'admin') {
+          const res = await getAllFincas();
+          setFincas(res);
+        } else {
+          const res = await getFincasByUser();
+          setFincas(res);
+        }
       } catch (e) {
         // ignore for now
       } finally {

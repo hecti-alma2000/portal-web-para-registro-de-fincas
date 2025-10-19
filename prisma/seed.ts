@@ -1,10 +1,43 @@
 // prisma/seed.ts
-import { PrismaClient, TipoPropiedad } from '@prisma/client';
+import { PrismaClient, TipoPropiedad, Role } from '@prisma/client';
+import * as bcryptjs from 'bcryptjs';
 
 // Inicializa el cliente de Prisma
 const prisma = new PrismaClient();
 
-const fincasData = [
+// Definiciones de Constantes y Credenciales del Administrador
+const ADMIN_EMAIL = 'hector@google.com';
+const ADMIN_PASSWORD = '123456';
+
+// Tipado auxiliar para los datos de la finca antes de asignar la relación de usuario.
+// Esto resuelve el error de TypeScript al declarar el array inicial, ya que no incluye 'user'.
+type FincaDataTemplate = {
+  nombre: string;
+  localizacion: string;
+  propietario: string;
+  tipoPropiedad: TipoPropiedad;
+  entidadPertenece: string | null;
+  descripcion: string | null;
+  usoActual: string | null;
+  estadoConservacion: string | null;
+  problematicaDetectada: string | null;
+  tradicionesHistoria: string | null;
+  fotoUrl: string | null;
+};
+
+// Datos del Usuario Administrador
+const usersData = [
+  {
+    name: 'hecti_alma',
+    email: ADMIN_EMAIL,
+    // Hasheo síncrono de la contraseña (salt = 10)
+    password: bcryptjs.hashSync(ADMIN_PASSWORD, 10),
+    role: Role.admin,
+  },
+];
+
+// Datos de las Fincas (Tipado como FincaDataTemplate[])
+const fincasDataTemplate: FincaDataTemplate[] = [
   {
     nombre: 'La Bendecida',
     localizacion: 'Consejo Popular Buenaventura 2 (Jagüeyes)',
@@ -18,7 +51,7 @@ const fincasData = [
     estadoConservacion: 'Bueno',
     problematicaDetectada: 'Falta de insumos',
     tradicionesHistoria: 'Mantiene tradiciones campesinas.',
-    fotoUrl: '/uploads/la-bendecida.webp', // ¡ACTUALIZADO A WEBP!
+    fotoUrl: '/uploads/la-bendecida.webp',
   },
   {
     nombre: 'El Troncón',
@@ -34,7 +67,7 @@ const fincasData = [
     problematicaDetectada: 'Falta de insumos',
     tradicionesHistoria:
       'Declarada de referencia nacional en diversificación agropecuaria y coto genético.',
-    fotoUrl: '/uploads/el-troncon.webp', // ¡ACTUALIZADO A WEBP!
+    fotoUrl: '/uploads/el-troncon.webp',
   },
   {
     nombre: 'La Gloria',
@@ -48,7 +81,7 @@ const fincasData = [
     estadoConservacion: 'Bueno',
     problematicaDetectada: null,
     tradicionesHistoria: 'Mantiene las tradiciones campesinas y desarrollo de reforestación.',
-    fotoUrl: '/uploads/la-gloria.webp', // ¡ACTUALIZADO A WEBP!
+    fotoUrl: '/uploads/la-gloria.webp',
   },
   {
     nombre: 'El Carmen',
@@ -63,7 +96,7 @@ const fincasData = [
     problematicaDetectada: 'Falta de insumos para desarrollar la agricultura.',
     tradicionesHistoria:
       'Mantiene las tradiciones campesinas en apego a las costumbres familiares.',
-    fotoUrl: '/uploads/el-carmen.webp', // ¡ACTUALIZADO A WEBP!
+    fotoUrl: '/uploads/el-carmen.webp',
   },
   {
     nombre: 'La Próspera',
@@ -77,7 +110,7 @@ const fincasData = [
     estadoConservacion: 'Bueno',
     problematicaDetectada: null,
     tradicionesHistoria: 'Especializada en cítricos, con comercialización al sector turismo.',
-    fotoUrl: '/uploads/la-prospera.webp', // ¡ACTUALIZADO A WEBP!
+    fotoUrl: '/uploads/la-prospera.webp',
   },
   {
     nombre: 'La Margarita',
@@ -91,7 +124,7 @@ const fincasData = [
     estadoConservacion: 'Aceptable',
     problematicaDetectada: null,
     tradicionesHistoria: 'Presencia de siete palmas reales, símbolo nacional, en el paisaje.',
-    fotoUrl: '/uploads/la-margarita.webp', // ¡ACTUALIZADO A WEBP!
+    fotoUrl: '/uploads/la-margarita.webp',
   },
   {
     nombre: 'La Alegría',
@@ -105,7 +138,7 @@ const fincasData = [
     estadoConservacion: 'Aceptable',
     problematicaDetectada: null,
     tradicionesHistoria: 'Un riachuelo atraviesa la propiedad, ideal para actividades.',
-    fotoUrl: '/uploads/la-alegria.webp', // ¡ACTUALIZADO A WEBP!
+    fotoUrl: '/uploads/la-alegria.webp',
   },
   {
     nombre: 'Las Maravillas',
@@ -121,7 +154,7 @@ const fincasData = [
     problematicaDetectada: null,
     tradicionesHistoria:
       'Reconocimiento a diferentes niveles por rendimiento de leche y carne. Polígono de experimentación.',
-    fotoUrl: '/uploads/las-maravillas.webp', // ¡ACTUALIZADO A WEBP!
+    fotoUrl: '/uploads/las-maravillas.webp',
   },
   {
     nombre: 'La Paula',
@@ -135,7 +168,7 @@ const fincasData = [
     estadoConservacion: 'Muy buena',
     problematicaDetectada: null,
     tradicionesHistoria: 'Responsable con el medioambiente.',
-    fotoUrl: '/uploads/la-paula.webp', // ¡ACTUALIZADO A WEBP!
+    fotoUrl: '/uploads/la-paula.webp',
   },
   {
     nombre: 'Finca de Gil',
@@ -149,7 +182,7 @@ const fincasData = [
     estadoConservacion: 'Muy buena',
     problematicaDetectada: null,
     tradicionesHistoria: 'Uso de molinos y micropresas, prácticas mayormente ecológicas.',
-    fotoUrl: '/uploads/finca-gil.webp', // ¡ACTUALIZADO A WEBP!
+    fotoUrl: '/uploads/finca-gil.webp',
   },
   {
     nombre: 'Los Piriles',
@@ -163,7 +196,7 @@ const fincasData = [
     estadoConservacion: 'Bueno',
     problematicaDetectada: null,
     tradicionesHistoria: 'Uso de medios biológicos y orgánicos.',
-    fotoUrl: '/uploads/los-piriles.webp', // ¡ACTUALIZADO A WEBP!
+    fotoUrl: '/uploads/los-piriles.webp',
   },
   {
     nombre: 'La Guinda',
@@ -178,14 +211,14 @@ const fincasData = [
     problematicaDetectada: 'Insumos para desarrollar la agricultura.',
     tradicionesHistoria:
       'El río La Rioja atraviesa la propiedad, sistema de riego para la producción.',
-    fotoUrl: '/uploads/la-guinda.webp', // ¡ACTUALIZADO A WEBP!
+    fotoUrl: '/uploads/la-guinda.webp',
   },
 ];
 
 async function main() {
-  console.log(`Iniciando la siembra (seeding) de ${fincasData.length} fincas con imágenes WEBP...`);
+  console.log(`Iniciando la siembra (seeding) de ${fincasDataTemplate.length} fincas...`);
 
-  // 1. Borrar todas las fincas existentes y sus relaciones para empezar limpio
+  // 1. LIMPIEZA TOTAL (Eliminación en orden inverso para respetar las claves foráneas)
   await prisma.diagnostico.deleteMany();
   await prisma.infraestructuraFinca.deleteMany();
   await prisma.elementoInteres.deleteMany();
@@ -193,20 +226,42 @@ async function main() {
   await prisma.principioSustentabilidad.deleteMany();
   await prisma.accionAmbiental.deleteMany();
   await prisma.finca.deleteMany();
+  await prisma.user.deleteMany(); // Limpiar la tabla de usuarios
 
-  console.log('Datos de fincas y sus relaciones eliminados.');
+  console.log('Todas las tablas de Fincas y Usuarios han sido limpiadas.');
 
-  // 2. Insertar las fincas actualizadas con fotoUrl
-  for (const data of fincasData) {
+  // 2. CREAR USUARIO ADMINISTRADOR
+  const adminUser = await prisma.user.create({
+    data: usersData[0],
+  });
+
+  console.log(`Usuario Admin creado: ${adminUser.email} con ID: ${adminUser.id}`);
+
+  // 3. MAPEO Y ASIGNACIÓN DE FINCAS
+  // Mapeo crucial: Creamos la estructura final FincaCreateInput,
+  // utilizando la conexión de relación 'user' en lugar de la clave 'userId'.
+  const fincasToCreate = fincasDataTemplate.map((finca) => ({
+    ...finca,
+    // Conexión del usuario (obligatoria por el esquema de Prisma)
+    user: {
+      connect: {
+        id: adminUser.id,
+      },
+    },
+  }));
+
+  // 4. INSERCIÓN DE FINCAS
+  for (const data of fincasToCreate) {
     const finca = await prisma.finca.create({
+      // TypeScript ahora acepta 'data' porque 'user' está definido con la conexión.
       data: data,
     });
-    console.log(
-      `Finca creada con ID: ${finca.id}, Nombre: ${finca.nombre} y Foto URL: ${finca.fotoUrl}`
-    );
+    console.log(`Finca creada: ${finca.nombre}`);
   }
 
-  console.log(`Siembra (seeding) finalizada. Se insertaron ${fincasData.length} fincas.`);
+  console.log(
+    `\n✅ Siembra finalizada. Se insertaron ${fincasToCreate.length} fincas y ${usersData.length} usuario(s).`
+  );
 }
 
 main()

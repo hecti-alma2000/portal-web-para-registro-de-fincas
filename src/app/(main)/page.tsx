@@ -4,12 +4,12 @@ import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { Divider } from '@/components/ui/Divider';
 
-const HeroBanner = dynamic(() => import('../components/HeroBanner'), {
+const HeroBanner = dynamic(() => import('../../components/HeroBanner'), {
   ssr: false,
   loading: () => <div className="w-full h-[50vh] bg-gray-200 animate-pulse"></div>,
 });
 
-const LazyCarrusel = dynamic(() => import('../components/ui/carrusel/Carrusel'), {
+const LazyCarrusel = dynamic(() => import('../../components/ui/carrusel/Carrusel'), {
   ssr: false,
   loading: () => (
     // Se elimina 'max-w-lg' y 'mx-auto' ya que el carrusel ocupará la mitad del espacio

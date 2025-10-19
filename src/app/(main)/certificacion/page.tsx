@@ -1,12 +1,20 @@
 // app/certificacion/page.tsx
 
+import { auth } from '@/auth.config';
 import { CertificacionForm } from '@/components/ui/CertificacionForm';
+import { redirect } from 'next/navigation';
 
 /**
  * Página principal del Sistema de Certificación de Fincas.
  * Usa un componente de cliente para la interactividad y SweetAlert2.
  */
-export default function CertificacionPage() {
+export default async function CertificacionPage() {
+  const session = await auth();
+  if (!session?.user) {
+    redirect('/auth/login');
+  }
+  // 2. Definir el tipo de rol estricto. (Asumiendo que Role es 'user' o 'admin')
+  const role: 'user' | 'admin' = session.user.role === 'admin' ? 'admin' : 'user';
   return (
     <div className="py-12 px-4 min-h-screen">
       <header className="text-center mb-10">
@@ -18,7 +26,7 @@ export default function CertificacionPage() {
         </p>
       </header>
 
-      <CertificacionForm />
+      <CertificacionForm role={role} />
     </div>
   );
 }

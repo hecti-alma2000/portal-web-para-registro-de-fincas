@@ -10,13 +10,27 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Definimos un enumerador para el tipo de propiedad, 
+// Definimos un enumerador para el tipo de propiedad,
 // lo que garantiza la consistencia de los datos.
 enum TipoPropiedad {
   ESTATAL
   PRIVADA
 }
+enum Role {
+  admin
+  user
+}
 
+model User{
+  id  String     @id @default(uuid())
+  name String
+  email String @unique
+  emailVerified DateTime?
+  password String
+  role Role @default(user)
+
+  fincas      Finca[]
+}
 // Modelo principal para la Finca
 model Finca {
   id                          Int      @id @default(autoincrement())
@@ -35,13 +49,15 @@ model Finca {
   infraestructura             InfraestructuraFinca?
   createdAt                   DateTime @default(now())
   updatedAt                   DateTime @updatedAt
+  userId                      String
+  user                      User    @relation(fields: [userId], references: [id])
 
   // Relaciones normalizadas
   elementosInteres            ElementoInteres[]
   actividadesAgroturisticas   ActividadAgroturistica[]
   principiosSustentabilidad   PrincipioSustentabilidad[]
   accionesAmbientales         AccionAmbiental[]
-  diagnosticos                Diagnostico[]
+  diagnosticos                Diagnostico[]
 }
 
 model ElementoInteres {
@@ -88,16 +104,16 @@ model InfraestructuraFinca {
 
 model Diagnostico {
   id      String @id @default(cuid())
-  
+
   // Relación con Finca
   // Relación con Finca: DEBE ser String
-  fincaId Int 
+  fincaId Int
   finca   Finca  @relation(fields: [fincaId], references: [id])
-  
+
   // Resultado del cálculo
   puntuacionTotal Float // Suma de (VI * PI)
   resultadoFinal  String  // "Apta" o "No apta" (basado en el umbral de 2.02)
-  
+
   // Respuestas del Cuestionario (Valoración Int - VI)
   // Utilizamos los códigos (A, B, C...) como nombres de campos.
   criterioA Int // Existencia de una casa rural o rancho campestre (Max 2)
@@ -111,7 +127,7 @@ model Diagnostico {
   criterioI Int // Infraestructura disponible (Max 4)
   criterioJ Int // Cercanía a sitios con valores socioculturales y centros nodales (Max 4)
   criterioK Int // Entorno atractivo (Max 4)
-  
+
   createdAt DateTime @default(now())
 
   @@index([fincaId])

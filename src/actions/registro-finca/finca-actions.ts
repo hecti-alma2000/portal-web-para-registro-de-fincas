@@ -1,4 +1,5 @@
 'use server';
+import { auth } from '@/auth.config';
 import prisma from '@/lib/prisma';
 import fs from 'fs';
 import path from 'path';
@@ -15,15 +16,39 @@ export async function getAllFincas() {
 }
 
 export async function deleteFinca(id: number) {
-  try {
-    // intentar eliminar foto asociada
-    const finca: any = await prisma.finca.findUnique({ where: { id } });
-    if (finca?.fotoUrl) {
-      try {
-        // Normalize fotoUrl to a filename inside public/uploads
-        let foto = String(finca.fotoUrl || '');
+  const session = await auth();
 
-        // If it's a full URL, extract the pathname
+  if (!session?.user) {
+    return { ok: false, message: 'No autenticado. Inicie sesión.' };
+  }
+
+  const userId = session.user.id;
+  const isAdmin = session.user.role === 'admin';
+
+  try {
+    // 1. Definir la cláusula WHERE
+    const whereClause: any = { id };
+
+    // 🔑 RESTRICCIÓN DE SEGURIDAD:
+    // Si NO es admin, se debe verificar que la finca pertenezca al usuario.
+    if (!isAdmin) {
+      whereClause.userId = userId;
+    }
+
+    // 2. Intentar buscar la finca para eliminar la foto
+    const finca: any = await prisma.finca.findUnique({ where: whereClause });
+
+    // Si no se encuentra la finca bajo estas condiciones (e.g., el user intentó borrar la finca de otro)
+    if (!finca) {
+      return { ok: false, message: 'Finca no encontrada o no tiene permisos para eliminarla.' };
+    }
+
+    // 3. Lógica para eliminar la foto (tu código original)
+    if (finca.fotoUrl) {
+      // ... (Tu lógica existente para encontrar y eliminar la foto) ...
+      try {
+        let foto = String(finca.fotoUrl || '');
+        // Normalize fotoUrl to a filename inside public/uploads
         try {
           if (/^https?:\/\//i.test(foto)) {
             const u = new URL(foto);
@@ -32,27 +57,25 @@ export async function deleteFinca(id: number) {
         } catch (e) {
           // ignore URL parse errors
         }
-
-        // Remove any query string or hash
         foto = foto.split('?')[0].split('#')[0];
-
-        // If the path contains 'uploads', take only the part after it
         const uploadsSegmentMatch = foto.match(/uploads[\\/](.*)$/i);
         const filename = uploadsSegmentMatch ? uploadsSegmentMatch[1] : foto.replace(/^[\\/]+/, '');
-
-        // Build path under public/uploads
         const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
         const p = path.join(uploadsDir, filename);
-
         if (fs.existsSync(p)) fs.unlinkSync(p);
       } catch (err) {
-        // ignore file delete errors
+        console.error('Error al borrar foto:', err);
       }
     }
-    await prisma.finca.delete({ where: { id } });
+
+    // 4. Eliminar la finca (usando la cláusula WHERE con o sin userId)
+    await prisma.finca.delete({ where: whereClause });
+
     return { ok: true };
   } catch (error) {
-    return { ok: false, message: 'No se pudo eliminar la finca' };
+    // Este catch capturará errores de Prisma si el WHERE no encuentra nada (lo cual ya manejamos arriba)
+    console.error('Error al eliminar finca en DB:', error);
+    return { ok: false, message: 'Error en la base de datos al eliminar.' };
   }
 }
 

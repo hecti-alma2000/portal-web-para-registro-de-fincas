@@ -1,22 +1,22 @@
 'use client';
 
 import { deleteFinca, getAllFincas } from '@/actions/registro-finca/finca-actions';
-import { useRegistroFincaModalStore } from '../../store/modal/registroFincaModal.store';
+import { useRegistroFincaModalStore } from '../../../store/modal/registroFincaModal.store';
 import { useState, useTransition, useEffect } from 'react';
 import Swal from 'sweetalert2';
-import { useFincaEditStore } from '../../store/modal/fincaEdit.store';
+import { useFincaEditStore } from '../../../store/modal/fincaEdit.store';
 import { Plus } from 'lucide-react';
 import dynamic from 'next/dynamic';
 
 // Carga perezosa del componente FincaCard
-const FincaCard = dynamic(() => import('../../components/registro-finca/FincaCard'), {
+const FincaCard = dynamic(() => import('../../../components/registro-finca/FincaCard'), {
   loading: () => <p>Cargando fincas...</p>,
   ssr: false, // Opcional: Deshabilita el renderizado del lado del servidor si es necesario
 });
 
 // Carga perezosa del componente del modal.
 const RegistroFincaModal = dynamic(
-  () => import('../../components/registro-finca/RegistroFincaModal'),
+  () => import('../../../components/registro-finca/RegistroFincaModal'),
   {
     loading: () => null, // No muestra nada mientras carga el modal
     ssr: false,
@@ -27,6 +27,11 @@ export default function RegistroFincaPage({ fincas }: { fincas: any[] }) {
   const open = useRegistroFincaModalStore((state) => state.open);
   const [isPending, startTransition] = useTransition();
   const [fincasList, setFincasList] = useState(fincas);
+
+  // Sincronizar fincasList cuando las props del servidor cambien (p. ej. tras revalidatePath o router.refresh)
+  useEffect(() => {
+    setFincasList(fincas || []);
+  }, [fincas]);
 
   const handleDelete = (id: number) => {
     Swal.fire({
