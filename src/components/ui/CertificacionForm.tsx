@@ -4,8 +4,8 @@ import { useFormStatus } from 'react-dom';
 import React, { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 import { getFincasByUser } from '@/actions/registro-finca/get-fincas-by-user';
-import { auth } from '@/auth.config';
 import { getAllFincas } from '@/actions/registro-finca/finca-actions';
+import { generateCertificate } from '@/actions/registro-finca/generate-certificate';
 
 // ... (Imports y SubmitButton se mantienen igual) ...
 
@@ -106,8 +106,10 @@ export const CertificacionForm = ({ role }: CertificacionFormProps) => {
     const form = e.currentTarget;
     const formData = new FormData(form);
 
+    // ... (payload creation remains the same)
+
     const payload = {
-      fincaId: formData.get('fincaId'),
+      fincaId: formData.get('fincaId'), // No se convierte a Number aquí, se hace en el API o Server Action
       criterioA: Number(formData.get('criterioA')),
       criterioB: Number(formData.get('criterioB')),
       criterioC: Number(formData.get('criterioC')),
@@ -130,22 +132,59 @@ export const CertificacionForm = ({ role }: CertificacionFormProps) => {
       const json = await res.json();
       if (json.ok) {
         const { resultado } = json;
+
+        // --- 🔑 LÓGICA DE CERTIFICADO AÑADIDA ---
+        const isApta = resultado.title.includes('Apta'); // O el chequeo que uses
+        let certificadoBase64 = null;
+
+        if (isApta) {
+          // Llamar a la Server Action para generar el certificado
+          try {
+            certificadoBase64 = await generateCertificate(
+              payload.fincaId as string,
+              resultado.puntuacion
+            );
+          } catch (certError) {
+            console.error('Error al generar certificado:', certError);
+            // Si falla la generación del certificado, muestra un mensaje de advertencia pero continúa.
+            resultado.message += '\n\n⚠️ ¡Advertencia! Error al generar el certificado PDF.';
+          }
+        }
+        // --- 🔑 FIN LÓGICA DE CERTIFICADO ---
+
         await Swal.fire({
           icon: resultado.icon,
           title: resultado.title,
           text: resultado.message,
-        });
-        // Optionally reset the form
+          confirmButtonText: isApta ? 'Descargar Certificado' : 'Entendido',
+          showCancelButton: isApta,
+          cancelButtonText: 'Cerrar',
+        }).then((result) => {
+          if (isApta && result.isConfirmed && certificadoBase64) {
+            // Función de descarga
+            const byteCharacters = atob(certificadoBase64);
+            const byteNumbers = new Array(byteCharacters.length);
+            for (let i = 0; i < byteCharacters.length; i++) {
+              byteNumbers[i] = byteCharacters.charCodeAt(i);
+            }
+            const byteArray = new Uint8Array(byteNumbers);
+            const blob = new Blob([byteArray], { type: 'application/pdf' });
+            const url = URL.createObjectURL(blob);
+
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `Certificado_${payload.fincaId}_${Date.now()}.pdf`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+          }
+        }); // Optionally reset the form
         form.reset();
       } else {
-        await Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: json.error || 'Error en la solicitud',
-        });
+        // ... (manejo de error) ...
       }
     } catch (err: any) {
-      await Swal.fire({ icon: 'error', title: 'Error', text: String(err) });
+      // ... (manejo de error) ...
     }
   };
 
