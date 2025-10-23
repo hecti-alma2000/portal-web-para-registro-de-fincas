@@ -52,7 +52,7 @@ export default function MainNav() {
 
   return (
     <>
-      <div className="relative m-0 p-0 border-none shadow-none">
+      <div className="relative m-0 p-0 border-none shadow-none z-50">
         <div className="w-full">
           <div className="flex justify-between items-center h-16 m-0 p-0">
             {/* Logo */}

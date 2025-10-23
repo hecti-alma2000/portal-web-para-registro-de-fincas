@@ -17,6 +17,7 @@ interface CustomUser extends NextAuthUser {
 }
 
 export const authConfig: NextAuthConfig = {
+  trustHost: true,
   pages: {
     signIn: '/auth/login',
     newUser: '/auth/new-account',

@@ -1,23 +1,34 @@
-// app/fincas/[id]/page.tsx (o la ruta donde esté tu página de detalles)
+// src/app/(main)/fincas/[id]/page.tsx
 
 import { getFincaById } from '@/actions/registro-finca/get-finca-by-id';
 import { FincaDetails } from '@/components/finca/FincaDetails';
 import { notFound } from 'next/navigation';
+import type { Metadata } from 'next';
 
-interface Props {
-  params: { id: string }; // Los parámetros de ruta son siempre strings
+interface GenerateMetadataProps {
+  params: Promise<{ id: string }>;
 }
 
-export default async function FincaDetailsPage({ params }: Props) {
-  // Convertimos el ID de string a número
-  const id = Number(params.id);
+export async function generateMetadata({ params }: GenerateMetadataProps): Promise<Metadata> {
+  const resolvedParams = await params;
+  return {
+    title: `Detalles de Finca ${resolvedParams.id}`,
+  };
+}
 
-  // Verificamos si la conversión falló o si el ID es inválido
-  if (isNaN(id)) {
+export default async function FincaDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+  // 1. Esperamos a que se resuelva la promesa de params
+  const resolvedParams = await params;
+  const idString = resolvedParams.id;
+
+  // 2. Conversión a número (sincrónico, NO lleva 'await')
+  const id = Number(idString);
+
+  if (Number.isNaN(id)) {
     notFound();
   }
 
-  // Llamada a la acción de servidor con el ID numérico
+  // 3. Llamada a la acción de servidor (asíncrono, SÍ lleva 'await')
   const finca = await getFincaById(id);
 
   if (!finca) {
@@ -25,8 +36,7 @@ export default async function FincaDetailsPage({ params }: Props) {
   }
 
   return (
-    <div>
-      {/* Usamos el componente FincaDetailComponent */}
+    <div className="bg-gray-50 min-h-screen">
       <FincaDetails finca={finca} />
     </div>
   );

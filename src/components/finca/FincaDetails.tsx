@@ -1,6 +1,3 @@
-// src/components/finca/FincaDetailComponent.tsx
-'use client';
-
 import { Finca, TipoPropiedad } from '@prisma/client';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -32,6 +29,7 @@ export const FincaDetails = ({ finca }: Props) => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      {/* El componente Link funciona incluso en Server Components */}
       <Link href="/fincas" className="hover:underline hover:text-blue-500">
         ← Volver
       </Link>
@@ -106,12 +104,13 @@ export const FincaDetails = ({ finca }: Props) => {
           </div>
         </div>
       </div>
-      ---
+
       {/* Sección de Descripción y Uso */}
       <div className="mt-12 grid grid-cols-1 lg:grid-cols-3 gap-12">
         {/* Descripción Detallada */}
         <div className="lg:col-span-2 space-y-6">
           <h2 className="text-2xl font-bold text-gray-900">Descripción y Caracterización</h2>
+          {/* whitespace-pre-line respeta saltos de línea del texto de la DB */}
           <p className="text-gray-700 leading-relaxed whitespace-pre-line">{finca.descripcion}</p>
 
           {finca.tradicionesHistoria && (
@@ -135,8 +134,8 @@ export const FincaDetails = ({ finca }: Props) => {
           <DetailItem label="Localización Específica" value={finca.localizacion} icon="🗺️" />
         </div>
       </div>
-      {/* Aquí irían componentes para Actividades, Elementos de Interés, Infraestructura, etc. */}
-      {/* Por ahora, dejamos este espacio como un placeholder. */}
+
+      {/* Placeholder */}
       <div className="mt-16 text-center text-gray-500 border-t pt-8">
         <p>Más detalles (Actividades, Infraestructura, Diagnóstico) próximamente.</p>
       </div>

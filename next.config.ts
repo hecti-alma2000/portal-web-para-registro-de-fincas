@@ -3,14 +3,15 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactStrictMode: false, // Activa el modo estricto de React
-  images: {
-    domains: ["example.com"], // Dominios permitidos para imágenes
+  env: {
+    NEXTAUTH_URL: process.env.NEXTAUTH_URL,
+    NEXTAUTH_URL_INTERNAL: process.env.NEXTAUTH_URL_INTERNAL,
   },
   async redirects() {
     return [
       {
-        source: "/old-path",
-        destination: "/new-path",
+        source: '/old-path',
+        destination: '/new-path',
         permanent: true,
       },
     ];
