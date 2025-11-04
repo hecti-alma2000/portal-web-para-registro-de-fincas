@@ -2,6 +2,7 @@
 'use client';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
+import Image from 'next/image'; //  Importamos el componente Image
 import { Divider } from '@/components/ui/Divider';
 
 const HeroBanner = dynamic(() => import('../../components/HeroBanner'), {
@@ -102,15 +103,22 @@ export default function Home() {
           </div>
 
           <span className="flex items-center ">
-            {/* Carga perezosa de la imagen del logo */}
-            <img src="/icons/logo.png" alt="Logo" className="h-28 w-28" loading="lazy" />
+            {/*  OPTIMIZACIÓN: Usar next/image para el logo */}
+            <Image
+              src="/icons/logo.png"
+              alt="Logo"
+              width={112} // Equivalente a h-28 w-28 (112px en Tailwind por defecto)
+              height={112} // Si la imagen es crítica, puedes usar 'priority' aquí.
+              sizes="112px"
+              className="h-28 w-28 object-contain"
+            />
             <div className="flex flex-col">
               <span className="text-black text-2xl font-bold">
                 Fincas con Potencial Agroturístico
               </span>
               <Link
                 href="/certificacion"
-                className="bg-green-600 px-6 py-2  text-white transition hover:bg-green-700 rounded-lg"
+                className="bg-green-600 px-6 py-2  text-white transition hover:bg-green-700 rounded-lg"
               >
                 Descubre si tu finca cuenta con el potencial agroturístico
               </Link>

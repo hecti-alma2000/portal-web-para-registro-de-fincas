@@ -40,6 +40,12 @@ export const Footer = () => {
                     alt={logo.alt}
                     width={90}
                     height={90}
+                    // OPTIMIZACIÓN 1: Usar 'priority' para la carga crítica inicial.
+                    // Esto precarga la imagen en todas las páginas donde se renderiza el Footer.
+                    priority={true}
+                    // OPTIMIZACIÓN 2: Usar 'sizes' para ayudar al navegador
+                    // a seleccionar el asset óptimo para el tamaño fijo de 90px.
+                    sizes="(max-width: 768px) 90px, 90px"
                     className="hover:scale-105 transition-transform duration-300 object-contain"
                   />
                 </Link>

@@ -3,32 +3,51 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, Fragment } from 'react';
-import {
-  Home,
-  Search,
-  PlusCircle,
-  Menu,
-  X,
-  LibraryBig,
-  ShieldCheck,
-  Tractor,
-  User,
-  LogIn, // Nuevo icono para Ingresar
-  LogOut,
-  Shield, // Nuevo icono para Salir
-} from 'lucide-react';
+import dynamic from 'next/dynamic'; // 🎯 Importamos next/dynamic
+
 import { Transition } from '@headlessui/react';
 import { DropdownMenu } from './ui/DropdownMenu';
 import { signOut, useSession } from 'next-auth/react';
 
-// Navegación con los iconos de Lucide React
+// 🎯 1. DEFINICIÓN DE ICONOS DINÁMICOS
+// Cada icono se importa perezosamente, creando su propio JS chunk (si la librería lo soporta).
+const DynamicHome = dynamic(() => import('lucide-react').then((mod) => mod.Home), { ssr: false });
+const DynamicSearch = dynamic(() => import('lucide-react').then((mod) => mod.Search), {
+  ssr: false,
+});
+const DynamicPlusCircle = dynamic(() => import('lucide-react').then((mod) => mod.PlusCircle), {
+  ssr: false,
+});
+const DynamicLibraryBig = dynamic(() => import('lucide-react').then((mod) => mod.LibraryBig), {
+  ssr: false,
+});
+const DynamicTractor = dynamic(() => import('lucide-react').then((mod) => mod.Tractor), {
+  ssr: false,
+});
+const DynamicShieldCheck = dynamic(() => import('lucide-react').then((mod) => mod.ShieldCheck), {
+  ssr: false,
+});
+
+// Iconos de control (Menú y Auth)
+const DynamicMenu = dynamic(() => import('lucide-react').then((mod) => mod.Menu), { ssr: false });
+const DynamicX = dynamic(() => import('lucide-react').then((mod) => mod.X), { ssr: false });
+const DynamicLogIn = dynamic(() => import('lucide-react').then((mod) => mod.LogIn), { ssr: false });
+const DynamicLogOut = dynamic(() => import('lucide-react').then((mod) => mod.LogOut), {
+  ssr: false,
+});
+const DynamicShield = dynamic(() => import('lucide-react').then((mod) => mod.Shield), {
+  ssr: false,
+});
+
+// 🎯 2. LISTA DE NAVEGACIÓN MODIFICADA
+// Ahora usamos los componentes dinámicos recién creados.
 const navigation = [
-  { href: '/', name: 'Inicio', icon: Home },
-  { href: '/explorar', name: 'Explorar', icon: Search },
-  { href: '/registro-finca', name: 'Registrar', icon: PlusCircle },
-  { href: '/info', name: 'Información', icon: LibraryBig },
-  { href: '/fincas', name: 'Fincas', icon: Tractor },
-  { href: '/certificacion', name: 'Certificación', icon: ShieldCheck },
+  { href: '/', name: 'Inicio', Icon: DynamicHome },
+  { href: '/explorar', name: 'Explorar', Icon: DynamicSearch },
+  { href: '/registro-finca', name: 'Registrar', Icon: DynamicPlusCircle },
+  { href: '/info', name: 'Información', Icon: DynamicLibraryBig },
+  { href: '/fincas', name: 'Fincas', Icon: DynamicTractor },
+  { href: '/certificacion', name: 'Certificación', Icon: DynamicShieldCheck },
 ];
 
 export default function MainNav() {
@@ -39,14 +58,11 @@ export default function MainNav() {
   const isAuthenticated = !!session?.user;
   const isAdmin = session?.user?.role === 'admin';
 
-  // Función auxiliar para el cierre del menú móvil
   const closeMenu = () => setIsOpen(false);
 
-  // 🔑 Función de Logout solicitada
   const handleLogout = async () => {
-    closeMenu(); // Cierra el menú antes de hacer logout
+    closeMenu();
     await signOut({ redirect: false });
-    // Usamos window.location.reload() para asegurar la actualización de la UI
     window.location.reload();
   };
 
@@ -76,7 +92,8 @@ export default function MainNav() {
                         : 'text-black hover:text-gray-300'
                     }`}
                   >
-                    {<item.icon />}
+                    {/*  Uso del componente dinámico */}
+                    <item.Icon />
                     <span className="text-xs mt-1">{item.name}</span>
                   </span>
                 </Link>
@@ -90,17 +107,17 @@ export default function MainNav() {
 
             {/* Botón del menú móvil (Hamburguesa) */}
             <div className="flex items-center lg:hidden">
-              {/* En escritorio el dropdown es suficiente. En móvil, mantenemos el botón hamburguesa */}
               <button
                 onClick={() => setIsOpen(!isOpen)}
                 type="button"
                 id="menu-button"
                 className="inline-flex items-center justify-center p-2 rounded-md text-black hover:text-gray-300 focus:outline-none"
               >
+                {/*  Uso de iconos de control dinámicos */}
                 {isOpen ? (
-                  <X className="h-6 w-6" aria-hidden="true" />
+                  <DynamicX className="h-6 w-6" aria-hidden="true" />
                 ) : (
-                  <Menu className="h-6 w-6" aria-hidden="true" />
+                  <DynamicMenu className="h-6 w-6" aria-hidden="true" />
                 )}
               </button>
             </div>
@@ -134,7 +151,8 @@ export default function MainNav() {
                         : 'text-gray-700 hover:bg-gray-50'
                     }`}
                   >
-                    {<item.icon className="mr-3 h-5 w-5" />}
+                    {/*  Uso de iconos de navegación dinámicos */}
+                    <item.Icon className="mr-3 h-5 w-5" />
                     {item.name}
                   </span>
                 </Link>
@@ -147,7 +165,8 @@ export default function MainNav() {
                     onClick={closeMenu}
                     className="flex items-center w-full px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 text-gray-700 hover:bg-gray-50 border-t mt-1 pt-3"
                   >
-                    <Shield className="mr-3 h-5 w-5" />
+                    {/*  Uso de icono de Admin dinámico */}
+                    <DynamicShield className="mr-3 h-5 w-5" />
                     Panel Admin
                   </span>
                 </Link>
@@ -159,7 +178,8 @@ export default function MainNav() {
                   onClick={handleLogout}
                   className="flex items-center w-full px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 text-gray-700 hover:bg-gray-50 border-t mt-1 pt-3"
                 >
-                  <LogOut className="mr-3 h-5 w-5" />
+                  {/*  Uso de icono de Logout dinámico */}
+                  <DynamicLogOut className="mr-3 h-5 w-5" />
                   Salir
                 </button>
               ) : (
@@ -168,7 +188,8 @@ export default function MainNav() {
                     onClick={closeMenu}
                     className="flex items-center w-full px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 text-gray-700 hover:bg-gray-50 border-t mt-1 pt-3"
                   >
-                    <LogIn className="mr-3 h-5 w-5" />
+                    {/*  Uso de icono de Login dinámico */}
+                    <DynamicLogIn className="mr-3 h-5 w-5" />
                     Ingresar
                   </span>
                 </Link>

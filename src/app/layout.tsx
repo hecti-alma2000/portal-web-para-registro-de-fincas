@@ -18,7 +18,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang="es">
       <head />
       <body>
-        {/* 🔑 2. Pasar la sesión al componente Providers */}
+        {/* 2. Pasar la sesión al componente Providers */}
         <Providers session={session}>{children}</Providers>
       </body>
     </html>

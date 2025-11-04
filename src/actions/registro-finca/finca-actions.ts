@@ -43,9 +43,8 @@ export async function deleteFinca(id: number) {
       return { ok: false, message: 'Finca no encontrada o no tiene permisos para eliminarla.' };
     }
 
-    // 3. Lógica para eliminar la foto (tu código original)
-    if (finca.fotoUrl) {
-      // ... (Tu lógica existente para encontrar y eliminar la foto) ...
+    // 3. Lógica para eliminar la foto (solo si hay fotoUrl válida)
+    if (finca.fotoUrl && typeof finca.fotoUrl === 'string' && finca.fotoUrl.trim() !== '') {
       try {
         let foto = String(finca.fotoUrl || '');
         // Normalize fotoUrl to a filename inside public/uploads
@@ -62,7 +61,7 @@ export async function deleteFinca(id: number) {
         const filename = uploadsSegmentMatch ? uploadsSegmentMatch[1] : foto.replace(/^[\\/]+/, '');
         const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
         const p = path.join(uploadsDir, filename);
-        if (fs.existsSync(p)) fs.unlinkSync(p);
+        if (filename && fs.existsSync(p)) fs.unlinkSync(p);
       } catch (err) {
         console.error('Error al borrar foto:', err);
       }
