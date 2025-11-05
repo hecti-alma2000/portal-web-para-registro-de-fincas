@@ -106,9 +106,8 @@ model Diagnostico {
   id      String @id @default(cuid())
 
   // Relación con Finca
-  // Relación con Finca: DEBE ser String
   fincaId Int
-  finca   Finca  @relation(fields: [fincaId], references: [id])
+  finca   Finca  @relation(fields: [fincaId], references: [id], onDelete: Cascade)
 
   // Resultado del cálculo
   puntuacionTotal Float // Suma de (VI * PI)

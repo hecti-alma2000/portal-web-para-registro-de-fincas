@@ -49,14 +49,15 @@ export async function generateCertificate(fincaId: string, puntuacion: number) {
 
   // Determinar el nivel de resultado basado en la puntuación
   let nivelResultado: string;
-  if (puntuacion >= 35) {
+  if (puntuacion >= 3.2) {
+    // Umbral Óptimo (~85%)
     nivelResultado = 'Óptimo';
-  } else if (puntuacion >= 25) {
-    nivelResultado = 'Alto';
+  } else if (puntuacion >= 2.5) {
+    // Umbral Suficiente (~70%)
+    nivelResultado = 'Suficiente';
   } else {
-    // Nota: Este Server Action solo se llama si la finca es 'Apta',
-    // pero definimos un nivel base si la puntuación es baja dentro del rango de Apta.
-    nivelResultado = 'Satisfactorio';
+    // Si es "Apta" pero con bajo potencial (P < 2.5)
+    nivelResultado = 'Insatisfactorio';
   }
 
   // 3. Cargar la plantilla PDF

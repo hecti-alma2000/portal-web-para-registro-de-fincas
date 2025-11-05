@@ -6,8 +6,8 @@ import * as bcryptjs from 'bcryptjs';
 const prisma = new PrismaClient();
 
 // Definiciones de Constantes y Credenciales del Administrador
-const ADMIN_EMAIL = 'hector@google.com';
-const ADMIN_PASSWORD = '123456';
+const ADMIN_EMAIL = 'lisbeteunice1008@gmail.com';
+const ADMIN_PASSWORD = 'LizEunice25*';
 
 // Tipado auxiliar para los datos de la finca antes de asignar la relación de usuario.
 // Esto resuelve el error de TypeScript al declarar el array inicial, ya que no incluye 'user'.
@@ -28,10 +28,10 @@ type FincaDataTemplate = {
 // Datos del Usuario Administrador
 const usersData = [
   {
-    name: 'hecti_alma',
+    name: 'Lisbet Eunice Pérez Anzardo',
     email: ADMIN_EMAIL,
-    // Hasheo síncrono de la contraseña (salt = 10)
-    password: bcryptjs.hashSync(ADMIN_PASSWORD, 10),
+    // Hasheo síncrono de la contraseña (salt = 12)
+    password: bcryptjs.hashSync(ADMIN_PASSWORD, 12),
     role: Role.admin,
   },
 ];
