@@ -62,12 +62,20 @@ export const Footer = () => {
           <p>
             Este proyecto forma parte de la tesis doctoral{' '}
             <strong>
-              Fincas con potencial agrotrístico en el contexto del desarrollo territorial.
+              Fincas con potencial agrotrístico en el contexto del desarrollo territorial
             </strong>
           </p>
           <p className="mt-1">
-            Realizada por <strong>Lisbet Eunice Pérez Anzardo</strong> con el apoyo y colaboración
-            de <strong>cuanticosurl.com</strong>.
+            Desarrollada por <strong>Lisbet Eunice Pérez Anzardo</strong> con el apoyo y
+            colaboración de{' '}
+            <Link
+              href={'https://cuanticosurl.com/'}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-700 underline hover:text-blue-500"
+            >
+              cuanticosurl.com
+            </Link>
           </p>
           <p className="mt-4 text-xs">© {new Date().getFullYear()}Todos los derechos reservados.</p>
         </div>

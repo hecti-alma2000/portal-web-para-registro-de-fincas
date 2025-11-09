@@ -22,7 +22,7 @@ export default async function CertificacionPage() {
           Diagnóstico de Potencial Agroturístico
         </h1>
         <p className="text-lg text-gray-600 mt-2">
-          Responde este cuestionario y obtén una evaluación inmediata de tu finca.
+          Responde este cuestionario y obtén una evaluación inmediata de tu finca
         </p>
       </header>
 

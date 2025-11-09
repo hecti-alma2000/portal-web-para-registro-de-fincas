@@ -5,7 +5,7 @@ import { ActivityCard } from '@/components/ui/ActivityCard';
 import { ContentSection } from '@/components/ui/ContentSection';
 import { FAQSection } from '@/components/ui/FAQSection';
 import { SidebarNav } from '@/components/ui/SidebarNav';
-import Image from 'next/image';
+
 
 /**
  * Página principal de "Información sobre Agroturismo".
@@ -92,7 +92,92 @@ export default function AgroturismoInfoPage() {
           </div>
         </ContentSection>
 
-        {/* ==================== SECCIÓN 3: ACTIVIDADES POPULARES ==================== */}
+        {/* ==================== SECCIÓN 3: FPAT (Concepto y Desarrollo UX) ==================== */}
+        <ContentSection id="fpat" title="Fincas con Potencial Agroturístico (FPAT)">
+          <div className="space-y-6 text-gray-700">
+            <h3 className="text-xl font-semibold mt-0 mb-3 text-gray-800">Definición:</h3>
+
+            {/* Contenedor para la definición original, destacada como cita */}
+            <blockquote className="border-l-4 border-blue-600 bg-blue-50 p-4 italic text-blue-800 rounded-lg shadow-sm">
+              <p className="mb-0">
+                "Extensión de tierra limitada que permite diversificar su actividad primaria
+                mediante el aprovechamiento de sus recursos naturales y/o construidos, la
+                posibilidad de articulación entre ellas mediante cadenas de valor, así como de la
+                infraestructura de la localidad; lo que determina su proyección a corto, mediano y
+                largo plazo que, para su puesta en valor de uso turístico requiere de la acción
+                pública, a fin de contribuir al desarrollo territorial."
+              </p>
+            </blockquote>
+
+            <h3 className="text-xl font-semibold mt-6 mb-3 text-gray-800 border-b border-gray-300 pb-2">
+              🌱 ¿Qué Significa Ser una FPAT?
+            </h3>
+
+            <p className="text-justify leading-relaxed">
+              En términos sencillos, una <b className="font-semibold">FPAT</b> no es solo una finca;
+              es un proyecto agrícola que ha sido evaluado y clasificado por tener la capacidad de{' '}
+              <b className="text-green-600 font-semibold">
+                transformar su producción en una experiencia turística rentable y sostenible
+              </b>
+              . Es la base para el{' '}
+              <b className="text-blue-600 font-semibold">Agroturismo Holguinero</b>.
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Columna 1 */}
+              <div className="p-4 border border-gray-200 rounded-lg bg-white shadow-sm hover:shadow-md transition">
+                <h4 className="flex items-center text-lg font-semibold text-gray-800 mb-2">
+                  ✅ Potencial de Diversificación
+                </h4>
+                <p className="text-sm">
+                  La finca debe poder ir más allá de su actividad principal. Buscamos el{' '}
+                  <b className="font-medium">aprovechamiento máximo</b> de sus recursos (naturales,
+                  infraestructura, paisajes) para generar{' '}
+                  <b className="text-green-600">nuevos ingresos turísticos</b>.
+                </p>
+              </div>
+
+              {/* Columna 2 */}
+              <div className="p-4 border border-gray-200 rounded-lg bg-white shadow-sm hover:shadow-md transition">
+                <h4 className="flex items-center text-lg font-semibold text-gray-800 mb-2">
+                  🔗 Articulación Territorial
+                </h4>
+                <p className="text-sm">
+                  Se evalúa la capacidad de la finca para conectarse con otras (formando{' '}
+                  <b className="font-medium">cadenas de valor</b>) y utilizar la infraestructura de
+                  la localidad, impulsando el{' '}
+                  <b className="text-blue-600">desarrollo económico local</b> en conjunto.
+                </p>
+              </div>
+
+              {/* Columna 3 */}
+              <div className="p-4 border border-gray-200 rounded-lg bg-white shadow-sm hover:shadow-md transition">
+                <h4 className="flex items-center text-lg font-semibold text-gray-800 mb-2">
+                  🧭 Proyección a Largo Plazo
+                </h4>
+                <p className="text-sm">
+                  La evaluación garantiza que el potencial de la finca no sea solo temporal, sino
+                  que tenga una <b className="font-medium">viabilidad y crecimiento definidos</b> a
+                  corto, mediano y largo plazo, asegurando la sostenibilidad de la inversión.
+                </p>
+              </div>
+
+              {/* Columna 4 */}
+              <div className="p-4 border border-gray-200 rounded-lg bg-white shadow-sm hover:shadow-md transition">
+                <h4 className="flex items-center text-lg font-semibold text-gray-800 mb-2">
+                  📈 Requiere de Acción Pública
+                </h4>
+                <p className="text-sm">
+                  Para que una FPAT alcance su máximo valor turístico, a menudo necesita del apoyo
+                  de la <b className="font-medium">gestión y acción pública</b>. Este índice
+                  justifica y guía dichas inversiones.
+                </p>
+              </div>
+            </div>
+          </div>
+        </ContentSection>
+
+        {/* ==================== SECCIÓN 4: ACTIVIDADES POPULARES ==================== */}
         <ContentSection id="actividades" title="Actividades Populares">
           <p className="text-gray-700 text-lg mb-8">
             El agroturismo trasciende la simple visita; se define por las{' '}
@@ -165,7 +250,7 @@ export default function AgroturismoInfoPage() {
           </div>
         </ContentSection>
 
-        {/* ==================== SECCIÓN 4: SOSTENIBILIDAD Y MEDIO AMBIENTE (Actualizado) ==================== */}
+        {/* ==================== SECCIÓN 5: SOSTENIBILIDAD Y MEDIO AMBIENTE (Actualizado) ==================== */}
         <ContentSection id="sostenibilidad" title="Sostenibilidad y Medio Ambiente">
           <p className="text-gray-700 text-lg mb-8">
             El agroturismo tiene un compromiso fundamental con la{' '}
@@ -258,7 +343,7 @@ export default function AgroturismoInfoPage() {
           </div>
         </ContentSection>
 
-        {/* ==================== SECCIÓN N5: PREGUNTAS FRECUENTES (FAQ) ==================== */}
+        {/* ==================== SECCIÓN 6: PREGUNTAS FRECUENTES (FAQ) ==================== */}
         <ContentSection id="faq" title="Preguntas Frecuentes">
           <p className="text-gray-700 text-lg mb-6">
             Encuentra respuestas a las dudas más comunes de visitantes y futuros anfitriones.

@@ -1,11 +1,13 @@
 // SidebarNav.tsx
 
 import Link from 'next/link';
+import { title } from 'process';
 
 // Array de secciones para generar la navegación
 const sections = [
   { id: 'introduccion', title: 'Introducción al Agroturismo' },
   { id: 'tipos', title: 'Tipos de Fincas' },
+  { id: 'fpat', title: 'FPAT' },
   { id: 'actividades', title: 'Actividades Populares' },
   { id: 'sostenibilidad', title: 'Sostenibilidad y Ambiente' },
   { id: 'faq', title: 'Preguntas Frecuentes (FAQ)' },
