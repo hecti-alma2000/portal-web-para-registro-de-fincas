@@ -7,11 +7,11 @@ import { title } from 'process';
 const sections = [
   { id: 'introduccion', title: 'Introducción al Agroturismo' },
   { id: 'tipos', title: 'Tipos de Fincas' },
-  { id: 'fpat', title: 'FPAT' },
   { id: 'actividades', title: 'Actividades Populares' },
+  { id: 'fpat', title: 'FPAT' },
   { id: 'sostenibilidad', title: 'Sostenibilidad y Ambiente' },
-  { id: 'faq', title: 'Preguntas Frecuentes (FAQ)' },
   { id: 'certificacion', title: 'Sistema de Certificación' },
+  { id: 'faq', title: 'Preguntas Frecuentes (FAQ)' },
 ];
 
 /**

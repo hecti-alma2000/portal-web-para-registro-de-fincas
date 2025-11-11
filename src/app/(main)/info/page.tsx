@@ -92,13 +92,85 @@ export default function AgroturismoInfoPage() {
           </div>
         </ContentSection>
 
-        {/* ==================== SECCIÓN 3: FPAT (Concepto y Desarrollo UX) ==================== */}
+        {/* ==================== SECCIÓN 3: ACTIVIDADES POPULARES ==================== */}
+        <ContentSection id="actividades" title="Actividades Populares">
+          <p className="text-gray-700 text-lg mb-8">
+            El agroturismo trasciende la simple visita; se define por las{' '}
+            <b>experiencias inmersivas y memorables</b> que ofrece. Aquí, el visitante deja de ser
+            un mero observador para convertirse en un<b></b> <b>participante activo</b>. Hemos
+            seleccionado cuidadosamente algunas de las actividades más auténticas y atractivas que
+            transforman una finca en un destino vibrante, ofreciendo a los visitantes una conexión
+            genuina con la tierra, la cultura local y el trabajo del campo. Desde la aventura activa
+            hasta la tranquilidad gastronómica, cada experiencia está diseñada para crear recuerdos
+            duraderos.
+          </p>
+
+          {/* Diseño responsive de cuadrícula: 1 columna en móvil, 2 en tablet/desktop */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <ActivityCard
+              title="Recorridos Guiados"
+              description="Aprende sobre el ciclo de vida de los cultivos y la historia de la finca directamente del propietario o un guía experto."
+              icon={<span>🗺️</span>} // Icono: Mapa / Sendero
+              color="green"
+            />
+
+            <ActivityCard
+              title="Talleres de Producción"
+              description="Participa en actividades prácticas como la fabricación de queso, el ordeño manual o la preparación de café artesanal."
+              icon={<span>🧀☕</span>} // Icono: Taller / Café
+              color="blue"
+            />
+
+            <ActivityCard
+              title="Cosecha y Degustación"
+              description="Disfruta de la experiencia de recolectar frutas o vegetales directamente del árbol y probar productos frescos al instante."
+              icon={<span>🍎🍐🍇</span>} // Icono: Cosecha / Frutas
+              color="yellow"
+            />
+
+            <ActivityCard
+              title="Comidas Tradicionales"
+              description="Una inmersión gastronómica que ofrece platos cocinados con ingredientes de la finca, resaltando la cocina local y rural."
+              icon={<span>🥘</span>} // Icono: Plato de comida
+              color="red"
+            />
+
+            <ActivityCard
+              title="Paseos a Caballo y Senderismo"
+              description="Explora los senderos y el entorno natural de la finca a caballo, descubriendo paisajes ocultos y observando la flora local."
+              icon={<span>🐴🏞️</span>} // Icono: Caballo / Paisaje
+              color="green"
+            />
+
+            <ActivityCard
+              title="Interacción con Animales"
+              description="Una actividad perfecta para familias. Alimenta a las gallinas, ayuda en el cuidado de los terneros o participa en el pastoreo."
+              icon={<span>🐐🐑🥚</span>} // Icono: Cabra / Oveja / Huevo
+              color="blue"
+            />
+            <ActivityCard
+              title="Noche de Fogatas"
+              description="Disfruta de una velada tranquila bajo las estrellas, compartiendo historias locales, música tradicional y degustando de algunos aperitivos."
+              icon={<span>🔥🌌🎶</span>} // Icono: Fuego / Noche estrellada / Música
+              color="yellow"
+            />
+
+            <ActivityCard
+              title="Expedición a Pozas y Ríos"
+              description="Únete a una caminata guiada hacia cuerpos de agua cercanos para disfrutar de un refrescante baño en pozas naturales o explorar la flora ribereña. (Requiere calzado adecuado)."
+              icon={<span>💧🏞️🚶</span>} // Icono: Gota de agua / Paisaje / Caminante
+              color="blue"
+            />
+            {/* Puedes agregar más tarjetas si lo deseas */}
+          </div>
+        </ContentSection>
+        {/* ==================== SECCIÓN 4: FPAT (Concepto y Desarrollo UX) ==================== */}
         <ContentSection id="fpat" title="Fincas con Potencial Agroturístico (FPAT)">
           <div className="space-y-6 text-gray-700">
             <h3 className="text-xl font-semibold mt-0 mb-3 text-gray-800">Definición:</h3>
 
             {/* Contenedor para la definición original, destacada como cita */}
-            <blockquote className="border-l-4 border-blue-600 bg-blue-50 p-4 italic text-blue-800 rounded-lg shadow-sm">
+            <blockquote className="border-l-4 border-blue-600 bg-blue-50 p-4 italic text-blue-800 font-bold rounded-lg shadow-sm">
               <p className="mb-0">
                 "Extensión de tierra limitada que permite diversificar su actividad primaria
                 mediante el aprovechamiento de sus recursos naturales y/o construidos, la
@@ -174,79 +246,6 @@ export default function AgroturismoInfoPage() {
                 </p>
               </div>
             </div>
-          </div>
-        </ContentSection>
-
-        {/* ==================== SECCIÓN 4: ACTIVIDADES POPULARES ==================== */}
-        <ContentSection id="actividades" title="Actividades Populares">
-          <p className="text-gray-700 text-lg mb-8">
-            El agroturismo trasciende la simple visita; se define por las{' '}
-            <b>experiencias inmersivas y memorables</b> que ofrece. Aquí, el visitante deja de ser
-            un mero observador para convertirse en un<b></b> <b>participante activo</b>. Hemos
-            seleccionado cuidadosamente algunas de las actividades más auténticas y atractivas que
-            transforman una finca en un destino vibrante, ofreciendo a los visitantes una conexión
-            genuina con la tierra, la cultura local y el trabajo del campo. Desde la aventura activa
-            hasta la tranquilidad gastronómica, cada experiencia está diseñada para crear recuerdos
-            duraderos.
-          </p>
-
-          {/* Diseño responsive de cuadrícula: 1 columna en móvil, 2 en tablet/desktop */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <ActivityCard
-              title="Recorridos Guiados"
-              description="Aprende sobre el ciclo de vida de los cultivos y la historia de la finca directamente del propietario o un guía experto."
-              icon={<span>🗺️</span>} // Icono: Mapa / Sendero
-              color="green"
-            />
-
-            <ActivityCard
-              title="Talleres de Producción"
-              description="Participa en actividades prácticas como la fabricación de queso, el ordeño manual o la preparación de café artesanal."
-              icon={<span>🧀☕</span>} // Icono: Taller / Café
-              color="blue"
-            />
-
-            <ActivityCard
-              title="Cosecha y Degustación"
-              description="Disfruta de la experiencia de recolectar frutas o vegetales directamente del árbol y probar productos frescos al instante."
-              icon={<span>🍎🍐🍇</span>} // Icono: Cosecha / Frutas
-              color="yellow"
-            />
-
-            <ActivityCard
-              title="Comidas Tradicionales"
-              description="Una inmersión gastronómica que ofrece platos cocinados con ingredientes de la finca, resaltando la cocina local y rural."
-              icon={<span>🥘</span>} // Icono: Plato de comida
-              color="red"
-            />
-
-            <ActivityCard
-              title="Paseos a Caballo y Senderismo"
-              description="Explora los senderos y el entorno natural de la finca a caballo, descubriendo paisajes ocultos y observando la flora local."
-              icon={<span>🐴🏞️</span>} // Icono: Caballo / Paisaje
-              color="green"
-            />
-
-            <ActivityCard
-              title="Interacción con Animales"
-              description="Una actividad perfecta para familias. Alimenta a las gallinas, ayuda en el cuidado de los terneros o participa en el pastoreo."
-              icon={<span>🐐🐑🥚</span>} // Icono: Cabra / Oveja / Huevo
-              color="blue"
-            />
-            <ActivityCard
-              title="Noche de Fogatas"
-              description="Disfruta de una velada tranquila bajo las estrellas, compartiendo historias locales, música tradicional y degustando de algunos aperitivos."
-              icon={<span>🔥🌌🎶</span>} // Icono: Fuego / Noche estrellada / Música
-              color="yellow"
-            />
-
-            <ActivityCard
-              title="Expedición a Pozas y Ríos"
-              description="Únete a una caminata guiada hacia cuerpos de agua cercanos para disfrutar de un refrescante baño en pozas naturales o explorar la flora ribereña. (Requiere calzado adecuado)."
-              icon={<span>💧🏞️🚶</span>} // Icono: Gota de agua / Paisaje / Caminante
-              color="blue"
-            />
-            {/* Puedes agregar más tarjetas si lo deseas */}
           </div>
         </ContentSection>
 
@@ -343,22 +342,7 @@ export default function AgroturismoInfoPage() {
           </div>
         </ContentSection>
 
-        {/* ==================== SECCIÓN 6: PREGUNTAS FRECUENTES (FAQ) ==================== */}
-        <ContentSection id="faq" title="Preguntas Frecuentes">
-          <p className="text-gray-700 text-lg mb-6">
-            Encuentra respuestas a las dudas más comunes de visitantes y futuros anfitriones.
-          </p>
-          <FAQSection />
-        </ContentSection>
-
-        {/*
-          Aquí se añadirán las otras ContentSections:
-          - Sostenibilidad
-
-          - Certificación
-        */}
-
-        {/* ==================== SECCIÓN FINAL: CTA CERTIFICACIÓN ==================== */}
+        {/* ==================== SECCIÓN 6: CTA CERTIFICACIÓN ==================== */}
         <section id="certificacion" className="my-16">
           <div className="bg-green-50 p-8 rounded-2xl border border-green-200 shadow-lg text-center">
             <h3 className="text-3xl font-bold text-green-800 mb-3">
@@ -376,6 +360,20 @@ export default function AgroturismoInfoPage() {
             </Link>
           </div>
         </section>
+        {/* ==================== SECCIÓN FINAL: PREGUNTAS FRECUENTES (FAQ)  ==================== */}
+        <ContentSection id="faq" title="Preguntas Frecuentes">
+          <p className="text-gray-700 text-lg mb-6">
+            Encuentra respuestas a las dudas más comunes de visitantes y futuros anfitriones.
+          </p>
+          <FAQSection />
+        </ContentSection>
+
+        {/*
+          Aquí se añadirán las otras ContentSections:
+          - Sostenibilidad
+
+          - Certificación
+        */}
       </main>
     </div>
   );

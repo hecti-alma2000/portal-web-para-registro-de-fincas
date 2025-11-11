@@ -106,7 +106,7 @@ export default function HeroBanner() {
           className="text-4xl md:text-5xl font-bold text-white drop-shadow-lg font-[cursive] tracking-widest mb-2 text-center"
           style={{ fontFamily: 'Pacifico, cursive' }}
         >
-          FINCAS Y Agroturismo
+          Fincas y Agroturismo
         </h1>
         {/* Buscador funcional */}
         <form

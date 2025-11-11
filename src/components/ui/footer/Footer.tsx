@@ -66,7 +66,7 @@ export const Footer = () => {
             </strong>
           </p>
           <p className="mt-1">
-            Desarrollada por <strong>Lisbet Eunice Pérez Anzardo</strong> con el apoyo y
+            desarrollada por <strong>Lisbet Eunice Pérez Anzardo</strong> con el apoyo y
             colaboración de{' '}
             <Link
               href={'https://cuanticosurl.com/'}

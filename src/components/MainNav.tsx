@@ -43,11 +43,11 @@ const DynamicShield = dynamic(() => import('lucide-react').then((mod) => mod.Shi
 // Ahora usamos los componentes dinámicos recién creados.
 const navigation = [
   { href: '/', name: 'Inicio', Icon: DynamicHome },
-  { href: '/explorar', name: 'Explorar', Icon: DynamicSearch },
   { href: '/registro-finca', name: 'Registrar', Icon: DynamicPlusCircle },
+  { href: '/certificacion', name: 'Certificar', Icon: DynamicShieldCheck },
+  { href: '/explorar', name: 'Explorar', Icon: DynamicSearch },
   { href: '/info', name: 'Información', Icon: DynamicLibraryBig },
   { href: '/fincas', name: 'Fincas', Icon: DynamicTractor },
-  { href: '/certificacion', name: 'Certificación', Icon: DynamicShieldCheck },
 ];
 
 export default function MainNav() {
@@ -76,7 +76,9 @@ export default function MainNav() {
               <Link href="/">
                 <span className="flex items-center ">
                   <img src="/icons/logo.png" alt="Logo" className="h-18 w-18" loading="lazy" />
-                  <span className="text-black text-2xl font-bold">Turismo Alternativo</span>
+                  <span className="text-green-500 text-2xl font-bold text-shadow-initial">
+                    Turismo Alternativo
+                  </span>
                 </span>
               </Link>
             </div>

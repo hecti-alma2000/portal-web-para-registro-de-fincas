@@ -18,11 +18,11 @@ export default async function CertificacionPage() {
   return (
     <div className="py-12 px-4 min-h-screen">
       <header className="text-center mb-10">
-        <h1 className="text-4xl font-extrabold text-gray-900">
+        <h1 className="text-4xl font-extrabold text-green-500">
           Diagnóstico de Potencial Agroturístico
         </h1>
-        <p className="text-lg text-gray-600 mt-2">
-          Responde este cuestionario y obtén una evaluación inmediata de tu finca
+        <p className="text-lg text-green-500 mt-2">
+          Responde este cuestionario y obtén una evaluación inmediata de tu finca y su certificación
         </p>
       </header>
 

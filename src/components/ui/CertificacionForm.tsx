@@ -194,8 +194,9 @@ export const CertificacionForm = ({ role }: CertificacionFormProps) => {
       className="space-y-6 max-w-4xl mx-auto p-8 bg-gray-50 rounded-xl shadow-2xl"
     >
       <div className="flex items-center justify-between flex-col sm:flex-row">
-        <p className="text-gray-700 text-lg mb-6 border-b pb-4 font-semibold">
-          Valora cada criterio para obtener el diagnóstico ponderado de potencial agroturístico.
+        <p className="text-green-500 text-lg mb-6 border-b pb-4 text-center">
+          Valora cada criterio para obtener el resultado ponderado del índice de FPAT y si es apta
+          para su certificación avalada
         </p>
         <span className="flex items-center ">
           {/* Carga perezosa de la imagen del logo */}

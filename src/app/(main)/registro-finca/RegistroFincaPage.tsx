@@ -77,7 +77,7 @@ export default function RegistroFincaPage({ fincas }: { fincas: any[] }) {
   return (
     <main className="flex min-h-screen flex-col items-center p-8">
       <div className="w-full flex justify-between items-center mt-20">
-        <h1 className="text-3xl font-bold">Registro de Fincas</h1>
+        <h1 className="text-3xl text-green-500 font-bold">Registro de Fincas</h1>
         <button
           className="bg-green-600 text-white p-2 rounded-full hover:bg-green-700 transition flex items-center justify-center"
           onClick={open}
@@ -86,7 +86,7 @@ export default function RegistroFincaPage({ fincas }: { fincas: any[] }) {
           <Plus size={20} />
         </button>
       </div>
-      {fincasList.length !== 0 && <h2 className="text-2xl font-bold mb-4">Lista de Fincas</h2>}
+      {fincasList.length !== 0 && <h2 className="text-2xl text-green-500 mb-4">Lista de Fincas</h2>}
       <div className="w-full max-w-2xl">
         {fincasList.length === 0 ? (
           <div className="text-center text-gray-500">No hay fincas registradas.</div>
