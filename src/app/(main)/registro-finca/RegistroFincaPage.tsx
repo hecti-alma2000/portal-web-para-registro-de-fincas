@@ -1,6 +1,6 @@
 'use client';
 
-import { deleteFinca, getAllFincas } from '@/actions/registro-finca/finca-actions';
+import { deleteFinca } from '@/actions/registro-finca/finca-actions';
 import { useRegistroFincaModalStore } from '../../../store/modal/registroFincaModal.store';
 import { useState, useTransition, useEffect } from 'react';
 import Swal from 'sweetalert2';
@@ -8,29 +8,39 @@ import { useFincaEditStore } from '../../../store/modal/fincaEdit.store';
 import { Plus } from 'lucide-react';
 import dynamic from 'next/dynamic';
 
+// Definición básica de la interfaz de Finca para tipado
+interface Finca {
+  id: number;
+  nombre: string;
+  status: 'PENDING' | 'APPROVED' | 'REJECTED';
+  // ... otras propiedades
+}
+
 // Carga perezosa del componente FincaCard
 const FincaCard = dynamic(() => import('../../../components/registro-finca/FincaCard'), {
   loading: () => <p>Cargando fincas...</p>,
-  ssr: false, // Opcional: Deshabilita el renderizado del lado del servidor si es necesario
+  ssr: false,
 });
 
 // Carga perezosa del componente del modal.
 const RegistroFincaModal = dynamic(
   () => import('../../../components/registro-finca/RegistroFincaModal'),
   {
-    loading: () => null, // No muestra nada mientras carga el modal
+    loading: () => null,
     ssr: false,
   }
 );
 
-export default function RegistroFincaPage({ fincas }: { fincas: any[] }) {
+export default function RegistroFincaPage({ fincas }: { fincas: Finca[] }) {
   const open = useRegistroFincaModalStore((state) => state.open);
   const [isPending, startTransition] = useTransition();
-  const [fincasList, setFincasList] = useState(fincas);
 
-  // Sincronizar fincasList cuando las props del servidor cambien (p. ej. tras revalidatePath o router.refresh)
+  const initialFincas = fincas.filter((f) => f.status !== 'REJECTED');
+  const [fincasList, setFincasList] = useState(initialFincas);
+
   useEffect(() => {
-    setFincasList(fincas || []);
+    const filtered = (fincas || []).filter((f) => f.status !== 'REJECTED');
+    setFincasList(filtered);
   }, [fincas]);
 
   const handleDelete = (id: number) => {
@@ -59,15 +69,22 @@ export default function RegistroFincaPage({ fincas }: { fincas: any[] }) {
   useEffect(() => {
     const handler = (e: CustomEvent) => {
       if (e.detail && e.detail.finca) {
-        setFincasList((prev) => {
-          const idx = prev.findIndex((f) => f.id === e.detail.finca.id);
-          if (idx !== -1) {
-            const updated = [...prev];
-            updated[idx] = e.detail.finca;
-            return updated;
-          }
-          return [e.detail.finca, ...prev];
-        });
+        const incoming: Finca = e.detail.finca;
+
+        if (incoming.status !== 'REJECTED') {
+          setFincasList((prev) => {
+            const idx = prev.findIndex((f) => f.id === incoming.id);
+            if (idx !== -1) {
+              const updated = [...prev];
+              updated[idx] = incoming;
+              return updated;
+            }
+            return [incoming, ...prev];
+          });
+        } else {
+          setFincasList((prev) => prev.filter((f) => f.id !== incoming.id));
+          console.debug('Solicitud rechazada, removida de la lista principal.');
+        }
       }
     };
     window.addEventListener('finca-guardada', handler as EventListener);
@@ -89,7 +106,9 @@ export default function RegistroFincaPage({ fincas }: { fincas: any[] }) {
       {fincasList.length !== 0 && <h2 className="text-2xl text-green-500 mb-4">Lista de Fincas</h2>}
       <div className="w-full max-w-2xl">
         {fincasList.length === 0 ? (
-          <div className="text-center text-gray-500">No hay fincas registradas.</div>
+          <div className="text-center text-gray-500">
+            No hay fincas activas registradas.
+          </div>
         ) : (
           <ul className="space-y-4">
             {fincasList.map((finca) => (
@@ -97,19 +116,10 @@ export default function RegistroFincaPage({ fincas }: { fincas: any[] }) {
                 <FincaCard
                   finca={finca}
                   onEdit={() => {
-                    Swal.fire({
-                      title: '¿Editar finca?',
-                      text: '¿Deseas editar esta finca?',
-                      icon: 'question',
-                      showCancelButton: true,
-                      confirmButtonText: 'Sí, editar',
-                      cancelButtonText: 'Cancelar',
-                    }).then((result) => {
-                      if (result.isConfirmed) {
-                        useFincaEditStore.getState().setFincaToEdit(finca);
-                        open();
-                      }
-                    });
+                    // 🔑 CAMBIO REALIZADO: Eliminado Swal.fire.
+                    // Ahora se carga la finca y se abre el modal directamente.
+                    useFincaEditStore.getState().setFincaToEdit(finca);
+                    open();
                   }}
                   onDelete={() => handleDelete(finca.id)}
                 />
@@ -121,9 +131,4 @@ export default function RegistroFincaPage({ fincas }: { fincas: any[] }) {
       <RegistroFincaModal />
     </main>
   );
-}
-
-export async function getServerSideProps() {
-  const fincas = await getAllFincas();
-  return { props: { fincas } };
 }

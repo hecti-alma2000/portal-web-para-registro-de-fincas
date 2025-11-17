@@ -88,7 +88,11 @@ export const CertificacionForm = ({ role }: CertificacionFormProps) => {
           const res = await getAllFincas();
           setFincas(res);
         } else {
-          const res = await getFincasByUser();
+          // Para usuarios normales solo mostramos fincas aprobadas
+          const res = await fetch('/api/fincas/approved-by-user')
+            .then((r) => r.json())
+            .then((j) => j || []);
+          // Si quieres usar una server action en el futuro, puedes reemplazar este fetch
           setFincas(res);
         }
       } catch (e) {

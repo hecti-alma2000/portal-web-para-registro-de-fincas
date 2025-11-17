@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import { getFincaByName, getAllFincas } from '@/actions/registro-finca/finca-actions';
+import { getFincaByName, getPublicFincas } from '@/actions/registro-finca/finca-actions';
 import FincaCardSimple from '../components/registro-finca/FincaCardSimple';
 
 export default function HeroBanner() {
@@ -15,8 +15,8 @@ export default function HeroBanner() {
   const [dropdownVisible, setDropdownVisible] = useState(false);
 
   React.useEffect(() => {
-    // Cargar todas las fincas al montar el componente
-    getAllFincas().then((fincas) => setTodasFincas(fincas || []));
+    // Cargar fincas públicas (aprobadas) al montar el componente
+    getPublicFincas().then((fincas) => setTodasFincas(fincas || []));
   }, []);
 
   async function handleBuscar(e: React.FormEvent) {

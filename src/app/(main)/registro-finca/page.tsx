@@ -3,6 +3,7 @@ import RegistroFincaPage from './RegistroFincaPage';
 // 🔑 Importamos AMBAS acciones
 import { getAllFincas } from '@/actions/registro-finca/finca-actions';
 import { getFincasByUser } from '@/actions/registro-finca/get-fincas-by-user';
+import { getApprovedFincasByUser } from '@/actions/registro-finca/get-approved-fincas-by-user';
 import { redirect } from 'next/navigation';
 
 export default async function Page() {
@@ -22,7 +23,8 @@ export default async function Page() {
     fincas = await getAllFincas();
   } else if (userRole === 'user') {
     // Si es USER, obtén solo sus fincas
-    fincas = await getFincasByUser();
+    // Mostrar SOLO fincas aprobadas en la vista principal de registro para usuarios normales
+    fincas = await getApprovedFincasByUser();
   } else {
     // En caso de un rol no esperado, redirige o maneja el error
     redirect('/');

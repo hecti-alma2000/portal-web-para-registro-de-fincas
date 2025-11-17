@@ -11,6 +11,11 @@
 body {
   font-family: 'Roboto';
   background-image: url('/imgs_bg/gb_image.webp');
+  /* La propiedad clave para fijar el fondo */
+  background-attachment: fixed;
+  /* Opcional pero recomendado: asegura que la imagen cubra toda la pantalla y no se repita */
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 .btn-primary {
@@ -32,3 +37,22 @@ body {
   background-size: cover;
   background-position: center;
 }
+
+/* Scroll reveal global styles */
+.reveal {
+  opacity: 0;
+  transform: translateY(18px) scale(0.995);
+  transition: opacity 600ms cubic-bezier(.2,.9,.2,1), transform 600ms cubic-bezier(.2,.9,.2,1);
+  will-change: opacity, transform;
+}
+.reveal.revealed {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* Optional stagger utility */
+.reveal[data-delay='100'] { transition-delay: 100ms; }
+.reveal[data-delay='200'] { transition-delay: 200ms; }
+.reveal[data-delay='300'] { transition-delay: 300ms; }
+.reveal[data-delay='400'] { transition-delay: 400ms; }
+.reveal[data-delay='500'] { transition-delay: 500ms; }

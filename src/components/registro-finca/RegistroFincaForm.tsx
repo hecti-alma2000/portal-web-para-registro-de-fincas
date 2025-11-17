@@ -1,35 +1,28 @@
 'use client';
 import { useState, useTransition, useEffect, useCallback } from 'react';
 import Swal from 'sweetalert2';
-// 🔑 Importación del router de Next.js
 import { useRouter } from 'next/navigation';
 
-import { createFinca } from '@/actions/registro-finca/create-finca';
-import { updateFinca } from '@/actions/registro-finca/update-finca';
+// 🔑 NOTA: Ya no necesitamos importar updateFinca si submitFincaRequest lo maneja todo.
+import { submitFincaRequest, FincaFormData } from '@/actions/registro-finca/submit-request'; // Importamos el tipo FincaFormData
 import { useFincaEditStore } from '@/store/modal/fincaEdit.store';
 
-// --- Type Definitions (se mantienen iguales) ---
-type FincaFormData = {
-  nombre: string;
-  localizacion: string;
-  propietario: string;
-  descripcion?: string;
-  fotoUrl?: string;
-  tipoPropiedad: 'ESTATAL' | 'PRIVADA';
-  entidadPertenece?: string;
-  usoActual?: string;
-  estadoConservacion?: string;
-  problematicaDetectada?: string;
-  tradicionesHistoria?: string;
-  elementosInteres: string[];
-  actividadesAgroturisticas: string[];
-  principiosSustentabilidad: string[];
-  accionesAmbientales: string[];
-};
+// --- Type Definitions (Ahora importamos FincaFormData directamente de la Server Action) ---
+// El tipo FincaUpdateInput ya no es necesario si la Server Action solo usa FincaFormData + id opcional
 
 type FincaUpdateInput = FincaFormData & {
   id: number;
 };
+
+// --- Opciones de Selectores ---
+const ESTADO_CONSERVACION_OPTIONS = ['Muy Bueno', 'Bueno', 'Aceptable', 'Malo'];
+const USO_ACTUAL_OPTIONS = [
+  'Cultivos Varios',
+  'Ganadería',
+  'Forestal',
+  'Agroturismo',
+  'Otros', // Opción para activar el campo de texto
+];
 // -----------------------------------------------------------------
 
 interface RegistroFincaFormProps {
@@ -37,8 +30,20 @@ interface RegistroFincaFormProps {
   fincaToEdit?: any | null;
 }
 
+/**
+ * FUNCIÓN CLAVE: Convierte string vacío ("") a NULL.
+ */
+const cleanString = (value: string | undefined): string | null | undefined => {
+  if (value === null || value === undefined) {
+    return value;
+  }
+  if (typeof value === 'string' && value.trim() === '') {
+    return null;
+  }
+  return value;
+};
+
 export default function RegistroFincaForm({ onSuccess, fincaToEdit }: RegistroFincaFormProps) {
-  // 🔑 Inicialización del router
   const router = useRouter();
   const { setFincaToEdit } = useFincaEditStore();
 
@@ -48,15 +53,20 @@ export default function RegistroFincaForm({ onSuccess, fincaToEdit }: RegistroFi
   const [descripcion, setDescripcion] = useState('');
   const [fotoFile, setFotoFile] = useState<File | null>(null);
   const [fotoPreview, setFotoPreview] = useState<string | null>(null);
+  // Nota: Inicializamos fotoUrl como 'string | undefined' porque puede ser el URL existente (string),
+  // o undefined si es un nuevo registro sin foto.
   const [fotoUrl, setFotoUrl] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState(false);
   const [isPending, startTransition] = useTransition();
 
-  // Campos y estados dinámicos (se mantienen iguales)
+  // Campos y estados dinámicos
   const [tipoPropiedad, setTipoPropiedad] = useState<'ESTATAL' | 'PRIVADA'>('ESTATAL');
   const [entidadPertenece, setEntidadPertenece] = useState('');
-  const [usoActual, setUsoActual] = useState('');
+
   const [estadoConservacion, setEstadoConservacion] = useState('');
+  const [usoActualSelect, setUsoActualSelect] = useState('');
+  const [usoActualOtros, setUsoActualOtros] = useState('');
+
   const [problematicaDetectada, setProblematicaDetectada] = useState('');
   const [tradicionesHistoria, setTradicionesHistoria] = useState('');
   const [elementosInteres, setElementosInteres] = useState<string[]>([]);
@@ -68,7 +78,7 @@ export default function RegistroFincaForm({ onSuccess, fincaToEdit }: RegistroFi
   const [accionesAmbientales, setAccionesAmbientales] = useState<string[]>([]);
   const [nuevaAccion, setNuevaAccion] = useState('');
 
-  // Lógica de inicialización (se mantiene igual)
+  // Lógica de inicialización
   useEffect(() => {
     if (fincaToEdit) {
       setNombre(fincaToEdit.nombre || '');
@@ -77,40 +87,43 @@ export default function RegistroFincaForm({ onSuccess, fincaToEdit }: RegistroFi
       setDescripcion(fincaToEdit.descripcion || '');
       setTipoPropiedad(fincaToEdit.tipoPropiedad || 'ESTATAL');
       setEntidadPertenece(fincaToEdit.entidadPertenece || '');
-      setUsoActual(fincaToEdit.usoActual || '');
       setEstadoConservacion(fincaToEdit.estadoConservacion || '');
+
+      const uso = fincaToEdit.usoActual || '';
+      if (USO_ACTUAL_OPTIONS.includes(uso)) {
+        setUsoActualSelect(uso);
+        setUsoActualOtros('');
+      } else if (uso) {
+        setUsoActualSelect('Otros');
+        setUsoActualOtros(uso);
+      } else {
+        setUsoActualSelect('');
+        setUsoActualOtros('');
+      }
+
       setProblematicaDetectada(fincaToEdit.problematicaDetectada || '');
       setTradicionesHistoria(fincaToEdit.tradicionesHistoria || '');
 
-      setElementosInteres(fincaToEdit.elementosInteres?.map((e: any) => e.nombre) || []);
+      setElementosInteres(fincaToEdit.elementosInteres?.map((e: any) => e.nombre || e) || []);
       setFotoPreview(fincaToEdit.fotoUrl || null);
       setFotoUrl(fincaToEdit.fotoUrl || undefined);
       setActividadesAgroturisticas(
-        fincaToEdit.actividadesAgroturisticas?.map((a: any) => a.nombre) || []
+        fincaToEdit.actividadesAgroturisticas?.map((a: any) => a.nombre || a) || []
       );
       setPrincipiosSustentabilidad(
-        fincaToEdit.principiosSustentabilidad?.map((p: any) => p.nombre) || []
+        fincaToEdit.principiosSustentabilidad?.map((p: any) => p.nombre || p) || []
       );
-      setAccionesAmbientales(fincaToEdit.accionesAmbientales?.map((a: any) => a.nombre) || []);
-    } else {
-      // Resetear estados
-      setNombre('');
-      setLocalizacion('');
-      setPropietario('');
-      setDescripcion('');
-      setTipoPropiedad('ESTATAL');
-      setEntidadPertenece('');
-      setUsoActual('');
-      setEstadoConservacion('');
-      setProblematicaDetectada('');
-      setTradicionesHistoria('');
-      setElementosInteres([]);
-      setActividadesAgroturisticas([]);
-      setPrincipiosSustentabilidad([]);
-      setAccionesAmbientales([]);
+      setAccionesAmbientales(fincaToEdit.accionesAmbientales?.map((a: any) => a.nombre || a) || []);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fincaToEdit]);
+
+  // Lógica para deshabilitar Entidad a la que pertenece si es PRIVADA
+  useEffect(() => {
+    if (tipoPropiedad === 'PRIVADA') {
+      setEntidadPertenece('');
+    }
+  }, [tipoPropiedad]);
 
   // Funciones de utilidad (se mantienen iguales)
   const addToList = useCallback(
@@ -120,8 +133,8 @@ export default function RegistroFincaForm({ onSuccess, fincaToEdit }: RegistroFi
       newItem: string,
       setNewItem: (i: string) => void
     ) => {
-      if (newItem && !list.includes(newItem)) {
-        setList([...list, newItem]);
+      if (newItem && !list.includes(newItem.trim())) {
+        setList([...list, newItem.trim()]);
         setNewItem('');
       }
     },
@@ -143,17 +156,34 @@ export default function RegistroFincaForm({ onSuccess, fincaToEdit }: RegistroFi
   };
   const handleFotoRemove = () => {
     setFotoFile(null);
-    setFotoPreview(fincaToEdit?.fotoUrl || null);
+    setFotoPreview(null); // Eliminamos la vista previa para forzar la carga de null/undefined
+    setFotoUrl(undefined);
     const el = document.getElementById('foto-input') as HTMLInputElement | null;
     if (el) el.value = '';
   };
 
-  // --- Lógica principal: handleSubmit con router.refresh() ---
+  // --- Lógica principal: handleSubmit ---
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const isEditing = !!fincaToEdit;
     const actionText = isEditing ? 'Editar' : 'Registrar';
+
+    // 1. DEDUCCIÓN Y VALIDACIÓN DE CAMPOS OBLIGATORIOS
+    const usoFinal = usoActualSelect === 'Otros' ? usoActualOtros : usoActualSelect;
+
+    if (
+      !estadoConservacion ||
+      !usoActualSelect ||
+      (usoActualSelect === 'Otros' && !usoActualOtros)
+    ) {
+      Swal.fire(
+        'Campos requeridos',
+        'Por favor complete el **estado de conservación** y el **uso actual**.',
+        'warning'
+      );
+      return;
+    }
 
     const result = await Swal.fire({
       title: `¿${actionText} finca?`,
@@ -165,35 +195,25 @@ export default function RegistroFincaForm({ onSuccess, fincaToEdit }: RegistroFi
     });
 
     if (!result.isConfirmed) return;
+
     setLoading(true);
 
     startTransition(async () => {
-      let uploadedUrl: string | undefined = fotoUrl;
+      let currentFotoUrl: string | null = fotoUrl || null;
 
-      // 1. Manejo de subida de foto (se mantiene igual)
+      // 1. Manejo de subida de foto
       if (fotoFile) {
         try {
           const fd = new FormData();
           fd.append('file', fotoFile);
-
           const resUp = await fetch('/api/uploads', { method: 'POST', body: fd });
-
           if (!resUp.ok) {
             const errorText = await resUp.text();
-            throw new Error(
-              `Error en la subida. Estado: ${resUp.status}. Respuesta: ${errorText.substring(
-                0,
-                100
-              )}...`
-            );
+            throw new Error(`Error en la subida. ${errorText.substring(0, 100)}...`);
           }
-
           const j = await resUp.json();
-
           if (j.ok) {
-            uploadedUrl = j.url;
-            setFotoUrl(j.url);
-            setFotoPreview(j.url);
+            currentFotoUrl = j.url;
           } else {
             throw new Error(j.message || 'Error desconocido al procesar la imagen.');
           }
@@ -202,85 +222,86 @@ export default function RegistroFincaForm({ onSuccess, fincaToEdit }: RegistroFi
           console.error('ERROR AL SUBIR IMAGEN:', err.message);
           Swal.fire({
             title: 'Error de imagen',
-            text: err.message.includes('Error en la subida')
-              ? `No se pudo subir la foto. Verifique la API. (${err.message})`
-              : err.message,
+            text: 'No se pudo subir la foto: ' + err.message,
             icon: 'error',
-            confirmButtonText: 'OK',
           });
           return;
         }
+      } else if (!fotoPreview && isEditing) {
+        // Si estamos editando y se eliminó la foto del preview/url
+        currentFotoUrl = null;
       }
 
-      // 2. Preparar datos y ejecutar Server Action (se mantiene igual)
+      // 2. Preparar datos para la Server Action
+      const entidad = tipoPropiedad === 'PRIVADA' ? null : cleanString(entidadPertenece);
+
       const baseFincaData: FincaFormData = {
         nombre,
         localizacion,
         propietario,
-        descripcion,
-        fotoUrl: uploadedUrl,
+
+        descripcion: cleanString(descripcion),
+        // Si fotoUrl es undefined, lo enviamos como null si es creación o currentFotoUrl
+        fotoUrl: currentFotoUrl,
         tipoPropiedad,
-        entidadPertenece,
-        usoActual,
-        estadoConservacion,
-        problematicaDetectada,
-        tradicionesHistoria,
+        entidadPertenece: entidad,
+
+        usoActual: cleanString(usoFinal),
+        estadoConservacion: cleanString(estadoConservacion),
+
+        problematicaDetectada: cleanString(problematicaDetectada),
+        tradicionesHistoria: cleanString(tradicionesHistoria),
+
         elementosInteres,
         actividadesAgroturisticas,
         principiosSustentabilidad,
         accionesAmbientales,
       };
 
-      let res: { ok: boolean; message?: string; data?: any };
+      let res: { ok: boolean; message?: string; data?: any; isPending?: boolean };
 
       try {
         if (isEditing) {
           if (typeof fincaToEdit.id !== 'number') {
             throw new Error('ID de finca inválido para la actualización.');
           }
-          const updateData: FincaUpdateInput = { ...baseFincaData, id: fincaToEdit.id };
-          res = await updateFinca(updateData);
+          // 🔑 Llama a la acción unificada con el ID
+          res = await submitFincaRequest(baseFincaData, fincaToEdit.id);
         } else {
-          res = await createFinca(baseFincaData);
+          // 🔑 Llama a la acción unificada sin ID (Creación)
+          res = await submitFincaRequest(baseFincaData);
         }
       } catch (serverActionError: any) {
         res = {
           ok: false,
-          message: serverActionError.message || 'Error desconocido del servidor.',
+          message: 'Error de conexión con el servidor. Consulte la consola.',
         };
       }
 
       setLoading(false);
 
       if (res.ok) {
-        // Cierra el modal vía Zustand
         setFincaToEdit(null);
         if (onSuccess) onSuccess();
 
-        // 🔑 CAMBIO CLAVE: Forzar la actualización de la data en el cliente
-        // Disparar un evento con la finca actualizada/creada para que los componentes client-side
-        // puedan actualizar su estado sin depender de una recarga completa.
-        try {
-          if (res.data) {
-            const evt = new CustomEvent('finca-guardada', { detail: { finca: res.data } });
-            window.dispatchEvent(evt);
-          } else {
-            // Si el server action no devuelve data, solo refrescamos la ruta como respaldo
-            router.refresh();
-          }
-        } catch (e) {
-          // En entornos donde window no exista (por ejemplo tests), hacemos refresh como respaldo
-          router.refresh();
-        }
+        router.refresh();
+
+        const title = isEditing ? 'Solicitud de actualización' : 'Solicitud enviada';
+        const notificationText = res.isPending
+          ? isEditing
+            ? 'La actualización ha sido enviada para su revisión.'
+            : 'Tu solicitud fue enviada y está pendiente de revisión.'
+          : isEditing
+          ? 'La finca se actualizó y aprobó correctamente.'
+          : 'La finca se registró y aprobó automáticamente (Admin).';
 
         Swal.fire({
-          title: `¡Finca ${isEditing ? 'actualizada' : 'registrada'}!`,
-          text: `La finca se ${isEditing ? 'actualizó' : 'registró'} correctamente.`,
-          icon: 'success',
+          title: title,
+          text: notificationText,
+          icon: res.isPending ? 'info' : 'success',
           confirmButtonText: 'OK',
         });
       } else {
-        // Muestra el error
         Swal.fire({
           title: 'Error',
           text: res.message || `No se pudo ${actionText.toLowerCase()} la finca.`,
@@ -291,7 +312,7 @@ export default function RegistroFincaForm({ onSuccess, fincaToEdit }: RegistroFi
     });
   };
 
-  // --- JSX (Se mantiene igual) ---
+  // --- JSX (El contenido de la forma se mantiene igual) ---
 
   return (
     <form className="space-y-4 grid grid-cols-1 md:grid-cols-2 gap-4" onSubmit={handleSubmit}>
@@ -372,6 +393,7 @@ export default function RegistroFincaForm({ onSuccess, fincaToEdit }: RegistroFi
         <label className="block text-gray-700">Tipo de propiedad</label>
         <select
           className="mt-1 block w-full border rounded px-3 py-2"
+          required
           value={tipoPropiedad}
           onChange={(e) => setTipoPropiedad(e.target.value as 'ESTATAL' | 'PRIVADA')}
         >
@@ -380,35 +402,82 @@ export default function RegistroFincaForm({ onSuccess, fincaToEdit }: RegistroFi
         </select>
       </div>
 
+      {/* 1. Entidad a la que pertenece (Condicional) */}
       <div className="col-span-1">
         <label className="block text-gray-700">Entidad a la que pertenece</label>
         <input
           type="text"
-          className="mt-1 block w-full border rounded px-3 py-2"
+          className={`mt-1 block w-full border rounded px-3 py-2 ${
+            tipoPropiedad === 'PRIVADA' ? 'bg-gray-100 cursor-not-allowed' : ''
+          }`}
           value={entidadPertenece}
           onChange={(e) => setEntidadPertenece(e.target.value)}
+          disabled={tipoPropiedad === 'PRIVADA'}
+          required={tipoPropiedad === 'ESTATAL'}
         />
+        {tipoPropiedad === 'PRIVADA' && (
+          <p className="text-xs text-gray-500 mt-1">Campo deshabilitado para propiedad privada.</p>
+        )}
       </div>
 
+      {/* 2. Uso actual (Select obligatorio + Otros) */}
       <div className="col-span-1">
         <label className="block text-gray-700">Uso actual</label>
-        <input
-          type="text"
+        <select
           className="mt-1 block w-full border rounded px-3 py-2"
-          value={usoActual}
-          onChange={(e) => setUsoActual(e.target.value)}
-        />
+          required
+          value={usoActualSelect}
+          onChange={(e) => {
+            setUsoActualSelect(e.target.value);
+            if (e.target.value !== 'Otros') setUsoActualOtros('');
+          }}
+        >
+          <option value="" disabled>
+            Seleccione el uso actual
+          </option>
+          {USO_ACTUAL_OPTIONS.map((opt) => (
+            <option key={opt} value={opt}>
+              {opt}
+            </option>
+          ))}
+        </select>
       </div>
 
+      {/* Campo 'Otros' condicional para Uso Actual */}
+      {usoActualSelect === 'Otros' && (
+        <div className="col-span-1">
+          <label className="block text-gray-700">Especifique otro uso</label>
+          <input
+            type="text"
+            className="mt-1 block w-full border rounded px-3 py-2"
+            required
+            value={usoActualOtros}
+            onChange={(e) => setUsoActualOtros(e.target.value)}
+          />
+        </div>
+      )}
+
+      {/* 3. Estado de conservación (Select obligatorio) */}
       <div className="col-span-1">
         <label className="block text-gray-700">Estado de conservación</label>
-        <input
-          type="text"
+        <select
           className="mt-1 block w-full border rounded px-3 py-2"
+          required
           value={estadoConservacion}
           onChange={(e) => setEstadoConservacion(e.target.value)}
-        />
+        >
+          <option value="" disabled>
+            Seleccione un estado
+          </option>
+          {ESTADO_CONSERVACION_OPTIONS.map((opt) => (
+            <option key={opt} value={opt}>
+              {opt}
+            </option>
+          ))}
+        </select>
       </div>
+
+      <div className="col-span-1">{/* Placeholder vacío para mantener la rejilla */}</div>
 
       <div className="col-span-1 md:col-span-2">
         <label className="block text-gray-700">Problemática detectada</label>
@@ -430,7 +499,7 @@ export default function RegistroFincaForm({ onSuccess, fincaToEdit }: RegistroFi
         />
       </div>
 
-      {/* Listas dinámicas con lógica refactorizada */}
+      {/* Listas dinámicas (El JSX se mantiene igual) */}
       <div className="col-span-1 md:col-span-2 space-y-4">
         {/* Elementos de interés */}
         <div>

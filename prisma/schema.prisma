@@ -21,6 +21,12 @@ enum Role {
   user
 }
 
+enum RequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 model User{
   id  String     @id @default(uuid())
   name String
@@ -42,6 +48,8 @@ model Finca {
   fotoUrl                     String?
   tipoPropiedad               TipoPropiedad
   entidadPertenece            String?
+  // Nuevo estado para controlar solicitudes: PENDING (pendiente), APPROVED (aprobada), REJECTED (denegada)
+  status                      RequestStatus @default(PENDING)
   usoActual                   String?
   estadoConservacion          String?
   problematicaDetectada       String?

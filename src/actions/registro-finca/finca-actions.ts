@@ -9,6 +9,19 @@ export async function getAllFincas() {
     const fincas = await prisma.finca.findMany({
       orderBy: { createdAt: 'desc' },
     });
+
+    return fincas;
+  } catch (error) {
+    return [];
+  }
+}
+
+export async function getPublicFincas() {
+  try {
+    const fincas = await prisma.finca.findMany({
+      where: { status: 'APPROVED' },
+      orderBy: { createdAt: 'desc' },
+    });
     return fincas;
   } catch (error) {
     return [];

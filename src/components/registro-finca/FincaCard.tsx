@@ -2,7 +2,7 @@
 
 import { ChevronDown, ChevronUp, Pencil, Trash2 } from 'lucide-react';
 import { useState } from 'react';
-import dynamic from 'next/dynamic';
+import { Badge } from '@/components/ui/badge';
 
 interface FincaCardProps {
   finca: any;
@@ -45,6 +45,21 @@ const FincaCardComponent = ({ finca, onEdit, onDelete }: FincaCardProps) => {
       >
         <div>
           <div className="font-bold text-lg">{finca.nombre}</div>
+          {finca.status && (
+            <div className="mt-1">
+              <Badge
+                variant={
+                  finca.status === 'APPROVED'
+                    ? 'success'
+                    : finca.status === 'REJECTED'
+                    ? 'destructive'
+                    : 'warning'
+                }
+              >
+                {finca.status === 'APPROVED' ? 'Aprobada ✅' : 'Pendiente ❗'}
+              </Badge>
+            </div>
+          )}
           <div className="text-gray-600 text-sm">
             Ubicación: {finca.ubicacion || finca.localizacion}
           </div>

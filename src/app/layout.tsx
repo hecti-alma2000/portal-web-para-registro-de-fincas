@@ -2,6 +2,8 @@
 
 import './globals.css';
 import { Providers } from '@/components/providers/Providers';
+// Client ScrollReveal component (client component - can be statically imported)
+import ScrollReveal from '@/components/ScrollReveal';
 import { auth } from '@/auth.config';
 
 export const metadata = {
@@ -19,7 +21,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <head />
       <body>
         {/* 2. Pasar la sesión al componente Providers */}
-        <Providers session={session}>{children}</Providers>
+        <Providers session={session}>
+          <ScrollReveal />
+          {children}
+        </Providers>
       </body>
     </html>
   );

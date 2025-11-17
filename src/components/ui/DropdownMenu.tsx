@@ -2,7 +2,8 @@
 
 import { useState, useRef, useEffect, Fragment, startTransition } from 'react';
 import Link from 'next/link';
-import { LogOut, LogIn, User, Shield } from 'lucide-react';
+// Importamos los iconos necesarios, incluyendo el nuevo Shield para 'Solicitudes' si lo decides, o un Mailbox para solicitudes
+import { LogOut, LogIn, User, Shield, ClipboardList } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { logout } from '@/actions/auth/logout'; // Server Action
 
@@ -17,8 +18,7 @@ const ChevronDownIcon = ({ isOpen }: { isOpen: boolean }) => (
     viewBox="0 0 24 24"
     xmlns="http://www.w3.org/2000/svg"
   >
-       {' '}
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path> {' '}
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
   </svg>
 );
 
@@ -35,9 +35,10 @@ export const DropdownMenu = () => {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const { data: session } = useSession();
-  const isAuthenticated = !!session?.user; // ⬅️ Definido dentro del scope
-  const isAdmin = session?.user?.role === 'admin'; // ⬅️ Definido dentro del scope // Lógica para cerrar el menú al hacer clic fuera (se mantiene igual)
+  const isAuthenticated = !!session?.user;
+  const isAdmin = session?.user?.role === 'admin';
 
+  // Lógica para cerrar el menú al hacer clic fuera
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -49,29 +50,33 @@ export const DropdownMenu = () => {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, []); // 🔑 FUNCIÓN DE LOGOUT CORREGIDA Y REUBICADA DENTRO DEL COMPONENTE
+  }, []);
 
+  // Función de LOGOUT
   const handleSignOut = () => {
-    setIsOpen(false); // Usamos startTransition para ejecutar la Server Action
+    setIsOpen(false);
 
     startTransition(async () => {
-      // 1. Esperar a que el servidor cierre la sesión (limpie las cookies)
-      await logout(); // 2. Forzar la recarga/navegación una vez que la acción asíncrona haya finalizado.
-      // window.location.replace() es la forma más robusta de forzar un hard reload/navegación.
+      // 1. Esperar a que el servidor cierre la sesión
+      await logout();
+      // 2. Forzar la recarga/navegación una vez que la acción asíncrona haya finalizado.
       window.location.replace(window.location.href);
     });
-  }; // 🛠️ Opciones dinámicas
-  // ⬅️ La función handleSignOut ahora termina aquí.
+  };
 
+  // 🛠️ Opciones dinámicas
   const authenticatedOptions: DropdownOption[] = [
     { label: 'Mi Perfil', href: '/profile', icon: User },
   ];
+
+  // 🆕 OPCIONES DE ADMINISTRADOR MODIFICADAS
   const adminOptions: DropdownOption[] = [
     { label: 'Usuarios', href: '/admin/users', icon: Shield },
+    { label: 'Solicitudes', href: '/admin/request', icon: ClipboardList }, // Usamos ClipboardList para 'Solicitudes'
   ];
 
   const authAction: DropdownOption = isAuthenticated
-    ? { label: 'Salir', href: '#', icon: LogOut, action: handleSignOut } // ⬅️ handleSignOut es accesible aquí
+    ? { label: 'Salir', href: '#', icon: LogOut, action: handleSignOut }
     : { label: 'Ingresar', href: '/auth/login', icon: LogIn };
 
   const menuOptions: DropdownOption[] = [
@@ -82,7 +87,7 @@ export const DropdownMenu = () => {
 
   return (
     <div className="relative inline-block text-left" ref={dropdownRef}>
-      {/* Botón Principal del Desplegable (se mantiene igual) */}
+      {/* Botón Principal del Desplegable */}
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
@@ -93,7 +98,8 @@ export const DropdownMenu = () => {
         <User className="h-6 w-6 text-black" />
         <ChevronDownIcon isOpen={isOpen} />
       </button>
-      {/* Menú Desplegable (se mantiene igual) */}
+
+      {/* Menú Desplegable */}
       {isOpen && (
         <div className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-30 border border-gray-100">
           <div
@@ -108,6 +114,7 @@ export const DropdownMenu = () => {
                 {session?.user?.name || session?.user?.email}
               </div>
             )}
+
             {menuOptions.map((option) => {
               const Content = (
                 <span

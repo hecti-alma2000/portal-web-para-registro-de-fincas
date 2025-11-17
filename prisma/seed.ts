@@ -1,5 +1,5 @@
 // prisma/seed.ts
-import { PrismaClient, TipoPropiedad, Role } from '@prisma/client';
+import { PrismaClient, TipoPropiedad, Role, RequestStatus } from '@prisma/client';
 import * as bcryptjs from 'bcryptjs';
 
 // Inicializa el cliente de Prisma
@@ -9,8 +9,7 @@ const prisma = new PrismaClient();
 const ADMIN_EMAIL = 'lisbeteunice1008@gmail.com';
 const ADMIN_PASSWORD = 'LizEunice25*';
 
-// Tipado auxiliar para los datos de la finca antes de asignar la relación de usuario.
-// Esto resuelve el error de TypeScript al declarar el array inicial, ya que no incluye 'user'.
+// 🔑 TIPADO CLAVE: Incluir las listas de relaciones en la plantilla de datos
 type FincaDataTemplate = {
   nombre: string;
   localizacion: string;
@@ -23,20 +22,14 @@ type FincaDataTemplate = {
   problematicaDetectada: string | null;
   tradicionesHistoria: string | null;
   fotoUrl: string | null;
+  // 🔑 Nuevos campos de lista
+  elementosInteres: string[];
+  actividadesAgroturisticas: string[];
+  principiosSustentabilidad: string[];
+  accionesAmbientales: string[];
 };
 
-// Datos del Usuario Administrador
-const usersData = [
-  {
-    name: 'Lisbet Eunice Pérez Anzardo',
-    email: ADMIN_EMAIL,
-    // Hasheo síncrono de la contraseña (salt = 12)
-    password: bcryptjs.hashSync(ADMIN_PASSWORD, 12),
-    role: Role.admin,
-  },
-];
-
-// Datos de las Fincas (Tipado como FincaDataTemplate[])
+// Datos de las Fincas (AHORA INCLUYENDO LISTAS)
 const fincasDataTemplate: FincaDataTemplate[] = [
   {
     nombre: 'La Bendecida',
@@ -52,6 +45,11 @@ const fincasDataTemplate: FincaDataTemplate[] = [
     problematicaDetectada: 'Falta de insumos',
     tradicionesHistoria: 'Mantiene tradiciones campesinas.',
     fotoUrl: '/uploads/la-bendecida.webp',
+    // 🔑 Datos de las listas (nuevos)
+    elementosInteres: ['Espejo de agua', 'Vegetación acuática', 'Minindustria'],
+    actividadesAgroturisticas: ['Degustación de conservas', 'Observación de aves'],
+    principiosSustentabilidad: ['Biodiversidad', 'Uso eficiente del agua'],
+    accionesAmbientales: ['Reforestación', 'Manejo integrado de plagas'],
   },
   {
     nombre: 'El Troncón',
@@ -68,7 +66,18 @@ const fincasDataTemplate: FincaDataTemplate[] = [
     tradicionesHistoria:
       'Declarada de referencia nacional en diversificación agropecuaria y coto genético.',
     fotoUrl: '/uploads/el-troncon.webp',
+    // 🔑 Datos de las listas
+    elementosInteres: ['Jardín ornamental', 'Coto genético', 'Especies exóticas'],
+    actividadesAgroturisticas: ['Tour por coto genético', 'Rutas por sendero'],
+    principiosSustentabilidad: ['Conservación de fauna', 'Diversificación'],
+    accionesAmbientales: ['Control biológico', 'Protección de especies'],
   },
+  // Añadir el resto de tus 10 fincas aquí, asegurándote de incluir
+  // TODOS los 4 campos de listas:
+  // elementosInteres: [],
+  // actividadesAgroturisticas: [],
+  // principiosSustentabilidad: [],
+  // accionesAmbientales: [],
   {
     nombre: 'La Gloria',
     localizacion: 'Consejo Popular Buenaventura 2 (La Alegría No.3)',
@@ -82,6 +91,10 @@ const fincasDataTemplate: FincaDataTemplate[] = [
     problematicaDetectada: null,
     tradicionesHistoria: 'Mantiene las tradiciones campesinas y desarrollo de reforestación.',
     fotoUrl: '/uploads/la-gloria.webp',
+    elementosInteres: ['Minindustria', 'Áreas boscosas'],
+    actividadesAgroturisticas: ['Visita a minindustria', 'Reforestación participativa'],
+    principiosSustentabilidad: ['Valor agregado', 'Suelo saludable'],
+    accionesAmbientales: ['Reforestación'],
   },
   {
     nombre: 'El Carmen',
@@ -97,6 +110,10 @@ const fincasDataTemplate: FincaDataTemplate[] = [
     tradicionesHistoria:
       'Mantiene las tradiciones campesinas en apego a las costumbres familiares.',
     fotoUrl: '/uploads/el-carmen.webp',
+    elementosInteres: ['Vegetación variada', 'Fauna doméstica'],
+    actividadesAgroturisticas: ['Convivencia familiar', 'Participación en faenas'],
+    principiosSustentabilidad: ['Tradición', 'Integración familiar'],
+    accionesAmbientales: ['Reforestación'],
   },
   {
     nombre: 'La Próspera',
@@ -111,6 +128,10 @@ const fincasDataTemplate: FincaDataTemplate[] = [
     problematicaDetectada: null,
     tradicionesHistoria: 'Especializada en cítricos, con comercialización al sector turismo.',
     fotoUrl: '/uploads/la-prospera.webp',
+    elementosInteres: ['Cultivos cítricos', 'Recursos turísticos'],
+    actividadesAgroturisticas: ['Cosecha de cítricos', 'Venta a turismo'],
+    principiosSustentabilidad: ['Comercialización directa', 'Monocultivo diversificado'],
+    accionesAmbientales: ['Manejo de suelo'],
   },
   {
     nombre: 'La Margarita',
@@ -125,6 +146,10 @@ const fincasDataTemplate: FincaDataTemplate[] = [
     problematicaDetectada: null,
     tradicionesHistoria: 'Presencia de siete palmas reales, símbolo nacional, en el paisaje.',
     fotoUrl: '/uploads/la-margarita.webp',
+    elementosInteres: ['Palmas reales (símbolo nacional)', 'Cultivo de limón'],
+    actividadesAgroturisticas: ['Avistamiento de palmas'],
+    principiosSustentabilidad: ['Respeto a la flora nativa'],
+    accionesAmbientales: ['Conservación de palmas'],
   },
   {
     nombre: 'La Alegría',
@@ -139,6 +164,10 @@ const fincasDataTemplate: FincaDataTemplate[] = [
     problematicaDetectada: null,
     tradicionesHistoria: 'Un riachuelo atraviesa la propiedad, ideal para actividades.',
     fotoUrl: '/uploads/la-alegria.webp',
+    elementosInteres: ['Riachuelo'],
+    actividadesAgroturisticas: ['Senderismo acuático'],
+    principiosSustentabilidad: ['Recurso hídrico'],
+    accionesAmbientales: ['Protección de orillas'],
   },
   {
     nombre: 'Las Maravillas',
@@ -155,6 +184,10 @@ const fincasDataTemplate: FincaDataTemplate[] = [
     tradicionesHistoria:
       'Reconocimiento a diferentes niveles por rendimiento de leche y carne. Polígono de experimentación.',
     fotoUrl: '/uploads/las-maravillas.webp',
+    elementosInteres: ['Polígono de experimentación', 'Inseminación artificial'],
+    actividadesAgroturisticas: ['Tour de genética bovina', 'Visita a cultivos orgánicos'],
+    principiosSustentabilidad: ['Innovación', 'Fertilizantes orgánicos'],
+    accionesAmbientales: ['Mejora genética', 'Compostaje'],
   },
   {
     nombre: 'La Paula',
@@ -169,6 +202,10 @@ const fincasDataTemplate: FincaDataTemplate[] = [
     problematicaDetectada: null,
     tradicionesHistoria: 'Responsable con el medioambiente.',
     fotoUrl: '/uploads/la-paula.webp',
+    elementosInteres: ['Rebaño ovino-caprino', 'Micropresas', 'Infraestructura pecuaria'],
+    actividadesAgroturisticas: ['Pesca recreativa', 'Alimentación de ganado menor'],
+    principiosSustentabilidad: ['Diversificación de cría', 'Manejo de agua'],
+    accionesAmbientales: ['Uso de micropresas'],
   },
   {
     nombre: 'Finca de Gil',
@@ -183,6 +220,10 @@ const fincasDataTemplate: FincaDataTemplate[] = [
     problematicaDetectada: null,
     tradicionesHistoria: 'Uso de molinos y micropresas, prácticas mayormente ecológicas.',
     fotoUrl: '/uploads/finca-gil.webp',
+    elementosInteres: ['Molino', 'Micropresas', 'Pozo'],
+    actividadesAgroturisticas: ['Demostración de prácticas ecológicas'],
+    principiosSustentabilidad: ['Fertilización orgánica', 'Uso de energía renovable (molino)'],
+    accionesAmbientales: ['Uso de abonos verdes'],
   },
   {
     nombre: 'Los Piriles',
@@ -197,6 +238,10 @@ const fincasDataTemplate: FincaDataTemplate[] = [
     problematicaDetectada: null,
     tradicionesHistoria: 'Uso de medios biológicos y orgánicos.',
     fotoUrl: '/uploads/los-piriles.webp',
+    elementosInteres: ['Producción porcina', 'Medios biológicos'],
+    actividadesAgroturisticas: ['Demostración de biopreparados'],
+    principiosSustentabilidad: ['Medios biológicos'],
+    accionesAmbientales: ['Uso de biopreparados'],
   },
   {
     nombre: 'La Guinda',
@@ -212,13 +257,17 @@ const fincasDataTemplate: FincaDataTemplate[] = [
     tradicionesHistoria:
       'El río La Rioja atraviesa la propiedad, sistema de riego para la producción.',
     fotoUrl: '/uploads/la-guinda.webp',
+    elementosInteres: ['Río La Rioja', 'Sistema de riego'],
+    actividadesAgroturisticas: ['Paseo por el río', 'Demostración de riego'],
+    principiosSustentabilidad: ['Riego eficiente', 'Recursos hídricos'],
+    accionesAmbientales: ['Protección de cauce'],
   },
 ];
 
 async function main() {
   console.log(`Iniciando la siembra (seeding) de ${fincasDataTemplate.length} fincas...`);
 
-  // 1. LIMPIEZA TOTAL (Eliminación en orden inverso para respetar las claves foráneas)
+  // 1. LIMPIEZA TOTAL (Orden inverso)
   await prisma.diagnostico.deleteMany();
   await prisma.infraestructuraFinca.deleteMany();
   await prisma.elementoInteres.deleteMany();
@@ -226,41 +275,70 @@ async function main() {
   await prisma.principioSustentabilidad.deleteMany();
   await prisma.accionAmbiental.deleteMany();
   await prisma.finca.deleteMany();
-  await prisma.user.deleteMany(); // Limpiar la tabla de usuarios
+  await prisma.user.deleteMany();
 
   console.log('Todas las tablas de Fincas y Usuarios han sido limpiadas.');
 
   // 2. CREAR USUARIO ADMINISTRADOR
   const adminUser = await prisma.user.create({
-    data: usersData[0],
+    data: {
+      name: 'Lisbet Eunice Pérez Anzardo',
+      email: ADMIN_EMAIL,
+      password: bcryptjs.hashSync(ADMIN_PASSWORD, 12),
+      role: Role.admin,
+    },
   });
 
   console.log(`Usuario Admin creado: ${adminUser.email} con ID: ${adminUser.id}`);
 
-  // 3. MAPEO Y ASIGNACIÓN DE FINCAS
-  // Mapeo crucial: Creamos la estructura final FincaCreateInput,
-  // utilizando la conexión de relación 'user' en lugar de la clave 'userId'.
-  const fincasToCreate = fincasDataTemplate.map((finca) => ({
-    ...finca,
-    // Conexión del usuario (obligatoria por el esquema de Prisma)
-    user: {
-      connect: {
-        id: adminUser.id,
-      },
-    },
-  }));
+  // 3. MAPEO Y ASIGNACIÓN DE FINCAS (Ahora incluyendo la creación de relaciones)
+  for (const fincaData of fincasDataTemplate) {
+    // Separamos las listas del resto de los datos
+    const {
+      elementosInteres,
+      actividadesAgroturisticas,
+      principiosSustentabilidad,
+      accionesAmbientales,
+      ...baseData
+    } = fincaData;
 
-  // 4. INSERCIÓN DE FINCAS
-  for (const data of fincasToCreate) {
-    const finca = await prisma.finca.create({
-      // TypeScript ahora acepta 'data' porque 'user' está definido con la conexión.
-      data: data,
-    });
-    console.log(`Finca creada: ${finca.nombre}`);
+    try {
+      const finca = await prisma.finca.create({
+        data: {
+          ...baseData,
+          // 🔑 ASIGNACIÓN CORRECTA DEL ENUMERADOR
+          status: RequestStatus.APPROVED,
+
+          // Conexión del usuario
+          user: {
+            connect: {
+              id: adminUser.id,
+            },
+          },
+
+          // 🔑 CREACIÓN DE RELACIONES (LISTAS)
+          elementosInteres: {
+            create: elementosInteres.map((nombre) => ({ nombre })),
+          },
+          actividadesAgroturisticas: {
+            create: actividadesAgroturisticas.map((nombre) => ({ nombre })),
+          },
+          principiosSustentabilidad: {
+            create: principiosSustentabilidad.map((nombre) => ({ nombre })),
+          },
+          accionesAmbientales: {
+            create: accionesAmbientales.map((nombre) => ({ nombre })),
+          },
+        },
+      });
+      console.log(`Finca creada: ${finca.nombre} (Estado: APROBADO)`);
+    } catch (error) {
+      console.error(`Error al crear la finca ${fincaData.nombre}:`, error);
+    }
   }
 
   console.log(
-    `\n✅ Siembra finalizada. Se insertaron ${fincasToCreate.length} fincas y ${usersData.length} usuario(s).`
+    `\n✅ Siembra finalizada. Se insertaron ${fincasDataTemplate.length} fincas y ${1} usuario(s).`
   );
 }
 
