@@ -3,14 +3,19 @@ import { redirect } from 'next/navigation';
 import { ProfileCard } from '@/components/ui/profile/ProfileCard';
 import { StatCard } from '@/components/ui/profile/StatCard';
 import { getProfileStats } from '@/actions/registro-finca/get-profile-stats';
+
 // Lucide icons
 import { Home, BadgeCheck, Star, Leaf } from 'lucide-react';
+import ProfileReload from '@/components/profile/ProfileReload';
 
 export default async function ProfilePage() {
   const session = await auth();
   if (!session?.user) {
     redirect('/');
   }
+
+  // Mantener la verificación de sesión en el servidor y cargar las estadísticas en el servidor
+  // para que estén disponibles sin depender de peticiones cliente adicionales.
 
   const stats = await getProfileStats();
   // Si es admin, mostrar totalFincas; si es user, mostrar userFincas
@@ -31,7 +36,10 @@ export default async function ProfilePage() {
           <ProfileCard user={session.user} />
         </div>
 
-        {/* Estadísticas */}
+        {/* Componente cliente que fuerza un reload cuando la navegación fue cliente->cliente */}
+        <ProfileReload />
+
+        {/* Estadísticas (renderizado en servidor usando actions) */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="reveal" data-delay="300">
             <StatCard

@@ -26,7 +26,7 @@ export async function generateCertificate(fincaId: string, puntuacion: number) {
   // 2. Obtener datos de la Finca y el Propietario
   const finca = await prisma.finca.findUnique({
     where: { id: numericFincaId },
-    select: { nombre: true, userId: true },
+    select: { nombre: true, userId: true, propietario: true },
   });
 
   const user = await prisma.user.findUnique({
@@ -39,7 +39,7 @@ export async function generateCertificate(fincaId: string, puntuacion: number) {
   }
 
   // Preparar datos para el certificado
-  const propietarioNombre = user.name || user.email || 'Propietario Desconocido';
+  const propietarioNombre = finca.propietario || 'Propietario Desconocido';
   const nombreFinca = finca.nombre;
   const fechaEmision = new Date().toLocaleDateString('es-ES', {
     year: 'numeric',
@@ -88,84 +88,43 @@ export async function generateCertificate(fincaId: string, puntuacion: number) {
 
   // --- COORDENADAS DE INSERCIÓN (AJUSTAR SEGÚN TU PLANTILLA) ---
 
-  // Título Dinámico
-  firstPage.drawText(
-    `CERTIFICACIÓN DE POTENCIAL AGROTURÍSTICO - NIVEL ${nivelResultado.toUpperCase()}`,
-    {
-      x: width / 2 - 250, // Intentando centrar el texto
-      y: height - 150,
-      size: smallSize,
-      color: strongColor,
-    }
-  );
-
-  // Declaración formal (Texto Fijo Explicativo)
-  firstPage.drawText(
-    'Se otorga la presente certificación, validando la aptitud de la propiedad, a:',
-    {
-      x: 100,
-      y: height - 210,
-      size: smallSize,
-      color: textColor,
-    }
-  );
+  // Fecha de Emisión (Pie del Certificado)
+  firstPage.drawText(`Emitido el ${fechaEmision}.`, {
+    x: width / 2 - 130,
+    y: height - 390,
+    size: smallSize,
+    color: textColor,
+  });
 
   // Nombre del Propietario (Énfasis)
   firstPage.drawText(propietarioNombre, {
-    x: 100,
-    y: height - 250,
+    x: 215,
+    y: height - 455,
     size: mediumSize,
-    color: strongColor,
+    color: textColor,
   });
 
   // Nombre de la Finca
-  firstPage.drawText(`Propietario de la Finca: "${nombreFinca}"`, {
-    x: 100,
-    y: height - 285,
+  firstPage.drawText(`${nombreFinca}`, {
+    x: 215,
+    y: height - 520,
     size: mediumSize,
     color: textColor,
   });
 
-  // Resultado
-  firstPage.drawText(`Resultado: APTO con Potencial Agroturístico Nivel ${nivelResultado}.`, {
-    x: 100,
-    y: height - 350,
-    size: smallSize,
-    color: strongColor,
+  // Nivel Alcanzado
+  firstPage.drawText(`Nivel Alcanzado: ${nivelResultado.toUpperCase()}`, {
+    x: 180,
+    y: height - 575,
+    size: mediumSize,
+    color: textColor,
   });
 
   // Puntuación
-  firstPage.drawText(`Puntuación Total Obtenida: ${puntuacion} puntos.`, {
-    x: 100,
-    y: height - 380,
-    size: mediumSize,
-    color: textColor,
-  });
-
-  // Explicación del Método (Requiere múltiples llamadas para saltos de línea)
-  const explicacionLinea1 = `Esta certificación se basa en el Sistema de Evaluación Ponderada de Criterios (SEPC),
-    el cual evalúa 11 parámetros críticos`;
-  const explicacionLinea2 = `(Infraestructura, Accesibilidad, Sustentabilidad, etc.)
-    que confirman la alta viabilidad del espacio para el desarrollo agroturístico sostenible.`;
-
-  firstPage.drawText(explicacionLinea1, {
-    x: 100,
-    y: height - 430,
+  firstPage.drawText(`${puntuacion} puntos.`, {
+    x: 350,
+    y: height - 618,
     size: smallSize,
-    color: textColor,
-  });
-  firstPage.drawText(explicacionLinea2, {
-    x: 100,
-    y: height - 445,
-    size: smallSize,
-    color: textColor,
-  });
-
-  // Fecha de Emisión (Pie del Certificado)
-  firstPage.drawText(`Emitido el ${fechaEmision}.`, {
-    x: width / 2 - 100,
-    y: height - 550,
-    size: mediumSize,
     color: textColor,
   });
 

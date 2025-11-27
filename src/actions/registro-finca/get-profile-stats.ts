@@ -32,11 +32,38 @@ export async function getProfileStats() {
       });
     }
 
-    // ... (Tu lógica existente para Certificaciones, última Certificación, etc.) ...
+    // Certificaciones: contamos diagnósticos que resultaron 'Apta'.
+    // Para administradores contamos en todo el sistema; para usuarios solo en sus fincas.
+    if (isAdmin) {
+      stats.certificaciones = await prisma.diagnostico.count({
+        where: {
+          resultadoFinal: 'Apta',
+        },
+      });
 
-    // Ejemplo: Certificaciones (asumiendo que es una columna en Finca o tabla separada)
-    stats.certificaciones = 0; // Coloca aquí la lógica de conteo real
-    stats.ultimaCertificacion = null; // Coloca aquí la lógica de fecha
+      const ultima = await prisma.diagnostico.findFirst({
+        where: { resultadoFinal: 'Apta' },
+        orderBy: { createdAt: 'desc' },
+        select: { createdAt: true },
+      });
+
+      stats.ultimaCertificacion = ultima?.createdAt ?? null;
+    } else {
+      stats.certificaciones = await prisma.diagnostico.count({
+        where: {
+          resultadoFinal: 'Apta',
+          finca: { userId: userId },
+        },
+      });
+
+      const ultima = await prisma.diagnostico.findFirst({
+        where: { resultadoFinal: 'Apta', finca: { userId: userId } },
+        orderBy: { createdAt: 'desc' },
+        select: { createdAt: true },
+      });
+
+      stats.ultimaCertificacion = ultima?.createdAt ?? null;
+    }
 
     stats.isAdmin = isAdmin;
 

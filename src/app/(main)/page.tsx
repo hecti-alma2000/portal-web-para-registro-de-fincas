@@ -100,14 +100,15 @@ export default function Home() {
           {/* COLUMNA 2: Logo y Enlace (Ocupa la otra mitad) */}
           <div className="flex flex-col items-center justify-center p-6 space-y-4">
             <span className="flex items-center space-x-3">
-              <Image
-                src="/icons/logo.png"
-                alt="Logo FPAT"
-                width={112}
-                height={112}
-                sizes="112px"
-                className="h-28 w-28 object-contain"
-              />
+              <div className="relative h-28 w-28 flex-shrink-0">
+                <Image
+                  src="/icons/logo.png"
+                  alt="Logo FPAT"
+                  fill // La imagen llena el contenedor padre
+                  sizes="112px"
+                  className="object-contain" // Asegura que el logo se ajuste sin cortarse
+                />
+              </div>
               <div className="flex flex-col">
                 <span className="text-black text-2xl font-bold">
                   Fincas con Potencial Agroturístico
