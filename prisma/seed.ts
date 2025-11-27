@@ -6,8 +6,15 @@ import * as bcryptjs from 'bcryptjs';
 const prisma = new PrismaClient();
 
 // Definiciones de Constantes y Credenciales del Administrador
+// Tomamos la contraseña del administrador desde una variable de entorno
+// para evitar dejar secretos en el código fuente.
 const ADMIN_EMAIL = 'lisbeteunice1008@gmail.com';
-const ADMIN_PASSWORD = 'LizEunice25*';
+if (!process.env.SEED_ADMIN_PASSWORD) {
+  throw new Error(
+    'SEED_ADMIN_PASSWORD no está definida en las variables de entorno. Por seguridad, define SEED_ADMIN_PASSWORD en tu fichero .env antes de ejecutar prisma/seed.ts'
+  );
+}
+const ADMIN_PASSWORD = process.env.SEED_ADMIN_PASSWORD;
 
 // 🔑 TIPADO CLAVE: Incluir las listas de relaciones en la plantilla de datos
 type FincaDataTemplate = {

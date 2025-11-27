@@ -166,7 +166,7 @@ export const FincaDetails = ({ finca }: Props) => {
         <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 mt-4" role="alert">
           <p className="font-bold text-yellow-800">Atención:</p>
           <p className="text-sm text-yellow-700">
-            Esta ficha está **pendiente de revisión** por el administrador.
+            Esta ficha está <b>pendiente de revisión</b> por el administrador.
           </p>
         </div>
       )}
