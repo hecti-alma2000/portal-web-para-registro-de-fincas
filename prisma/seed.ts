@@ -8,7 +8,14 @@ const prisma = new PrismaClient();
 // Definiciones de Constantes y Credenciales del Administrador
 // Tomamos la contraseña del administrador desde una variable de entorno
 // para evitar dejar secretos en el código fuente.
-const ADMIN_EMAIL = 'lisbeteunice1008@gmail.com';
+// Definiciones de Constantes y Credenciales del Administrador
+// Tomamos el email y la contraseña del administrador desde variables de entorno
+if (!process.env.SEED_ADMIN_EMAIL) {
+  throw new Error(
+    'SEED_ADMIN_EMAIL no está definida en las variables de entorno. Por seguridad, define SEED_ADMIN_EMAIL en tu fichero .env antes de ejecutar prisma/seed.ts'
+  );
+}
+const ADMIN_EMAIL: string = process.env.SEED_ADMIN_EMAIL;
 if (!process.env.SEED_ADMIN_PASSWORD) {
   throw new Error(
     'SEED_ADMIN_PASSWORD no está definida en las variables de entorno. Por seguridad, define SEED_ADMIN_PASSWORD en tu fichero .env antes de ejecutar prisma/seed.ts'
@@ -46,8 +53,7 @@ const fincasDataTemplate: FincaDataTemplate[] = [
     entidadPertenece: 'CCS “Cristino Naranjo”',
     descripcion:
       'Su actividad fundamental son los cultivos varios, aunque también desarrolla la ganadería en menor escala. Cuenta, además, con un espejo de agua con abundante vegetación acuática y crianza de peces comestibles. Igualmente realiza conservas de productos mediante una minindustria instalada en su propiedad.',
-    usoActual:
-      'Ganadería, cultivos permanentes y crías de animales domésticos, autoconsumo familiar.',
+    usoActual: 'Ganadería',
     estadoConservacion: 'Bueno',
     problematicaDetectada: 'Falta de insumos',
     tradicionesHistoria: 'Mantiene tradiciones campesinas.',
@@ -67,7 +73,7 @@ const fincasDataTemplate: FincaDataTemplate[] = [
     entidadPertenece: 'CCS “Cristino Naranjo”',
     descripcion:
       'Su actividad económica fundamental es la pecuaria, aunque también se desarrolla la crianza de cerdos. Cuenta con una base alimentaria propia para el rebaño. Constituye un loto de reserva genética en la reproducción de 18 especies exóticas, como flamencos, pavo real, cotorras, toros siboneyes, jicoteas y un cocodrilo. El sendero de la entrada principal es un jardín con plantas ornamentales, 30 árboles frutales y 25 maderables. Ha sido declarada de referencia nacional en la diversificación agropecuaria y coto genético.',
-    usoActual: 'Actividad pecuaria, autoconsumo familiar, cría de especies exóticas.',
+    usoActual: 'Ganadería',
     estadoConservacion: 'Muy bueno',
     problematicaDetectada: 'Falta de insumos',
     tradicionesHistoria:
@@ -93,7 +99,7 @@ const fincasDataTemplate: FincaDataTemplate[] = [
     entidadPertenece: 'CCS “Cristino Naranjo”',
     descripcion:
       'Su actividad fundamental es la ganadería, aunque también se producen cultivos varios, lo que abastece la minindustria La Gloria. Desarrolla la reforestación de áreas boscosas y mantiene las tradiciones campesinas asociadas a la agricultura en general.',
-    usoActual: 'Actividad pecuaria y autoconsumo familiar, minindustria de alimentos.',
+    usoActual: 'Ganadería',
     estadoConservacion: 'Bueno',
     problematicaDetectada: null,
     tradicionesHistoria: 'Mantiene las tradiciones campesinas y desarrollo de reforestación.',
@@ -111,7 +117,7 @@ const fincasDataTemplate: FincaDataTemplate[] = [
     entidadPertenece: 'CCS “Cristino Naranjo”',
     descripcion:
       'Esta finca, tercera de la familia Santiesteban, tiene como actividad fundamental la ganadería, con producción de cultivos varios que abastecen a la minindustria La Gloria. Cuenta con vegetación variada y fauna doméstica. Desarrolla la reforestación de áreas boscosas y mantiene las tradiciones campesinas en apego a las costumbres familiares.',
-    usoActual: 'Actividad pecuaria y autoconsumo familiar.',
+    usoActual: 'Ganadería',
     estadoConservacion: 'Bueno',
     problematicaDetectada: 'Falta de insumos para desarrollar la agricultura.',
     tradicionesHistoria:
@@ -130,7 +136,7 @@ const fincasDataTemplate: FincaDataTemplate[] = [
     entidadPertenece: 'CCS “Carlos Manuel de Céspedes”',
     descripcion:
       'Su actividad fundamental es cultivos varios, y su especialidad son los cítricos. Cuenta con recursos naturales y humanos de interés turístico. Su comercialización es con el turismo.',
-    usoActual: 'Cultivos varios, especialmente cítricos como el limón y autoconsumo.',
+    usoActual: 'Cultivos Varios',
     estadoConservacion: 'Bueno',
     problematicaDetectada: null,
     tradicionesHistoria: 'Especializada en cítricos, con comercialización al sector turismo.',
@@ -148,7 +154,7 @@ const fincasDataTemplate: FincaDataTemplate[] = [
     entidadPertenece: 'CCS “Raúl Pupo Morales”',
     descripcion:
       'Su actividad fundamental es cultivos varios, destacando una hectárea de limón. Llama la atención la existencia de siete palmas reales, símbolo nacional, en el paisaje de las lomas.',
-    usoActual: 'Producción de cultivos varios, especialmente limón y autoconsumo.',
+    usoActual: 'Cultivos Varios',
     estadoConservacion: 'Aceptable',
     problematicaDetectada: null,
     tradicionesHistoria: 'Presencia de siete palmas reales, símbolo nacional, en el paisaje.',
@@ -166,7 +172,7 @@ const fincasDataTemplate: FincaDataTemplate[] = [
     entidadPertenece: 'CCS “Frank País”',
     descripcion:
       'Su actividad fundamental es cultivos varios, destacando la siembra de 2 hectáreas de limón. Entre los elementos más distintivos del lugar se encuentra un riachuelo que atraviesa la propiedad.',
-    usoActual: 'Producción de cultivos varios, especialmente limón y autoconsumo.',
+    usoActual: 'Cultivos Varios',
     estadoConservacion: 'Aceptable',
     problematicaDetectada: null,
     tradicionesHistoria: 'Un riachuelo atraviesa la propiedad, ideal para actividades.',
@@ -184,8 +190,7 @@ const fincasDataTemplate: FincaDataTemplate[] = [
     entidadPertenece: 'CCS “Juan Manuel Romero”',
     descripcion:
       'Campesino ganadero con los mejores rendimientos de leche y carne. Ha transformado su finca en polígono de experimentación para la obtención de bovino adaptado al cambio climático (inseminación artificial). Cuenta con un área dedicada a cultivos varios con fertilizantes orgánicos.',
-    usoActual:
-      'Producción de cultivos varios, ganadería de alto rendimiento, experimentación genética.',
+    usoActual: 'Ganadería',
     estadoConservacion: 'Muy buena',
     problematicaDetectada: null,
     tradicionesHistoria:
@@ -204,7 +209,7 @@ const fincasDataTemplate: FincaDataTemplate[] = [
     entidadPertenece: 'CCS “Ignacio Agramonte”',
     descripcion:
       'Su actividad fundamental es la ganadería (producción de carne y leche) con cría de ganado mayor y menor. Cuenta con un rebaño ovino-caprino, tres micropresas con cría de pescados, y codornices. La infraestructura para la actividad pecuaria es buena (naves de ordeño y ceba).',
-    usoActual: 'Ganadería, cría de ganado menor, cría de peces y codornices, autoconsumo familiar.',
+    usoActual: 'Ganadería',
     estadoConservacion: 'Muy buena',
     problematicaDetectada: null,
     tradicionesHistoria: 'Responsable con el medioambiente.',
@@ -222,7 +227,7 @@ const fincasDataTemplate: FincaDataTemplate[] = [
     entidadPertenece: 'CCS “Ignacio Agramonte”',
     descripcion:
       'Su actividad fundamental es la ganadería, incluyendo ganado menor (ovino). Cuenta con dos micropresas, un pozo y un molino. Sus prácticas son mayormente ecológicas, utilizando materia orgánica como fertilizantes.',
-    usoActual: 'Ganadería (mayor y menor), autoconsumo familiar.',
+    usoActual: 'Ganadería',
     estadoConservacion: 'Muy buena',
     problematicaDetectada: null,
     tradicionesHistoria: 'Uso de molinos y micropresas, prácticas mayormente ecológicas.',
@@ -240,7 +245,7 @@ const fincasDataTemplate: FincaDataTemplate[] = [
     entidadPertenece: 'CCS “Ignacio Agramonte”',
     descripcion:
       'Su actividad fundamental es la ganadería. Cuenta con una pequeña producción de cultivos varios y producción porcina. Utiliza medios biológicos y orgánicos y su infraestructura está en buen estado.',
-    usoActual: 'Ganadería, cultivos varios y producción porcina, autoconsumo familiar.',
+    usoActual: 'Ganadería',
     estadoConservacion: 'Bueno',
     problematicaDetectada: null,
     tradicionesHistoria: 'Uso de medios biológicos y orgánicos.',
@@ -258,7 +263,7 @@ const fincasDataTemplate: FincaDataTemplate[] = [
     entidadPertenece: 'CCS “Wilfredo Peña Cabrera”',
     descripcion:
       'Su actividad fundamental es la ganadería (producción de carne y leche), aunque también tiene, en menor medida, cultivos varios. Cuenta con un sistema de riego. El río La Rioja atraviesa su propiedad, lo que constituye un atractivo.',
-    usoActual: 'Ganadería, cultivos varios, autoconsumo familiar.',
+    usoActual: 'Ganadería',
     estadoConservacion: 'Bueno',
     problematicaDetectada: 'Insumos para desarrollar la agricultura.',
     tradicionesHistoria:

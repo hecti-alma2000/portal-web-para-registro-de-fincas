@@ -16,10 +16,27 @@ export async function getAllFincas() {
   }
 }
 
-export async function getPublicFincas() {
+// Recibe un objeto de filtros opcional
+export async function getPublicFincas(filters?: {
+  tipoEntidad?: 'ESTATAL' | 'PRIVADA';
+  usoActual?: string;
+  estadoConservacion?: string;
+}) {
   try {
+    const where: any = { status: 'APPROVED' };
+    if (filters) {
+      if (filters.tipoEntidad) {
+        where.tipoPropiedad = filters.tipoEntidad;
+      }
+      if (filters.usoActual) {
+        where.usoActual = filters.usoActual;
+      }
+      if (filters.estadoConservacion) {
+        where.estadoConservacion = filters.estadoConservacion;
+      }
+    }
     const fincas = await prisma.finca.findMany({
-      where: { status: 'APPROVED' },
+      where,
       orderBy: { createdAt: 'desc' },
     });
     return fincas;
