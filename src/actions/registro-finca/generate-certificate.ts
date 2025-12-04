@@ -7,23 +7,18 @@ import fs from 'fs/promises';
 import path from 'path';
 
 /**
- * Genera un certificado PDF para una finca que ha sido declarada "Apta"
- * basándose en su puntuación final de certificación.
- * * @param fincaId El ID de la finca a certificar.
- * @param puntuacion La puntuación total obtenida en el diagnóstico.
- * @returns El certificado PDF como una cadena Base64.
+ * Genera un certificado PDF con datos dinámicos y 3 logos institucionales al pie.
  */
 export async function generateCertificate(fincaId: string, puntuacion: number) {
   const session = await auth();
 
-  // 1. Validación de Autenticación
   if (!session?.user) {
     throw new Error('User not authenticated.');
   }
 
   const numericFincaId = Number(fincaId);
 
-  // 2. Obtener datos de la Finca y el Propietario
+  // 1. Obtener datos
   const finca = await prisma.finca.findUnique({
     where: { id: numericFincaId },
     select: { nombre: true, userId: true, propietario: true },
@@ -35,10 +30,10 @@ export async function generateCertificate(fincaId: string, puntuacion: number) {
   });
 
   if (!finca || !user) {
-    throw new Error('Finca or user data not found in the database.');
+    throw new Error('Finca or user data not found.');
   }
 
-  // Preparar datos para el certificado
+  // 2. Preparar textos
   const propietarioNombre = finca.propietario || 'Propietario Desconocido';
   const nombreFinca = finca.nombre;
   const fechaEmision = new Date().toLocaleDateString('es-ES', {
@@ -47,90 +42,129 @@ export async function generateCertificate(fincaId: string, puntuacion: number) {
     day: 'numeric',
   });
 
-  // Determinar el nivel de resultado basado en la puntuación
   let nivelResultado: string;
   if (puntuacion >= 3.2) {
-    // Umbral Óptimo (~85%)
-    nivelResultado = 'Óptimo';
+    nivelResultado = 'ÓPTIMO';
   } else if (puntuacion >= 2.5) {
-    // Umbral Suficiente (~70%)
-    nivelResultado = 'Suficiente';
+    nivelResultado = 'ALTO';
   } else {
-    // Si es "Apta" pero con bajo potencial (P < 2.5)
-    nivelResultado = 'Insatisfactorio';
+    nivelResultado = 'SATISFACTORIO';
   }
 
-  // 3. Cargar la plantilla PDF
-  const templatePath = path.join(process.cwd(), 'public', 'certificate_template.pdf');
-  let pdfBytes: Uint8Array;
+  // 3. Definir rutas de archivos (Plantilla + Logos)
+  const publicDir = path.join(process.cwd(), 'public');
+  const templatePath = path.join(publicDir, 'certificate_template.pdf');
+
+  // ⚠️ Asegúrate de que estos nombres coincidan con tus archivos reales en public/icons/
+  const logo1Path = path.join(publicDir, 'icons', 'logo1.png');
+  const logo2Path = path.join(publicDir, 'icons', 'logo2.png');
+  const logo3Path = path.join(publicDir, 'icons', 'logo3.png');
+
+  // 4. Cargar todos los recursos en paralelo (Buffer)
+  let pdfBytes, logo1Bytes, logo2Bytes, logo3Bytes;
 
   try {
-    pdfBytes = await fs.readFile(templatePath);
+    [pdfBytes, logo1Bytes, logo2Bytes, logo3Bytes] = await Promise.all([
+      fs.readFile(templatePath),
+      fs.readFile(logo1Path),
+      fs.readFile(logo2Path),
+      fs.readFile(logo3Path),
+    ]);
   } catch (error) {
-    console.error('Error loading PDF template:', error);
-    // Es vital que el cliente sepa que el certificado no pudo generarse
-    throw new Error(
-      'No se pudo cargar la plantilla del certificado PDF. Contacte al administrador.'
-    );
+    console.error('Error cargando recursos (PDF o Logos):', error);
+    throw new Error('No se pudieron cargar los recursos necesarios para el certificado.');
   }
 
-  // 4. Crear y modificar el documento
+  // 5. Crear documento PDF
   const pdfDoc = await PDFDocument.load(pdfBytes);
   const pages = pdfDoc.getPages();
   const firstPage = pages[0];
-
   const { width, height } = firstPage.getSize();
-  const smallSize = 12;
-  const mediumSize = 18;
-  const largeSize = 24;
+
+  // 6. Incrustar las imágenes (Embed)
+  // Nota: Si tus logos son JPG, usa pdfDoc.embedJpg(bytes)
+  const logo1Image = await pdfDoc.embedPng(logo1Bytes);
+  const logo2Image = await pdfDoc.embedPng(logo2Bytes);
+  const logo3Image = await pdfDoc.embedPng(logo3Bytes);
+
+  // --- DIBUJAR TEXTOS ---
   const textColor = rgb(0.1, 0.1, 0.1);
-  const strongColor = rgb(0.1, 0.4, 0.2); // Verde oscuro para énfasis
 
-  // --- COORDENADAS DE INSERCIÓN (AJUSTAR SEGÚN TU PLANTILLA) ---
-
-  // Fecha de Emisión (Pie del Certificado)
+  // Fecha (Pie izquierdo o donde hayas limpiado el espacio)
   firstPage.drawText(`Emitido el ${fechaEmision}.`, {
-    x: width / 2 - 130,
-    y: height - 390,
-    size: smallSize,
+    x: 180,
+    y: height - 385,
+    size: 13,
     color: textColor,
   });
 
-  // Nombre del Propietario (Énfasis)
+  // Propietario
   firstPage.drawText(propietarioNombre, {
     x: 215,
-    y: height - 455,
-    size: mediumSize,
+    y: height - 451,
+    size: 18,
     color: textColor,
   });
 
-  // Nombre de la Finca
-  firstPage.drawText(`${nombreFinca}`, {
-    x: 215,
-    y: height - 520,
-    size: mediumSize,
+  // Finca
+  firstPage.drawText(nombreFinca, {
+    x: 240,
+    y: height - 515,
+    size: 18,
     color: textColor,
   });
 
-  // Nivel Alcanzado
-  firstPage.drawText(`Nivel Alcanzado: ${nivelResultado.toUpperCase()}`, {
-    x: 180,
-    y: height - 575,
-    size: mediumSize,
+  // Nivel (Centrado visualmente donde estaban las casillas)
+  firstPage.drawText(`Nivel Optenido: ${ nivelResultado }`, {
+    x: 200,
+    y: height - 572,
+    size: 18,
     color: textColor,
   });
 
   // Puntuación
   firstPage.drawText(`${puntuacion} puntos.`, {
     x: 350,
-    y: height - 618,
-    size: smallSize,
+    y: height - 612,
+    size: 12,
     color: textColor,
   });
 
-  // 5. Guardar y retornar el PDF
-  const pdfFinalBytes = await pdfDoc.save();
+  // --- 7. DIBUJAR LOGOS (Distribución Uniforme) ---
 
-  // Retornamos los bytes codificados en base64 para enviarlos al cliente
+
+
+
+  // --- DIBUJAR LOGOS (Pie, centrados y dentro de la página) ---
+  const logoSize = 70; // Tamaño cuadrado de cada logo
+  const gap = 100; // Espacio entre logos
+  const logoY = 150; // Altura desde el borde inferior
+  const totalLogosWidth = logoSize * 3 + gap * 2;
+  const startX = (width - totalLogosWidth) / 2;
+
+  // Logo 1 (izquierda)
+  firstPage.drawImage(logo1Image, {
+    x: startX,
+    y: logoY,
+    width: logoSize,
+    height: logoSize,
+  });
+  // Logo 2 (centro)
+  firstPage.drawImage(logo2Image, {
+    x: startX + logoSize + gap,
+    y: logoY,
+    width: logoSize,
+    height: logoSize,
+  });
+  // Logo 3 (derecha)
+  firstPage.drawImage(logo3Image, {
+    x: startX + (logoSize + gap) * 2,
+    y: logoY,
+    width: logoSize,
+    height: logoSize,
+  });
+
+  // 8. Finalizar
+  const pdfFinalBytes = await pdfDoc.save();
   return Buffer.from(pdfFinalBytes).toString('base64');
 }

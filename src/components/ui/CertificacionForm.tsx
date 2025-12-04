@@ -3,7 +3,6 @@
 import { useFormStatus } from 'react-dom';
 import React, { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
-import { getFincasByUser } from '@/actions/registro-finca/get-fincas-by-user';
 import { getAllFincas } from '@/actions/registro-finca/finca-actions';
 import { generateCertificate } from '@/actions/registro-finca/generate-certificate';
 
