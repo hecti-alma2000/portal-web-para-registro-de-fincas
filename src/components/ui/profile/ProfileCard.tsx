@@ -20,7 +20,7 @@ export function ProfileCard({ user }: ProfileCardProps) {
   };
 
   return (
-    <Card className="w-full max-w-3xl mx-auto">
+    <Card className="w-full max-w-3xl mx-auto" data-profile-session>
       <CardHeader className="flex flex-row items-center gap-4 space-y-0">
         <Avatar className="h-20 w-20">
           <AvatarImage src={user.image || ''} alt={user.name || ''} />

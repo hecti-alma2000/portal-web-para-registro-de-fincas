@@ -120,6 +120,7 @@ export default function Home() {
                   Descubre si tu finca cuenta con el potencial agroturístico
                 </Link>
               </div>
+
             </span>
           </div>
         </div>

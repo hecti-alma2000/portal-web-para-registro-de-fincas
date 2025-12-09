@@ -19,15 +19,23 @@ export default function ProfileReload() {
         return;
       }
 
+      // Solo recargar si NO hay sesión en el DOM (mejor robustez)
+      // Busca un elemento que solo aparece si hay sesión (por ejemplo, el nombre/email del usuario en el perfil)
+      // Ajusta el selector según tu ProfileCard
+      const hasSession = document.querySelector('[data-profile-session]');
+      if (hasSession) return;
+
       // Si venimos de otra ruta del mismo origen, forzamos una recarga completa.
       // Para evitar un bucle infinito, añadimos `reloaded=1` al URL antes de recargar.
       if (ref && ref.startsWith(origin)) {
         url.searchParams.set('reloaded', '1');
-        // Reemplazamos la URL actual con la versión que tiene el flag y navegamos a ella.
-        // `location.replace` hace una navegación completa y no deja la entrada anterior en el history.
         setTimeout(() => {
           location.replace(url.toString());
         }, 10);
+      }
+      // Extra: si navigation type es reload, no recargar
+      if (window.performance && window.performance.navigation && window.performance.navigation.type === 1) {
+        return;
       }
     } catch (e) {
       // No bloquear si algo falla: silencioso

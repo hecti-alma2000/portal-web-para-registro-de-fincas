@@ -151,9 +151,9 @@ export async function generateCertificate(fincaId: string, puntuacion: number) {
   });
   // Logo 2 (centro)
   firstPage.drawImage(logo2Image, {
-    x: startX + logoSize + gap,
+    x: startX + logoSize + gap - 25,
     y: logoY,
-    width: logoSize,
+    width: logoSize + 50,
     height: logoSize,
   });
   // Logo 3 (derecha)
