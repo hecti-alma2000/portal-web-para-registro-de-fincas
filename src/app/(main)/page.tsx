@@ -13,7 +13,7 @@ const HeroBanner = dynamic(() => import('../../components/HeroBanner'), {
 const LazyCarrusel = dynamic(() => import('../../components/ui/carrusel/Carrusel'), {
   ssr: false,
   loading: () => (
-    <div className="w-full h-[500px] bg-gray-200 animate-pulse flex items-center justify-center">
+    <div className="w-full h-125 bg-gray-200 animate-pulse flex items-center justify-center">
       <p>Cargando Carrusel...</p>
     </div>
   ),
@@ -63,7 +63,7 @@ export default function Home() {
   return (
     <main className="flex flex-col items-center overflow-x-hidden">
       <HeroBanner />
-      <div className="w-full max-w-screen-xl px-4 mx-auto md:px-8 lg:px-12">
+      <div className="w-full max-w-7xl px-4 mx-auto md:px-8 lg:px-12">
         <h1 className="mb-6 mt-5 text-center text-3xl font-bold">
           Gestiona y explora fincas de Agroturismo
         </h1>
@@ -100,7 +100,7 @@ export default function Home() {
           {/* COLUMNA 2: Logo y Enlace (Ocupa la otra mitad) */}
           <div className="flex flex-col items-center justify-center p-6 space-y-4">
             <span className="flex items-center space-x-3">
-              <div className="relative h-28 w-28 flex-shrink-0">
+              <div className="relative h-28 w-28 shrink-0">
                 <Image
                   src="/icons/logo.png"
                   alt="Logo FPAT"
@@ -120,7 +120,6 @@ export default function Home() {
                   Descubre si tu finca cuenta con el potencial agroturístico
                 </Link>
               </div>
-
             </span>
           </div>
         </div>
