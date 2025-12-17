@@ -17,13 +17,11 @@ interface N8nChatConfig {
   subtitle: string;
   defaultOpen: boolean;
 }
-
 declare global {
   interface Window {
     createChat?: (config: N8nChatConfig) => void;
   }
 }
-
 // ---------------------------------------------
 
 export default function ChatWidget() {
@@ -67,9 +65,6 @@ export default function ChatWidget() {
         subtitle: '¿En qué puedo ayudarte?',
         defaultOpen: false,
       });
-    } else {
-      // FALLO: El botón estático permanece, y al hacer clic abrirá el modal de error.
-      console.error('n8n chat library not found after load. Using fallback modal.');
     }
   };
 
@@ -92,7 +87,7 @@ export default function ChatWidget() {
         <button
           // 🔑 Cambiamos el <a> por un <button> y le asignamos el manejador interno
           onClick={handleFallbackClick}
-          className="fixed bottom-6 right-6 z-[9999] p-4 bg-green-500 text-white rounded-full shadow-lg hover:bg-green-600 transition-colors"
+          className="fixed bottom-6 right-6 z-9999 p-4 bg-green-500 text-white rounded-full shadow-lg hover:bg-green-600 transition-colors"
           title="Abrir Chat"
         >
           <MessageSquare size={28} />
@@ -105,7 +100,7 @@ export default function ChatWidget() {
       {/* 3. Modal de Error Interno (Aparece al hacer clic en el botón de fallback) */}
       {isFallbackChatOpen && (
         <div
-          className="fixed inset-0 z-[9998] flex items-end justify-end p-4 pointer-events-none"
+          className="fixed inset-0 z-9998 flex items-end justify-end p-4 pointer-events-none"
           // Backdrop para cerrar el chat al hacer clic fuera (opcional)
         >
           {/* 🔑 La ventana del chat de error */}
@@ -122,7 +117,7 @@ export default function ChatWidget() {
             </div>
 
             {/* Cuerpo del Mensaje de Error */}
-            <div className="flex-grow p-4 text-center flex flex-col justify-center items-center">
+            <div className="grow p-4 text-center flex flex-col justify-center items-center">
               <p className="text-xl text-red-600 font-bold mb-4">❌ Error de Conexión ❌</p>
               <p className="text-gray-700 leading-relaxed">
                 El servicio automático de chat (n8n) no está disponible en este momento.
