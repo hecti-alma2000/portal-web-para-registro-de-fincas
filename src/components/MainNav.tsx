@@ -72,7 +72,7 @@ export default function MainNav() {
         <div className="w-full">
           <div className="flex justify-between items-center h-16 m-0 p-0">
             {/* Logo */}
-            <div className="flex-shrink-0 flex items-center gap-2">
+            <div className="shrink-0 flex items-center gap-2">
               <Link href="/">
                 <span className="flex items-center ">
                   <img src="/icons/logo.png" alt="Logo" className="h-18 w-18" loading="lazy" />
