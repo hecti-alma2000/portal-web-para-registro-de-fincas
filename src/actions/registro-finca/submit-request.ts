@@ -1,33 +1,33 @@
 'use server';
+
 import prisma from '@/lib/prisma';
 import { auth } from '@/auth.config';
-import { RequestStatus } from '@prisma/client'; // 🔑 IMPORTANTE: Usar el enum de Prisma
+import { RequestStatus } from '@prisma/client';
+import { Resend } from 'resend'; // 1. Importar Resend
+import { AdminAlertEmail } from '@/components/emails/AdminAlertEmail'; // 2. Importar tu template
 
-// --- Tipos de Datos (Deben coincidir con los del formulario) ---
+// Inicializar Resend
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+// --- Tipos de Datos ---
 export type FincaFormData = {
   nombre: string;
   localizacion: string;
   propietario: string;
-
-  // Campos opcionales String? (Prisma: String | Null)
   descripcion?: string | null;
   fotoUrl?: string | null;
   tipoPropiedad: 'ESTATAL' | 'PRIVADA';
-
   entidadPertenece?: string | null;
   usoActual?: string | null;
   estadoConservacion?: string | null;
   problematicaDetectada?: string | null;
   tradicionesHistoria?: string | null;
-
-  // Listas (Relaciones One-to-Many)
   elementosInteres: string[];
   actividadesAgroturisticas: string[];
   principiosSustentabilidad: string[];
   accionesAmbientales: string[];
 };
 
-// El parámetro de la función incluye el ID opcional para la edición
 export async function submitFincaRequest(data: FincaFormData, fincaId?: number) {
   const session = await auth();
   if (!session?.user) return { ok: false, message: 'No autenticado' };
@@ -39,14 +39,12 @@ export async function submitFincaRequest(data: FincaFormData, fincaId?: number) 
     let newStatus: RequestStatus;
 
     if (user.role === 'admin') {
-      // Si es admin, se aprueba directamente
       newStatus = RequestStatus.APPROVED;
     } else {
-      // Si es usuario normal, se requiere aprobación (PENDING)
       newStatus = RequestStatus.PENDING;
     }
 
-    // 2. Base de datos para la creación/actualización
+    // 2. Preparar datos base
     const baseData = {
       nombre: data.nombre,
       localizacion: data.localizacion,
@@ -54,7 +52,6 @@ export async function submitFincaRequest(data: FincaFormData, fincaId?: number) 
       descripcion: data.descripcion,
       fotoUrl: data.fotoUrl,
       tipoPropiedad: data.tipoPropiedad,
-      // 🔑 CORRECCIÓN CLAVE: Usamos el enum de Prisma
       status: newStatus,
       entidadPertenece: data.entidadPertenece,
       usoActual: data.usoActual,
@@ -65,18 +62,15 @@ export async function submitFincaRequest(data: FincaFormData, fincaId?: number) 
 
     let finca;
 
-    // 3. CREACIÓN vs. ACTUALIZACIÓN
+    // 3. OPERACIÓN DE BASE DE DATOS (Crear o Actualizar)
     if (fincaId) {
-      // --- A. ACTUALIZACIÓN (Edición) ---
-
+      // --- ACTUALIZACIÓN ---
       finca = await prisma.finca.update({
         where: { id: fincaId },
         data: {
           ...baseData,
-          // Si el usuario NO es admin, forzamos PENDING para la revisión
+          // Si no es admin, vuelve a PENDING al editar
           status: user.role === 'admin' ? baseData.status : RequestStatus.PENDING,
-
-          // Actualización de relaciones (eliminar todos y crear nuevos)
           elementosInteres: {
             deleteMany: {},
             create: data.elementosInteres.map((nombre) => ({ nombre })),
@@ -96,12 +90,11 @@ export async function submitFincaRequest(data: FincaFormData, fincaId?: number) 
         },
       });
     } else {
-      // --- B. CREACIÓN (Nuevo Registro) ---
+      // --- CREACIÓN ---
       finca = await prisma.finca.create({
         data: {
           ...baseData,
           user: { connect: { id: user.id } },
-          // Creación de relaciones
           elementosInteres: {
             create: data.elementosInteres.map((nombre) => ({ nombre })),
           },
@@ -118,13 +111,52 @@ export async function submitFincaRequest(data: FincaFormData, fincaId?: number) 
       });
     }
 
+    // 4. LÓGICA DE NOTIFICACIÓN POR CORREO (Solo si quedó PENDING)
+    // Esto significa que un usuario normal hizo la petición y los admins deben saberlo.
+    if (finca.status === RequestStatus.PENDING) {
+      try {
+        // A. Buscar los emails de todos los admins
+        const admins = await prisma.user.findMany({
+          where: { role: 'admin' },
+          select: { email: true },
+        });
+
+        // Filtrar nulos y obtener array de strings
+        const adminEmails = admins.map((a) => a.email).filter(Boolean) as string[];
+
+        // B. Enviar correo si hay admins
+        if (adminEmails.length > 0) {
+          const { error } = await resend.emails.send({
+            from: process.env.EMAIL_FROM || 'onboarding@resend.dev',
+            to: adminEmails,
+            subject: fincaId
+              ? `Actualización de Finca Pendiente: ${finca.nombre}`
+              : `Nueva Solicitud de Finca: ${finca.nombre}`,
+            react: AdminAlertEmail({
+              nombreFinca: finca.nombre,
+              nombrePropietario: user.name || 'Usuario', // Nombre del usuario que hace la petición
+              fincaId: finca.id,
+            }),
+          });
+
+          if (error) {
+            console.error('Error enviando email a admins:', error);
+            // No hacemos throw para no cancelar el registro de la finca, solo logueamos.
+          }
+        }
+      } catch (emailError) {
+        console.error('Error en el bloque de notificación:', emailError);
+      }
+    }
+
+    // 5. Retornar respuesta exitosa
     return {
       ok: true,
       data: finca,
       isPending: finca.status === RequestStatus.PENDING,
     };
   } catch (error) {
-    console.error('submitFincaRequest error (Create/Update): ', error);
+    console.error('submitFincaRequest error: ', error);
     return { ok: false, message: 'Error al procesar la solicitud de la finca.' };
   }
 }

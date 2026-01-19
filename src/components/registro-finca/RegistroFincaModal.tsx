@@ -11,17 +11,17 @@ export default function RegistroFincaModal() {
 
   if (!isOpen) return null;
 
-  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === e.currentTarget) {
-      close();
-      setFincaToEdit(null);
-    }
-  };
+  // const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
+  //   if (e.target === e.currentTarget) {
+  //     close();
+  //     setFincaToEdit(null);
+  //   }
+  // };
 
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/10"
-      onClick={handleBackdropClick}
+      // onClick={handleBackdropClick}
     >
       <div
         className="bg-white rounded-lg shadow-lg p-8 w-full max-w-4xl h-[90vh] flex flex-col relative"

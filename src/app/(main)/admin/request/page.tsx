@@ -39,22 +39,19 @@ export default async function AdminRequestsPage() {
             <h2 className="text-lg font-semibold">{f.nombre}</h2>
             <p className="text-sm text-muted-foreground">Ubicación: {f.localizacion}</p>
             <p className="text-sm text-muted-foreground">Propietario: {f.propietario}</p>
-
             <div className="mt-3 flex gap-2">
-              <form action={handleApprove} method="post">
+              <form action={handleApprove}>
                 <input type="hidden" name="id" value={String(f.id)} />
                 <button type="submit" className="btn-primary">
                   Aprobar
                 </button>
               </form>
-
-              <form action={handleReject} method="post">
+              <form action={handleReject}>
                 <input type="hidden" name="id" value={String(f.id)} />
                 <button type="submit" className="btn-disable">
                   Denegar
                 </button>
               </form>
-
               <Link href={`/fincas/${f.id}`} className="btn-secondary">
                 Ver detalles
               </Link>

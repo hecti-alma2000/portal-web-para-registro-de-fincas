@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { registerUser } from '@/actions/auth/register';
 import { login } from '@/actions/auth/login';
+import { Eye, EyeOff } from 'lucide-react';
 
 type FormInputs = {
   name: string;
@@ -13,6 +14,7 @@ type FormInputs = {
 
 export const RegisterForm = () => {
   const [errorMessage, setErrorMessage] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const {
     register,
     handleSubmit,
@@ -58,22 +60,36 @@ export const RegisterForm = () => {
         {errors.email && <span className="text-red-500 text-sm mb-5">{errors.email.message}</span>}
 
         <label htmlFor="password">Contraseña</label>
-        <input
-          className="px-5 py-2 border bg-gray-200 rounded mb-1"
-          type="password"
-          {...register('password', {
-            required: 'La contraseña es obligatoria',
-            minLength: {
-              value: 6,
-              message: 'La contraseña debe tener al menos 6 caracteres',
-            },
-            pattern: {
-              value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{6,}$/,
-              message:
-                'La contraseña debe contener al menos: una mayúscula, una minúscula y un número',
-            },
-          })}
-        />
+        <div className="relative">
+          <input
+            className="px-5 py-2 border bg-gray-200 rounded mb-1 pr-12"
+            type={showPassword ? 'text' : 'password'}
+            {...register('password', {
+              required: 'La contraseña es obligatoria',
+              minLength: {
+                value: 6,
+                message: 'La contraseña debe tener al menos 6 caracteres',
+              },
+              pattern: {
+                value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{6,}$/,
+                message:
+                  'La contraseña debe contener al menos: una mayúscula, una minúscula y un número',
+              },
+            })}
+          />
+          <button
+            type="button"
+            aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+            className="absolute right-3 top-0 bottom-0 m-auto h-9 w-9 flex items-center justify-center text-gray-600 bg-transparent border-0"
+            onMouseDown={() => setShowPassword(true)}
+            onMouseUp={() => setShowPassword(false)}
+            onMouseLeave={() => setShowPassword(false)}
+            onTouchStart={() => setShowPassword(true)}
+            onTouchEnd={() => setShowPassword(false)}
+          >
+            {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+          </button>
+        </div>
         {errors.password && (
           <span className="text-red-500 text-sm mb-5">{errors.password.message}</span>
         )}

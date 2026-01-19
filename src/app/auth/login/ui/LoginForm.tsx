@@ -5,11 +5,12 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useActionState, useEffect } from 'react';
 import { useFormStatus } from 'react-dom';
-import { OctagonAlert } from 'lucide-react';
+import { OctagonAlert, Eye, EyeOff } from 'lucide-react';
 
 export const LoginForm = () => {
   const router = useRouter();
   const [state, dispatch] = useActionState(authenticate, undefined);
+  const [showPassword, setShowPassword] = React.useState(false);
   useEffect(() => {
     if (state === 'Success') {
       // router.replace("/");
@@ -22,11 +23,25 @@ export const LoginForm = () => {
       <label htmlFor="email">Correo electrónico</label>
       <input className="px-5 py-2 border bg-gray-200 rounded mb-5" type="email" name="email" />
       <label htmlFor="email">Contraseña</label>
-      <input
-        className="px-5 py-2 border bg-gray-200 rounded mb-5"
-        type="password"
-        name="password"
-      />
+      <div className="relative">
+        <input
+          className="px-5 py-2 border bg-gray-200 rounded mb-1 pr-12 w-full"
+          type={showPassword ? 'text' : 'password'}
+          name="password"
+        />
+        <button
+          type="button"
+          aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+          className="absolute right-3 top-0 bottom-0 m-auto h-9 w-9 flex items-center justify-center text-gray-600 bg-transparent border-0"
+          onMouseDown={() => setShowPassword(true)}
+          onMouseUp={() => setShowPassword(false)}
+          onMouseLeave={() => setShowPassword(false)}
+          onTouchStart={() => setShowPassword(true)}
+          onTouchEnd={() => setShowPassword(false)}
+        >
+          {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+        </button>
+      </div>
       <div className="flex h-8 items-end space-x-1" aria-live="polite" aria-atomic="true">
         {state === 'CredentialsSignin' && (
           <div className="mb-2 flex flex-row">
