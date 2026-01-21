@@ -145,7 +145,7 @@ export const FincaDetails = ({ finca }: Props) => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 text-black dark:text-white">
       {/* Volver y Encabezado */}
       <span
         onClick={handleBack}
@@ -240,20 +240,22 @@ export const FincaDetails = ({ finca }: Props) => {
       {/* --- Sección de Descripción y Características --- */}
       <div className="mt-12 space-y-10">
         {/* Descripción Detallada */}
-        <div className="bg-white p-6 rounded-xl shadow-lg">
+        <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-lg">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Descripción y Detalle</h2>
-          <p className="text-gray-700 leading-relaxed whitespace-pre-line">
+          <p className="text-gray-700 dark:text-gray-200 leading-relaxed whitespace-pre-line">
             {finca.descripcion || 'No se proporcionó una descripción detallada.'}
           </p>
         </div>
 
         {/* Tradiciones y Problemática (si existen) */}
         {(finca.tradicionesHistoria || finca.problematicaDetectada) && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-white p-6 rounded-xl shadow-lg">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-white dark:bg-slate-800 p-6 rounded-xl shadow-lg">
             {finca.tradicionesHistoria && (
               <div>
-                <h3 className="text-xl font-bold text-gray-800 pt-4">Tradiciones e Historia</h3>
-                <p className="text-gray-600 leading-relaxed italic mt-2">
+                <h3 className="text-xl font-bold text-gray-800 dark:text-white pt-4">
+                  Tradiciones e Historia
+                </h3>
+                <p className="text-gray-600 dark:text-gray-300 leading-relaxed italic mt-2">
                   {finca.tradicionesHistoria}
                 </p>
               </div>
@@ -263,7 +265,7 @@ export const FincaDetails = ({ finca }: Props) => {
                 <h3 className="text-xl font-bold text-red-700 pt-4 flex items-center">
                   <span className="mr-2">⚠️</span> Problemática Detectada
                 </h3>
-                <p className="text-red-800 leading-relaxed bg-red-50 p-3 rounded mt-2">
+                <p className="text-red-800 leading-relaxed bg-red-50 dark:bg-red-900/40 p-3 rounded mt-2">
                   {finca.problematicaDetectada}
                 </p>
               </div>
@@ -272,7 +274,7 @@ export const FincaDetails = ({ finca }: Props) => {
         )}
 
         {/* 🔑 Listas Dinámicas (Tags) */}
-        <div className="bg-white p-6 rounded-xl shadow-lg space-y-6">
+        <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-lg space-y-6">
           {renderTagList('Elementos de Interés', finca.elementosInteres)}
           {renderTagList('Actividades Agroturísticas', finca.actividadesAgroturisticas)}
           {renderTagList('Principios de Sustentabilidad', finca.principiosSustentabilidad)}

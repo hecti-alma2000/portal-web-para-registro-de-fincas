@@ -7,7 +7,13 @@ export function Card({
   className?: string;
   children?: React.ReactNode;
 }) {
-  return <div className={`bg-white rounded-xl shadow p-6 ${className}`}>{children}</div>;
+  return (
+    <div
+      className={`bg-white dark:bg-slate-900 text-black dark:text-white rounded-xl shadow p-6 ${className}`}
+    >
+      {children}
+    </div>
+  );
 }
 
 export function CardHeader({

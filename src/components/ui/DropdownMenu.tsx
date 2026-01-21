@@ -91,17 +91,17 @@ export const DropdownMenu = () => {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="inline-flex justify-center items-center w-full rounded-md px-3 py-1 text-sm font-medium text-black transition-all hover:bg-gray-100 focus:outline-none"
+        className="inline-flex justify-center items-center w-full rounded-md px-3 py-1 text-sm font-medium text-black dark:text-white transition-all hover:bg-gray-100 dark:hover:bg-slate-800 focus:outline-none"
         aria-expanded={isOpen}
         aria-haspopup="true"
       >
-        <User className="h-6 w-6 text-black" />
+        <User className=" h-6 w-6  text-black dark:text-white " />
         <ChevronDownIcon isOpen={isOpen} />
       </button>
 
       {/* Menú Desplegable */}
       {isOpen && (
-        <div className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-30 border border-gray-100">
+        <div className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white  dark:bg-slate-800 ring-1 ring-black dark:ring-white ring-opacity-5 z-30 border border-gray-100 dark:border-gray-700">
           <div
             className="py-1"
             role="menu"
@@ -110,7 +110,7 @@ export const DropdownMenu = () => {
           >
             {/* Si está autenticado, muestra el nombre o correo del usuario */}
             {isAuthenticated && (
-              <div className="block px-4 py-2 text-sm text-gray-900 border-b mb-1 font-semibold truncate">
+              <div className="block px-4 py-2 text-sm text-gray-900 dark:text-white border-b mb-1 font-semibold truncate">
                 {session?.user?.name || session?.user?.email}
               </div>
             )}
@@ -118,7 +118,7 @@ export const DropdownMenu = () => {
             {menuOptions.map((option) => {
               const Content = (
                 <span
-                  className="flex items-center w-full px-4 py-2 text-sm text-gray-700 transition-all hover:bg-indigo-500 hover:text-white cursor-pointer"
+                  className="flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 transition-all hover:bg-indigo-500 dark:hover:bg-indigo-600 hover:text-white cursor-pointer"
                   role="menuitem"
                 >
                   <option.icon className="h-4 w-4 mr-3" />

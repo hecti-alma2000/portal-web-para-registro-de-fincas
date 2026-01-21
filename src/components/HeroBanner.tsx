@@ -110,7 +110,7 @@ export default function HeroBanner() {
         </h1>
         {/* Buscador funcional */}
         <form
-          className="bg-white/90 rounded-lg shadow flex flex-row items-center gap-2 px-4 py-3 w-full max-w-2xl mt-2 justify-center"
+          className="bg-white/90 dark:bg-slate-800/80 rounded-lg shadow flex flex-row items-center gap-2 px-4 py-3 w-full max-w-2xl mt-2 justify-center"
           onSubmit={handleBuscar}
           style={{ position: 'relative' }}
           autoComplete="off"
@@ -123,7 +123,7 @@ export default function HeroBanner() {
               value={nombre}
               onChange={handleInputChange}
               onFocus={() => nombre && sugerencias.length > 0 && setDropdownVisible(true)}
-              className="border border-gray-300 rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-green-400 text-left pr-10"
+              className="border border-gray-300 dark:border-gray-700 dark:bg-slate-900 dark:text-white rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-green-400 text-left pr-10"
               style={{ minWidth: '200px', maxWidth: '100%' }}
             />
             {/* Botón limpiar dentro del input */}
@@ -151,7 +151,7 @@ export default function HeroBanner() {
             {dropdownVisible && sugerencias.length > 0 && (
               <ul
                 id="dropdown-finca-busqueda"
-                className="absolute left-0 top-full mt-1 w-full bg-white border border-gray-200 rounded shadow-lg z-30 animate-fade-in"
+                className="absolute left-0 top-full mt-1 w-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded shadow-lg z-30 animate-fade-in"
                 style={{
                   maxHeight: '220px', // Menor altura para asegurar que no salga del HeroBanner
                   overflowY: 'auto',
@@ -162,7 +162,7 @@ export default function HeroBanner() {
                 {sugerencias.map((f, idx) => (
                   <li
                     key={f.id}
-                    className="px-4 py-2 cursor-pointer hover:bg-green-100 text-gray-800 flex flex-col"
+                    className="px-4 py-2 cursor-pointer hover:bg-green-100 dark:hover:bg-green-900 text-gray-800 dark:text-white flex flex-col"
                     onClick={() => handleSelectFinca(f)}
                   >
                     <span className="font-semibold text-green-700">{f.nombre}</span>
@@ -175,7 +175,7 @@ export default function HeroBanner() {
             {dropdownVisible && sugerencias.length === 0 && nombre && (
               <div
                 id="dropdown-finca-busqueda"
-                className="absolute left-0 top-full mt-1 w-full bg-white border border-gray-200 rounded shadow-lg z-30 px-4 py-2 text-gray-500 animate-fade-in"
+                className="absolute left-0 top-full mt-1 w-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded shadow-lg z-30 px-4 py-2 text-gray-500 dark:text-gray-300 animate-fade-in"
               >
                 No hay coincidencias
               </div>
@@ -206,7 +206,7 @@ export default function HeroBanner() {
         {/* Modal para mostrar el resultado de la búsqueda */}
         {showModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-            <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-0 relative animate-fade-in border border-green-200">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-lg w-full p-0 relative animate-fade-in border border-green-200 dark:border-green-700 text-black dark:text-white">
               <button
                 className="absolute top-3 right-3 text-gray-400 hover:text-red-500 bg-gray-100 rounded-full p-1 shadow"
                 onClick={() => setShowModal(false)}

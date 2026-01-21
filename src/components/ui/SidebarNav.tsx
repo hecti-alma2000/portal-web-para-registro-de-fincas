@@ -36,7 +36,7 @@ export const SidebarNav: React.FC = () => {
             <Link
               href={`#${section.id}`} // Enlace de ancla
               // Estilos para el estado inactivo, con hover para resaltar
-              className="text-gray-600 text-sm hover:text-green-600 transition duration-150 pl-3 border-l-2 border-transparent hover:border-green-600"
+              className="text-sm hover:text-green-600 transition duration-150 pl-3 border-l-2 border-transparent hover:border-green-600 prose dark:prose-invert"
             >
               {section.title}
             </Link>

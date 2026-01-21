@@ -2,6 +2,7 @@
 
 import './globals.css';
 import { Providers } from '@/components/providers/Providers';
+import { Providers as ThemeProviders } from '@/components/Providers';
 // Client ScrollReveal component (client component - can be statically imported)
 import ScrollReveal from '@/components/ScrollReveal';
 import { auth } from '@/auth.config';
@@ -23,7 +24,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         {/* 2. Pasar la sesión al componente Providers */}
         <Providers session={session}>
           <ScrollReveal />
-          {children}
+          <ThemeProviders>{children}</ThemeProviders>
         </Providers>
       </body>
     </html>

@@ -15,7 +15,7 @@ export const ContentSection = ({ id, title, children }: ContentSectionProps) => 
     // en la navegación de anclas, compensando una posible barra de navegación fija.
     <section id={id} className="pt-8 scroll-mt-24 border-b pb-10">
       {/* Título de la Sección - Fuente legible y prominente */}
-      <h2 className="text-3xl font-bold text-gray-800 mt-6 mb-6">{title}</h2>
+      <h2 className="text-3xl font-bold mt-6 mb-6 prose dark:prose-invert">{title}</h2>
 
       {/* Contenido dinámico (párrafos, imágenes, etc.) */}
       <div className="space-y-6">{children}</div>

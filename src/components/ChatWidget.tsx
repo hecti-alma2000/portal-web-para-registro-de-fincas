@@ -104,7 +104,7 @@ export default function ChatWidget() {
           // Backdrop para cerrar el chat al hacer clic fuera (opcional)
         >
           {/* 🔑 La ventana del chat de error */}
-          <div className="bg-white rounded-lg shadow-2xl w-full max-w-sm h-96 flex flex-col pointer-events-auto">
+          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-2xl w-full max-w-sm h-96 flex flex-col pointer-events-auto text-black dark:text-white prose dark:prose-invert">
             {/* Header (Estilo WhatsApp) */}
             <div className="bg-green-600 text-white p-4 rounded-t-lg flex justify-between items-center">
               <h3 className="text-lg font-semibold">ChatBot Fincas</h3>

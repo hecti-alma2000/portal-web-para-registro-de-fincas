@@ -17,16 +17,16 @@ interface Props {
 export const Divider = ({ dividerTitle }: Props) => {
   return (
     <span className="flex items-center">
-      <span className="h-px flex-1 bg-gradient-to-r from-transparent via-green-500 to-green-500"></span>
+      <span className="h-px flex-1 bg-lineal-to-r from-transparent via-green-500 to-green-500"></span>
 
-      <span className="shrink-0 px-4 text-gray-900 text-2xl font-bold flex items-center">
+      <span className="shrink-0 px-4 text-2xl font-bold flex items-center prose dark:prose-invert">
         {/* Aquí renderizamos el componente LazyLeaf */}
         <LazyLeaf className="text-green-600 mr-2 text-xl" />
         {/* Ajusta el color y tamaño */}
         {dividerTitle}
       </span>
 
-      <span className="h-px flex-1 bg-gradient-to-l from-transparent via-green-500 to-green-500"></span>
+      <span className="h-px flex-1 bg-lineal-to-l from-transparent via-green-500 to-green-500"></span>
     </span>
   );
 };

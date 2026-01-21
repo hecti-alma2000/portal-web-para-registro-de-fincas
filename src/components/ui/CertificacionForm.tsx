@@ -194,7 +194,7 @@ export const CertificacionForm = ({ role }: CertificacionFormProps) => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-6 max-w-4xl mx-auto p-8 bg-gray-50 rounded-xl shadow-2xl"
+      className="space-y-6 max-w-4xl mx-auto p-8 bg-gray-50 dark:bg-slate-900 text-black dark:text-white rounded-xl shadow-2xl"
     >
       <div className="flex items-center justify-between flex-col sm:flex-row">
         <p className="text-green-500 text-lg mb-6 border-b pb-4 text-center">

@@ -10,7 +10,7 @@ interface Props {
 
 export const FincaGridItem = ({ finca }: Props) => {
   return (
-    <div className="overflow-hidden rounded-lg shadow-xl transition-transform duration-300 hover:scale-[1.03] hover:shadow-2xl bg-white">
+    <div className="overflow-hidden rounded-lg shadow-xl transition-transform duration-300 hover:scale-[1.03] hover:shadow-2xl bg-white dark:bg-slate-800 text-black dark:text-white">
       <Link href={`/fincas/${finca.id}`} className="contents">
         {/* Sección de la Imagen */}
         <div className="relative w-full h-56 md:h-72">
@@ -35,10 +35,14 @@ export const FincaGridItem = ({ finca }: Props) => {
         <div className="p-4 flex flex-col justify-between h-auto">
           <div className="flex-grow">
             {/* Nombre */}
-            <h3 className="text-xl font-bold text-gray-800 line-clamp-2">{finca.nombre}</h3>
+            <h3 className="text-xl font-bold text-gray-800 dark:text-white line-clamp-2">
+              {finca.nombre}
+            </h3>
 
             {/* Localización */}
-            <p className="mt-1 text-sm text-gray-500 line-clamp-1">📍 {finca.localizacion}</p>
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-300 line-clamp-1">
+              📍 {finca.localizacion}
+            </p>
           </div>
 
           {/* Tipo de Propiedad (Badge) */}
