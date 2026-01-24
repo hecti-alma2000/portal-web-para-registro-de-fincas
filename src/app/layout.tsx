@@ -1,7 +1,7 @@
 // src/app/layout.tsx (Modificado)
 
 import './globals.css';
-import { Providers } from '@/components/providers/Providers';
+import { Providers as SessionProviders } from '@/components/providers/Providers';
 import { Providers as ThemeProviders } from '@/components/Providers';
 // Client ScrollReveal component (client component - can be statically imported)
 import ScrollReveal from '@/components/ScrollReveal';
@@ -18,14 +18,20 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const session = await auth();
 
   return (
-    <html lang="es">
+    <html lang="es" suppressHydrationWarning>
       <head />
       <body>
-        {/* 2. Pasar la sesión al componente Providers */}
-        <Providers session={session}>
-          <ScrollReveal />
-          <ThemeProviders>{children}</ThemeProviders>
-        </Providers>
+        <ThemeProviders
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <SessionProviders session={session}>
+            <ScrollReveal />
+            {children}
+          </SessionProviders>
+        </ThemeProviders>
       </body>
     </html>
   );

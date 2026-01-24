@@ -3,10 +3,9 @@
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 
-export function ThemeToggle() {
+export const ThemeToggle = () => {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  // Evita errores de hidratación esperando a que el componente monte
   useEffect(() => setMounted(true), []);
   if (!mounted) return null;
   return (
@@ -17,4 +16,4 @@ export function ThemeToggle() {
       {theme === 'dark' ? '☀️' : '🌙'}
     </button>
   );
-}
+};

@@ -8,7 +8,7 @@ export default function MainLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <main className="min-h-screen ">
+    <main className="min-h-screen">
       <MainNav />
       <ChatWidget />
       {children}

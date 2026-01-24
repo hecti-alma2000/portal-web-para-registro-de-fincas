@@ -1,7 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
 @import 'tailwindcss';
 
+/* AGREGAR ESTO: Define que el modo oscuro se activa con la clase .dark */
+@variant dark (&:where(.dark, .dark *));
+
 @plugin "tailwindcss-animate";
+/* Tu plugin de typography también se puede importar aquí en v4 si lo deseas */
+/* @plugin "@tailwindcss/typography"; */
 
 @theme {
   --font-sans: var(--font-geist-sans);
@@ -11,13 +16,14 @@
 body {
   font-family: 'Roboto';
   background-image: url('/imgs_bg/gb_image.webp');
-  /* La propiedad clave para fijar el fondo */
   background-attachment: fixed;
-  /* Opcional pero recomendado: asegura que la imagen cubra toda la pantalla y no se repita */
   background-repeat: no-repeat;
   background-size: cover;
+  /* Aseguramos color de texto base que responda al tema */
+  @apply text-zinc-900 dark:text-zinc-100;
 }
-.dark body {
+
+[class~='dark'] body {
   background-image: url('/imgs_bg/gb_black_image.webp');
 }
 
