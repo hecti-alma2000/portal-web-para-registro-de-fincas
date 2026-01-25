@@ -1,8 +1,7 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react'; // Añadido useMemo
 import { MapContainer, TileLayer, Polyline, Marker } from 'react-leaflet';
 import { usePositionsStore } from '@/store/map/positions.store';
-import type { Positions } from '@/store/map/positions.store';
 import { SearchBar } from '@/components/search-bar/SearchBar';
 import { divIcon } from 'leaflet';
 import { MapFlyTo } from '@/utiles/MapFlyTo';
@@ -11,13 +10,10 @@ import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { MarkerTrails } from '../marker-trails';
 
-// --- Funciones de Utilidad Fuera del Componente ---
-
+// --- Funciones de Utilidad ---
 const calculateRouteDistance = (positions: [number, number][]): number => {
   let totalDistance = 0;
-  if (positions.length < 2) {
-    return 0;
-  }
+  if (positions.length < 2) return 0;
   for (let i = 0; i < positions.length - 1; i++) {
     const p1 = L.latLng(positions[i][0], positions[i][1]);
     const p2 = L.latLng(positions[i + 1][0], positions[i + 1][1]);
@@ -30,198 +26,164 @@ const formatMinutesToHoursAndMinutes = (minutes: number): string => {
   const totalMinutes = Math.round(minutes);
   const hours = Math.floor(totalMinutes / 60);
   const remainingMinutes = totalMinutes % 60;
-
-  if (hours > 0 && remainingMinutes > 0) {
-    return `${hours}h ${remainingMinutes}min`;
-  } else if (hours > 0) {
-    return `${hours}h`;
-  } else {
-    if (totalMinutes === 0) return 'Menos de 1 min';
-    return `${totalMinutes}min`;
-  }
+  if (hours > 0) return `${hours}h ${remainingMinutes > 0 ? remainingMinutes + 'min' : ''}`;
+  return totalMinutes === 0 ? 'Menos de 1 min' : `${totalMinutes}min`;
 };
 
-// --- Componente Principal ---
-
 export const LocationMap = () => {
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  // 1. Lógica de detección de tema mejorada
+  useEffect(() => {
+    const getDarkStatus = () => {
+      if (typeof document === 'undefined') return false;
+
+      // Prioridad 1: Clase en el HTML (estándar de Tailwind/Next-themes)
+      const hasHtmlClass = document.documentElement.classList.contains('dark');
+      // Prioridad 2: LocalStorage
+      const ls = window.localStorage.getItem('theme');
+      if (ls === 'dark') return true;
+      if (ls === 'light') return false;
+
+      // Prioridad 3: Preferencia del sistema
+      return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    };
+
+    // Ajuste inicial
+    setIsDarkMode(getDarkStatus());
+
+    // Observador para cambios de clase en el HTML (cuando el usuario alterna el botón de tema)
+    const observer = new MutationObserver(() => {
+      setIsDarkMode(getDarkStatus());
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class'],
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  // --- Store y Estados de Rutas ---
   const blueRoute1 = usePositionsStore((state) => state.blueRoute1);
   const blueRoute2 = usePositionsStore((state) => state.blueRoute2);
   const redRoute1 = usePositionsStore((state) => state.redRoute1);
   const redRoute2 = usePositionsStore((state) => state.redRoute2);
   const redRoute3 = usePositionsStore((state) => state.redRoute3);
+  const setImportantPoints = usePositionsStore((state) => state.setImportantPoints);
 
-  const setImportantPoints = usePositionsStore((state: Positions) => state.setImportantPoints);
-  const setCurrentZone = usePositionsStore((state) => state.setCurrentZone);
   const [searchTerm, setSearchTerm] = useState('');
-
-  useEffect(() => {
-    setImportantPoints(searchTerm);
-  }, [searchTerm, setImportantPoints, setCurrentZone]);
-
-  const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-  };
-
   const [agroalimentariaStats, setAgroalimentariaStats] = useState({
     distanceKm: 0,
     timeMinutes: 0,
   });
-  const [agroganaderaStats, setAgroganaderaStats] = useState({
-    distanceKm: 0,
-    timeMinutes: 0,
-  });
+  const [agroganaderaStats, setAgroganaderaStats] = useState({ distanceKm: 0, timeMinutes: 0 });
 
   useEffect(() => {
-    const distRedRoute1 = calculateRouteDistance(
-      redRoute1.map((p) => [p.lat, p.lng] as [number, number])
-    );
-    const distRedRoute2 = calculateRouteDistance(
-      redRoute2.map((p) => [p.lat, p.lng] as [number, number])
-    );
-    const distRedRoute3 = calculateRouteDistance(
-      redRoute3.map((p) => [p.lat, p.lng] as [number, number])
+    setImportantPoints(searchTerm);
+  }, [searchTerm, setImportantPoints]);
+
+  useEffect(() => {
+    const distRed =
+      calculateRouteDistance(redRoute1.map((p) => [p.lat, p.lng] as [number, number])) +
+      calculateRouteDistance(redRoute2.map((p) => [p.lat, p.lng] as [number, number])) +
+      calculateRouteDistance(redRoute3.map((p) => [p.lat, p.lng] as [number, number]));
+
+    const distBlue = calculateRouteDistance(
+      [...blueRoute1, ...blueRoute2].map((p) => [p.lat, p.lng] as [number, number])
     );
 
-    const agroalimentariaDist = distRedRoute1 + distRedRoute2 + distRedRoute3;
-
-    const avgSpeedKmH = 25;
-    const agroalimentariaTime = (agroalimentariaDist / avgSpeedKmH) * 60;
-    setAgroalimentariaStats({
-      distanceKm: agroalimentariaDist,
-      timeMinutes: agroalimentariaTime,
-    });
-
-    const totalAgroganaderaPositions = [
-      ...blueRoute1.map((p) => [p.lat, p.lng] as [number, number]),
-      ...blueRoute2.map((p) => [p.lat, p.lng] as [number, number]),
-    ];
-    const agroganaderaDist = calculateRouteDistance(totalAgroganaderaPositions);
-    const agroganaderaTime = (agroganaderaDist / avgSpeedKmH) * 60;
-    setAgroganaderaStats({
-      distanceKm: agroganaderaDist,
-      timeMinutes: agroganaderaTime,
-    });
+    const speed = 25;
+    setAgroalimentariaStats({ distanceKm: distRed, timeMinutes: (distRed / speed) * 60 });
+    setAgroganaderaStats({ distanceKm: distBlue, timeMinutes: (distBlue / speed) * 60 });
   }, [blueRoute1, blueRoute2, redRoute1, redRoute2, redRoute3]);
 
-  const selectMarker = (position: { lat: number; lng: number }, mapInstance: L.Map) => {
-    if (mapInstance) {
-      mapInstance.flyTo(L.latLng(position.lat, position.lng), 15);
-    }
-  };
-
+  // --- Configuración Visual del Mapa ---
   const initialCenter: [number, number] = [20.886992464628573, -76.5981011376514];
-
   const bounds: L.LatLngBoundsExpression = [
     [20.78, -76.72],
     [20.97, -76.48],
   ];
 
-  // ** --- DECLARACIÓN DE COORDENADAS PARA LAS ETIQUETAS EN EL MAPA --- **
-  // Haremos ajustes más grandes en las coordenadas para separarlas.
-
-  // Ruta Agroalimentaria: Moveremos el nombre un poco al NORTE y sus stats un poco más al SUR
-  const agroalimentariaNameCoords: [number, number] = [20.87, -76.568]; // Ajustado al Norte
-  const agroalimentariaStatsCoords: [number, number] = [20.858, -76.575]; // Ajustado más al Sur
-
-  // Ruta Agroganadera: Moveremos el nombre un poco al OESTE y sus stats un poco más al OESTE también, pero al Sur.
-  const agroganaderaNameCoords: [number, number] = [20.8777, -76.68]; // Ajustado más al Oeste
-  const agroganaderaStatsCoords: [number, number] = [20.87, -76.685]; // Ajustado más al Sur y al Oeste
-
-  // ** --- FIN DECLARACIÓN DE COORDENADAS --- **
-
-  // Crear DivIcon para Ruta Agroalimentaria (NOMBRE)
-  const agroalimentariaLabel = divIcon({
-    html: '<div class="leaflet-label" style="font-weight: bold; color: black; text-shadow: 1px 1px 2px white; font-size: 18px;">RUTA AGROALIMENTARIA</div>',
-    className: 'text-label',
-    iconSize: [250, 25],
-    iconAnchor: [125, 0], // Anclaje superior central del icono
-  });
-
-  // Crear DivIcon para Ruta Agroganadera (NOMBRE)
-  const agroganaderaLabel = divIcon({
-    html: '<div class="leaflet-label" style="font-weight: bold; color: black; text-shadow: 1px 1px 2px white; font-size: 18px;">RUTA AGROGANADERA</div>',
-    className: 'text-label',
-    iconSize: [250, 25],
-    iconAnchor: [125, 0], // Anclaje superior central del icono
-  });
-
-  // Crear DivIcon para Estadísticas de Ruta Agroalimentaria (Distancia/Tiempo)
-  const agroalimentariaStatsLabel = divIcon({
-    html: `
-    <div style="font-weight: bold; color: black; text-shadow: 1px 1px 2px white; font-size: 14px;">
-      Distancia: ${agroalimentariaStats.distanceKm.toFixed(2)} km<br/>
-      Tiempo (auto est.): ${formatMinutesToHoursAndMinutes(agroalimentariaStats.timeMinutes)}
-    </div>
-  `,
-    className: 'leaflet-div-icon-stats',
-    iconSize: [250, 40],
-    iconAnchor: [125, 20], // Anclaje un poco más abajo para centrar verticalmente
-  });
-
-  // Crear DivIcon para Estadísticas de Ruta Agroganadera (Distancia/Tiempo)
-  const agroganaderaStatsLabel = divIcon({
-    html: `
-    <div style="font-weight: bold; color: black; text-shadow: 1px 1px 2px white; font-size: 14px;">
-      Distancia: ${agroganaderaStats.distanceKm.toFixed(2)} km<br/>
-      Tiempo (auto est.): ${formatMinutesToHoursAndMinutes(agroganaderaStats.timeMinutes)}
-    </div>
-  `,
-    className: 'leaflet-div-icon-stats',
-    iconSize: [250, 40],
-    iconAnchor: [125, 20], // Anclaje un poco más abajo para centrar verticalmente
-  });
+  // Marcadores de etiquetas (Memorizados para evitar saltos)
+  const labels = useMemo(
+    () => ({
+      agroalimentaria: divIcon({
+        html: `<div class="font-bold text-base md:text-lg ${
+          isDarkMode ? 'text-white' : 'text-black'
+        }">RUTA AGROALIMENTARIA</div>`,
+        className: 'bg-transparent border-none pointer-events-none',
+        iconSize: [250, 25],
+      }),
+      agroganadera: divIcon({
+        html: `<div class="font-bold text-base md:text-lg ${
+          isDarkMode ? 'text-white' : 'text-black'
+        }">RUTA AGROGANADERA</div>`,
+        className: 'bg-transparent border-none pointer-events-none',
+        iconSize: [250, 25],
+      }),
+    }),
+    [isDarkMode]
+  );
 
   return (
-    <div className="px-1 md:px-10 md:py-10">
-      <h1 className="text-center text-green-500 text-3xl mb-5 animate__animated animate__fadeIn">
-        Rutas Agroturísticas del Municipio Calixto García
+    <div className="px-1 md:px-10 md:py-10 transition-colors duration-500">
+      <h1 className="text-center text-green-500 text-3xl mb-5 font-bold">
+        Rutas Agroturísticas de Calixto García
       </h1>
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between md:space-x-4 mb-2">
-        <div className="w-full md:w-1/2">
-          <SearchBar
-            value={searchTerm}
-            onSearchChange={onSearchChange}
-            placeholder="Filtrar puntos de interés..."
-          />
-        </div>
+
+      <div className="w-full md:w-1/2 mb-4">
+        <SearchBar
+          value={searchTerm}
+          onSearchChange={(e) => setSearchTerm(e.target.value)}
+          placeholder="Filtrar puntos..."
+        />
       </div>
+
       <MapContainer
         center={initialCenter}
         zoom={13}
-        scrollWheelZoom={true}
         maxBounds={bounds}
-        maxBoundsViscosity={1.0}
-        zoomControl={true}
         minZoom={13}
-        maxZoom={16} // Aumentado el maxZoom para permitir mayor detalle si se desea
-        className="h-[800px] rounded-lg shadow-md"
+        className="h-150 rounded-xl shadow-2xl relative z-0 border dark:border-slate-700"
       >
         <MapInitializer />
+
+        {/* 🔑 LA SOLUCIÓN: El atributo 'key' fuerza el re-renderizado del TileLayer al cambiar de modo */}
         <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          key={isDarkMode ? 'dark-tile' : 'light-tile'}
+          url={
+            isDarkMode
+              ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+              : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+          }
+          attribution="&copy; OpenStreetMap contributors &copy; CARTO"
         />
+
         <MapFlyTo targetZoom={15} />
-        <MarkerTrails selectMarker={selectMarker} />
+        <MarkerTrails selectMarker={(pos, map) => map.flyTo(L.latLng(pos.lat, pos.lng), 15)} />
 
-        {/* Marcadores para los NOMBRES de Ruta */}
-        <Marker position={agroalimentariaNameCoords} icon={agroalimentariaLabel} />
-        <Marker position={agroganaderaNameCoords} icon={agroganaderaLabel} />
+        {/* Nombres de Rutas */}
+        <Marker position={[20.87, -76.568]} icon={labels.agroalimentaria} />
+        <Marker position={[20.8777, -76.68]} icon={labels.agroganadera} />
 
-        {/* Marcadores para las ESTADÍSTICAS de Ruta (Distancia/Tiempo) */}
-        {agroalimentariaStats.distanceKm > 0 && (
-          <Marker position={agroalimentariaStatsCoords} icon={agroalimentariaStatsLabel} />
-        )}
-        {agroganaderaStats.distanceKm > 0 && (
-          <Marker position={agroganaderaStatsCoords} icon={agroganaderaStatsLabel} />
-        )}
-
-        {/* Polylines para dibujar las Rutas */}
-        <Polyline positions={blueRoute1} color="#1A237E" weight={8} opacity={0.7} />
-        <Polyline positions={blueRoute2} color="#1A237E" weight={8} opacity={0.7} />
-        <Polyline positions={redRoute1} color="#8BC34A" weight={8} opacity={0.7} />
-        <Polyline positions={redRoute2} color="#8BC34A" weight={8} opacity={0.7} />
-        <Polyline positions={redRoute3} color="#8BC34A" weight={8} opacity={0.7} />
+        {/* Polylines */}
+        <Polyline
+          positions={blueRoute1}
+          color={isDarkMode ? '#5C6BC0' : '#1A237E'}
+          weight={6}
+          opacity={0.8}
+        />
+        <Polyline
+          positions={blueRoute2}
+          color={isDarkMode ? '#5C6BC0' : '#1A237E'}
+          weight={6}
+          opacity={0.8}
+        />
+        <Polyline positions={redRoute1} color="#8BC34A" weight={6} opacity={0.8} />
+        <Polyline positions={redRoute2} color="#8BC34A" weight={6} opacity={0.8} />
+        <Polyline positions={redRoute3} color="#8BC34A" weight={6} opacity={0.8} />
       </MapContainer>
     </div>
   );

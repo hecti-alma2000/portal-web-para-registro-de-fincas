@@ -1,7 +1,23 @@
+import dynamic from 'next/dynamic';
 import { getPublicFincas } from '@/actions/registro-finca/finca-actions';
 import { FincaGrid } from '@/components/finca/FincaGrid';
 import { Title } from '@/components/ui/Title';
-import { FincasFilterBar } from '@/components/finca/FincasFilterBar';
+
+// Carga dinámica del componente de filtros
+const FincasFilterBar = dynamic(
+  () => import('@/components/finca/FincasFilterBar').then((mod) => mod.FincasFilterBar),
+  {
+    ssr: true, // Mantenemos ssr en true para que se vea el esqueleto en el servidor
+    loading: () => <FilterBarSkeleton />,
+  }
+);
+
+// Pequeño componente visual para el estado de carga
+function FilterBarSkeleton() {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8 p-4 bg-gray-100 dark:bg-slate-800/50 rounded-xl animate-pulse h-22" />
+  );
+}
 
 type SearchParamsProps = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -26,11 +42,10 @@ export default async function FincasPage({ searchParams }: SearchParamsProps) {
   const rawEstado = resolvedSearchParams.estadoConservacion;
   const estadoConservacion = Array.isArray(rawEstado) ? rawEstado[0] : rawEstado;
 
-  // 4. Extraer Dirección/Localización (Limpiando el valor)
+  // 4. Extraer Dirección/Localización
   const rawDireccion = resolvedSearchParams.direccion;
   const direccion = Array.isArray(rawDireccion) ? rawDireccion[0] : rawDireccion;
 
-  // Construir objeto de filtros
   const filters = {
     tipoEntidad,
     usoActual,
@@ -48,6 +63,7 @@ export default async function FincasPage({ searchParams }: SearchParamsProps) {
         className="mb-6"
       />
 
+      {/* Este componente se cargará de forma independiente */}
       <FincasFilterBar />
 
       {fincas.length > 0 ? (

@@ -20,10 +20,13 @@ export const SearchBar = ({ value, onSearchChange, placeholder }: SearchBarProps
   };
 
   return (
-    <div className="flex items-center mb-3 w-full md:w-2/4">
+    <div className="flex items-center mb-3 w-full md:w-2/4 z-40">
       {/* Ícono de búsqueda (lado izquierdo) */}
-      <span className="bg-gray-200 p-2 rounded-l-md flex justify-center items-center" id={inputId}>
-        <Search className="text-gray-600 w-5 h-5" />
+      <span
+        className="bg-white/90 dark:bg-slate-800/80 p-2 rounded-l-md flex justify-center items-center"
+        id={inputId}
+      >
+        <Search className="text-gray-600 dark:text-slate-200 w-5 h-5" />
       </span>
       {/* Input de búsqueda */}
       <input
@@ -33,7 +36,7 @@ export const SearchBar = ({ value, onSearchChange, placeholder }: SearchBarProps
         onChange={onSearchChange}
         placeholder={placeholder}
         autoComplete="off"
-        className={`text-gray-900 border-green-500 flex-1 p-2 focus:border-blue-500 focus:ring-blue-500 ${
+        className={`text-gray-900 dark:text-slate-100 border-green-500 flex-1 p-2 bg-white/90 dark:bg-slate-800/80 focus:border-blue-500 focus:ring-blue-500 ${
           value ? '' : 'rounded-r-md'
         }`}
       />
@@ -42,9 +45,9 @@ export const SearchBar = ({ value, onSearchChange, placeholder }: SearchBarProps
         <button
           type="button"
           onClick={handleClear}
-          className="bg-gray-200 p-2 rounded-r-md flex justify-center items-center"
+          className="bg-white/90 dark:bg-slate-800/80 p-2 rounded-r-md flex justify-center items-center"
         >
-          <X className="text-gray-600 hover:cursor-pointer w-5 h-5" />
+          <X className="text-gray-600 dark:text-slate-200 hover:cursor-pointer w-5 h-5" />
         </button>
       )}
     </div>
