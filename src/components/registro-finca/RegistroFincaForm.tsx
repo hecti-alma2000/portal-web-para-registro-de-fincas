@@ -3,43 +3,21 @@ import { useState, useTransition, useEffect, useCallback } from 'react';
 import Swal from 'sweetalert2';
 import { useRouter } from 'next/navigation';
 
-// 🔑 NOTA: Ya no necesitamos importar updateFinca si submitFincaRequest lo maneja todo.
-import { submitFincaRequest, FincaFormData } from '@/actions/registro-finca/submit-request'; // Importamos el tipo FincaFormData
+import { submitFincaRequest, FincaFormData } from '@/actions/registro-finca/submit-request';
 import { useFincaEditStore } from '@/store/modal/fincaEdit.store';
-
-// --- Type Definitions (Ahora importamos FincaFormData directamente de la Server Action) ---
-// El tipo FincaUpdateInput ya no es necesario si la Server Action solo usa FincaFormData + id opcional
-
-type FincaUpdateInput = FincaFormData & {
-  id: number;
-};
 
 // --- Opciones de Selectores ---
 const ESTADO_CONSERVACION_OPTIONS = ['Muy Bueno', 'Bueno', 'Aceptable', 'Malo'];
-const USO_ACTUAL_OPTIONS = [
-  'Cultivos Varios',
-  'Ganadería',
-  'Forestal',
-  'Agroturismo',
-  'Otros', // Opción para activar el campo de texto
-];
-// -----------------------------------------------------------------
+const USO_ACTUAL_OPTIONS = ['Cultivos Varios', 'Ganadería', 'Forestal', 'Agroturismo', 'Otros'];
 
 interface RegistroFincaFormProps {
   onSuccess?: () => void;
   fincaToEdit?: any | null;
 }
 
-/**
- * FUNCIÓN CLAVE: Convierte string vacío ("") a NULL.
- */
 const cleanString = (value: string | undefined): string | null | undefined => {
-  if (value === null || value === undefined) {
-    return value;
-  }
-  if (typeof value === 'string' && value.trim() === '') {
-    return null;
-  }
+  if (value === null || value === undefined) return value;
+  if (typeof value === 'string' && value.trim() === '') return null;
   return value;
 };
 
@@ -53,16 +31,12 @@ export default function RegistroFincaForm({ onSuccess, fincaToEdit }: RegistroFi
   const [descripcion, setDescripcion] = useState('');
   const [fotoFile, setFotoFile] = useState<File | null>(null);
   const [fotoPreview, setFotoPreview] = useState<string | null>(null);
-  // Nota: Inicializamos fotoUrl como 'string | undefined' porque puede ser el URL existente (string),
-  // o undefined si es un nuevo registro sin foto.
   const [fotoUrl, setFotoUrl] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState(false);
   const [isPending, startTransition] = useTransition();
 
-  // Campos y estados dinámicos
   const [tipoPropiedad, setTipoPropiedad] = useState<'ESTATAL' | 'PRIVADA'>('ESTATAL');
   const [entidadPertenece, setEntidadPertenece] = useState('');
-
   const [estadoConservacion, setEstadoConservacion] = useState('');
   const [usoActualSelect, setUsoActualSelect] = useState('');
   const [usoActualOtros, setUsoActualOtros] = useState('');
@@ -78,7 +52,6 @@ export default function RegistroFincaForm({ onSuccess, fincaToEdit }: RegistroFi
   const [accionesAmbientales, setAccionesAmbientales] = useState<string[]>([]);
   const [nuevaAccion, setNuevaAccion] = useState('');
 
-  // Lógica de inicialización
   useEffect(() => {
     if (fincaToEdit) {
       setNombre(fincaToEdit.nombre || '');
@@ -96,14 +69,10 @@ export default function RegistroFincaForm({ onSuccess, fincaToEdit }: RegistroFi
       } else if (uso) {
         setUsoActualSelect('Otros');
         setUsoActualOtros(uso);
-      } else {
-        setUsoActualSelect('');
-        setUsoActualOtros('');
       }
 
       setProblematicaDetectada(fincaToEdit.problematicaDetectada || '');
       setTradicionesHistoria(fincaToEdit.tradicionesHistoria || '');
-
       setElementosInteres(fincaToEdit.elementosInteres?.map((e: any) => e.nombre || e) || []);
       setFotoPreview(fincaToEdit.fotoUrl || null);
       setFotoUrl(fincaToEdit.fotoUrl || undefined);
@@ -115,17 +84,12 @@ export default function RegistroFincaForm({ onSuccess, fincaToEdit }: RegistroFi
       );
       setAccionesAmbientales(fincaToEdit.accionesAmbientales?.map((a: any) => a.nombre || a) || []);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fincaToEdit]);
 
-  // Lógica para deshabilitar Entidad a la que pertenece si es PRIVADA
   useEffect(() => {
-    if (tipoPropiedad === 'PRIVADA') {
-      setEntidadPertenece('');
-    }
+    if (tipoPropiedad === 'PRIVADA') setEntidadPertenece('');
   }, [tipoPropiedad]);
 
-  // Funciones de utilidad (se mantienen iguales)
   const addToList = useCallback(
     (
       list: string[],
@@ -154,22 +118,19 @@ export default function RegistroFincaForm({ onSuccess, fincaToEdit }: RegistroFi
     if (f) setFotoPreview(URL.createObjectURL(f));
     else setFotoPreview(null);
   };
+
   const handleFotoRemove = () => {
     setFotoFile(null);
-    setFotoPreview(null); // Eliminamos la vista previa para forzar la carga de null/undefined
+    setFotoPreview(null);
     setFotoUrl(undefined);
     const el = document.getElementById('foto-input') as HTMLInputElement | null;
     if (el) el.value = '';
   };
 
-  // --- Lógica principal: handleSubmit ---
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const isEditing = !!fincaToEdit;
     const actionText = isEditing ? 'Editar' : 'Registrar';
-
-    // 1. DEDUCCIÓN Y VALIDACIÓN DE CAMPOS OBLIGATORIOS
     const usoFinal = usoActualSelect === 'Otros' ? usoActualOtros : usoActualSelect;
 
     if (
@@ -201,135 +162,86 @@ export default function RegistroFincaForm({ onSuccess, fincaToEdit }: RegistroFi
     startTransition(async () => {
       let currentFotoUrl: string | null = fotoUrl || null;
 
-      // 1. Manejo de subida de foto
       if (fotoFile) {
         try {
           const fd = new FormData();
           fd.append('file', fotoFile);
           const resUp = await fetch('/api/uploads', { method: 'POST', body: fd });
-          if (!resUp.ok) {
-            const errorText = await resUp.text();
-            throw new Error(`Error en la subida. ${errorText.substring(0, 100)}...`);
-          }
           const j = await resUp.json();
-          if (j.ok) {
-            currentFotoUrl = j.url;
-          } else {
-            throw new Error(j.message || 'Error desconocido al procesar la imagen.');
-          }
+          if (j.ok) currentFotoUrl = j.url;
+          else throw new Error(j.message || 'Error al procesar la imagen.');
         } catch (err: any) {
           setLoading(false);
-          console.error('ERROR AL SUBIR IMAGEN:', err.message);
-          Swal.fire({
-            title: 'Error de imagen',
-            text: 'No se pudo subir la foto: ' + err.message,
-            icon: 'error',
-          });
+          Swal.fire({ title: 'Error de imagen', text: err.message, icon: 'error' });
           return;
         }
       } else if (!fotoPreview && isEditing) {
-        // Si estamos editando y se eliminó la foto del preview/url
         currentFotoUrl = null;
       }
-
-      // 2. Preparar datos para la Server Action
-      const entidad = tipoPropiedad === 'PRIVADA' ? null : cleanString(entidadPertenece);
 
       const baseFincaData: FincaFormData = {
         nombre,
         localizacion,
         propietario,
-
-        descripcion: cleanString(descripcion),
-        // Si fotoUrl es undefined, lo enviamos como null si es creación o currentFotoUrl
-        fotoUrl: currentFotoUrl,
-        tipoPropiedad,
-        entidadPertenece: entidad,
-
-        usoActual: cleanString(usoFinal),
-        estadoConservacion: cleanString(estadoConservacion),
-
-        problematicaDetectada: cleanString(problematicaDetectada),
-        tradicionesHistoria: cleanString(tradicionesHistoria),
-
         elementosInteres,
         actividadesAgroturisticas,
         principiosSustentabilidad,
         accionesAmbientales,
+        descripcion: cleanString(descripcion),
+        fotoUrl: currentFotoUrl,
+        tipoPropiedad,
+        entidadPertenece: tipoPropiedad === 'PRIVADA' ? null : cleanString(entidadPertenece),
+        usoActual: cleanString(usoFinal),
+        estadoConservacion: cleanString(estadoConservacion),
+        problematicaDetectada: cleanString(problematicaDetectada),
+        tradicionesHistoria: cleanString(tradicionesHistoria),
       };
 
-      let res: { ok: boolean; message?: string; data?: any; isPending?: boolean };
-
       try {
-        if (isEditing) {
-          if (typeof fincaToEdit.id !== 'number') {
-            throw new Error('ID de finca inválido para la actualización.');
-          }
-          // 🔑 Llama a la acción unificada con el ID
-          res = await submitFincaRequest(baseFincaData, fincaToEdit.id);
+        const res = await submitFincaRequest(baseFincaData, fincaToEdit?.id);
+        setLoading(false);
+
+        if (res.ok) {
+          setFincaToEdit(null);
+          if (onSuccess) onSuccess();
+          router.refresh();
+          Swal.fire({
+            title: isEditing ? 'Solicitud de actualización' : 'Solicitud enviada',
+            text: res.isPending ? 'Pendiente de revisión.' : 'Operación realizada con éxito.',
+            icon: res.isPending ? 'info' : 'success',
+          });
         } else {
-          // 🔑 Llama a la acción unificada sin ID (Creación)
-          res = await submitFincaRequest(baseFincaData);
+          Swal.fire('Error', res.message || 'Error al procesar la finca.', 'error');
         }
-      } catch (serverActionError: any) {
-        res = {
-          ok: false,
-          message: 'Error de conexión con el servidor. Consulte la consola.',
-        };
-      }
-
-      setLoading(false);
-
-      if (res.ok) {
-        setFincaToEdit(null);
-        if (onSuccess) onSuccess();
-
-        router.refresh();
-
-        const title = isEditing ? 'Solicitud de actualización' : 'Solicitud enviada';
-        const notificationText = res.isPending
-          ? isEditing
-            ? 'La actualización ha sido enviada para su revisión.'
-            : 'Tu solicitud fue enviada y está pendiente de revisión.'
-          : isEditing
-          ? 'La finca se actualizó y aprobó correctamente.'
-          : 'La finca se registró y aprobó automáticamente (Admin).';
-
-        Swal.fire({
-          title: title,
-          text: notificationText,
-          icon: res.isPending ? 'info' : 'success',
-          confirmButtonText: 'OK',
-        });
-      } else {
-        Swal.fire({
-          title: 'Error',
-          text: res.message || `No se pudo ${actionText.toLowerCase()} la finca.`,
-          icon: 'error',
-          confirmButtonText: 'OK',
-        });
+      } catch (error) {
+        setLoading(false);
+        Swal.fire('Error', 'Error de conexión con el servidor.', 'error');
       }
     });
   };
 
-  // --- JSX (El contenido de la forma se mantiene igual) ---
+  // Clases comunes para inputs y selects
+  const inputClasses =
+    'mt-1 block w-full rounded-md border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 shadow-sm focus:border-green-500 focus:ring-green-500 px-3 py-2 transition-colors';
+  const labelClasses = 'block text-sm font-medium text-gray-700 dark:text-slate-300';
 
   return (
-    <form className="space-y-4 grid grid-cols-1 md:grid-cols-2 gap-4" onSubmit={handleSubmit}>
+    <form className="space-y-4 grid grid-cols-1 md:grid-cols-2 gap-4 p-4" onSubmit={handleSubmit}>
+      {/* Nombre */}
       <div className="col-span-1">
-        <label className="block text-gray-700">Nombre de la finca</label>
+        <label className={labelClasses}>Nombre de la finca</label>
         <input
           type="text"
-          className="mt-1 block w-full border rounded px-3 py-2"
+          className={inputClasses}
           required
           value={nombre}
           onChange={(e) => setNombre(e.target.value)}
         />
       </div>
 
-      {/* Imagen */}
+      {/* Foto */}
       <div className="col-span-1 md:col-span-2">
-        <label className="block text-gray-700">Foto (opcional)</label>
+        <label className={labelClasses}>Foto (opcional)</label>
         <div className="flex items-center gap-4 mt-2">
           <input
             id="foto-input"
@@ -340,91 +252,101 @@ export default function RegistroFincaForm({ onSuccess, fincaToEdit }: RegistroFi
           />
           <label
             htmlFor="foto-input"
-            className="inline-flex items-center gap-2 bg-gray-200 px-3 py-2 rounded cursor-pointer hover:bg-gray-300"
+            className="inline-flex items-center gap-2 bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-slate-200 px-4 py-2 rounded-md cursor-pointer hover:bg-gray-200 dark:hover:bg-slate-600 transition"
           >
             Examinar
           </label>
-          {fotoFile && <span className="text-sm text-gray-600">{fotoFile.name}</span>}
+          {fotoFile && (
+            <span className="text-xs text-gray-500 dark:text-slate-400 truncate max-w-37.5">
+              {fotoFile.name}
+            </span>
+          )}
           {!fotoFile && fotoPreview && (
-            <img src={fotoPreview} alt="preview" className="w-32 h-20 object-cover rounded" />
+            <img
+              src={fotoPreview}
+              alt="preview"
+              className="w-24 h-16 object-cover rounded-md border border-gray-200 dark:border-slate-700"
+            />
           )}
           {(fotoFile || fotoPreview) && (
-            <button type="button" className="text-red-500 ml-2" onClick={handleFotoRemove}>
+            <button
+              type="button"
+              className="text-red-500 text-sm font-medium hover:underline"
+              onClick={handleFotoRemove}
+            >
               Eliminar
             </button>
           )}
         </div>
       </div>
 
+      {/* Dirección y Propietario */}
       <div className="col-span-1">
-        <label className="block text-gray-700">Dirección/Localización</label>
+        <label className={labelClasses}>Dirección/Localización</label>
         <input
           type="text"
-          className="mt-1 block w-full border rounded px-3 py-2"
+          className={inputClasses}
           required
           value={localizacion}
           onChange={(e) => setLocalizacion(e.target.value)}
         />
       </div>
-
-      <div className="col-span-1 md:col-span-2">
-        <label className="block text-gray-700">Propietario</label>
+      <div className="col-span-1">
+        <label className={labelClasses}>Propietario</label>
         <input
           type="text"
-          className="mt-1 block w-full border rounded px-3 py-2"
+          className={inputClasses}
           required
           value={propietario}
           onChange={(e) => setPropietario(e.target.value)}
         />
       </div>
 
+      {/* Descripción */}
       <div className="col-span-1 md:col-span-2">
-        <label className="block text-gray-700">Breve Descripción</label>
+        <label className={labelClasses}>Breve Descripción</label>
         <textarea
-          className="mt-1 block w-full border rounded px-3 py-2"
+          className={inputClasses}
           rows={3}
           value={descripcion}
           onChange={(e) => setDescripcion(e.target.value)}
         />
       </div>
 
-      {/* Tipo de propiedad */}
+      {/* Tipo Propiedad y Entidad */}
       <div className="col-span-1">
-        <label className="block text-gray-700">Tipo de propiedad</label>
+        <label className={labelClasses}>Tipo de propiedad</label>
         <select
-          className="mt-1 block w-full border rounded px-3 py-2"
+          className={inputClasses}
           required
           value={tipoPropiedad}
-          onChange={(e) => setTipoPropiedad(e.target.value as 'ESTATAL' | 'PRIVADA')}
+          onChange={(e) => setTipoPropiedad(e.target.value as any)}
         >
           <option value="ESTATAL">Estatal</option>
           <option value="PRIVADA">Privada</option>
         </select>
       </div>
-
-      {/* 1. Entidad a la que pertenece (Condicional) */}
       <div className="col-span-1">
-        <label className="block text-gray-700">Entidad a la que pertenece</label>
+        <label className={labelClasses}>Entidad a la que pertenece</label>
         <input
           type="text"
-          className={`mt-1 block w-full border rounded px-3 py-2 ${
-            tipoPropiedad === 'PRIVADA' ? 'bg-gray-100 cursor-not-allowed' : ''
+          className={`${inputClasses} ${
+            tipoPropiedad === 'PRIVADA'
+              ? 'bg-gray-50 dark:bg-slate-900 cursor-not-allowed opacity-60'
+              : ''
           }`}
           value={entidadPertenece}
           onChange={(e) => setEntidadPertenece(e.target.value)}
           disabled={tipoPropiedad === 'PRIVADA'}
           required={tipoPropiedad === 'ESTATAL'}
         />
-        {tipoPropiedad === 'PRIVADA' && (
-          <p className="text-xs text-gray-500 mt-1">Campo deshabilitado para propiedad privada.</p>
-        )}
       </div>
 
-      {/* 2. Uso actual (Select obligatorio + Otros) */}
+      {/* Uso Actual y Estado */}
       <div className="col-span-1">
-        <label className="block text-gray-700">Uso actual</label>
+        <label className={labelClasses}>Uso actual</label>
         <select
-          className="mt-1 block w-full border rounded px-3 py-2"
+          className={inputClasses}
           required
           value={usoActualSelect}
           onChange={(e) => {
@@ -433,7 +355,7 @@ export default function RegistroFincaForm({ onSuccess, fincaToEdit }: RegistroFi
           }}
         >
           <option value="" disabled>
-            Seleccione el uso actual
+            Seleccione uso
           </option>
           {USO_ACTUAL_OPTIONS.map((opt) => (
             <option key={opt} value={opt}>
@@ -442,32 +364,31 @@ export default function RegistroFincaForm({ onSuccess, fincaToEdit }: RegistroFi
           ))}
         </select>
       </div>
-
-      {/* Campo 'Otros' condicional para Uso Actual */}
-      {usoActualSelect === 'Otros' && (
-        <div className="col-span-1">
-          <label className="block text-gray-700">Especifique otro uso</label>
-          <input
-            type="text"
-            className="mt-1 block w-full border rounded px-3 py-2"
-            required
-            value={usoActualOtros}
-            onChange={(e) => setUsoActualOtros(e.target.value)}
-          />
-        </div>
-      )}
-
-      {/* 3. Estado de conservación (Select obligatorio) */}
       <div className="col-span-1">
-        <label className="block text-gray-700">Estado de conservación</label>
+        {usoActualSelect === 'Otros' && (
+          <>
+            <label className={labelClasses}>Especifique otro uso</label>
+            <input
+              type="text"
+              className={inputClasses}
+              required
+              value={usoActualOtros}
+              onChange={(e) => setUsoActualOtros(e.target.value)}
+            />
+          </>
+        )}
+      </div>
+
+      <div className="col-span-1">
+        <label className={labelClasses}>Estado de conservación</label>
         <select
-          className="mt-1 block w-full border rounded px-3 py-2"
+          className={inputClasses}
           required
           value={estadoConservacion}
           onChange={(e) => setEstadoConservacion(e.target.value)}
         >
           <option value="" disabled>
-            Seleccione un estado
+            Seleccione estado
           </option>
           {ESTADO_CONSERVACION_OPTIONS.map((opt) => (
             <option key={opt} value={opt}>
@@ -477,208 +398,116 @@ export default function RegistroFincaForm({ onSuccess, fincaToEdit }: RegistroFi
         </select>
       </div>
 
-      <div className="col-span-1">{/* Placeholder vacío para mantener la rejilla */}</div>
-
+      {/* Problemática y Tradiciones */}
       <div className="col-span-1 md:col-span-2">
-        <label className="block text-gray-700">Problemática detectada</label>
+        <label className={labelClasses}>Problemática detectada</label>
         <input
           type="text"
-          className="mt-1 block w-full border rounded px-3 py-2"
+          className={inputClasses}
           value={problematicaDetectada}
           onChange={(e) => setProblematicaDetectada(e.target.value)}
         />
       </div>
-
       <div className="col-span-1 md:col-span-2">
-        <label className="block text-gray-700">Tradiciones e Historia</label>
+        <label className={labelClasses}>Tradiciones e Historia</label>
         <input
           type="text"
-          className="mt-1 block w-full border rounded px-3 py-2"
+          className={inputClasses}
           value={tradicionesHistoria}
           onChange={(e) => setTradicionesHistoria(e.target.value)}
         />
       </div>
 
-      {/* Listas dinámicas (El JSX se mantiene igual) */}
-      <div className="col-span-1 md:col-span-2 space-y-4">
-        {/* Elementos de interés */}
-        <div>
-          <label className="block text-gray-700 font-medium">Elementos de interés</label>
-          <div className="flex gap-2 mb-2">
-            <input
-              type="text"
-              className="flex-1 border rounded px-3 py-2"
-              value={nuevoElementoInteres}
-              onChange={(e) => setNuevoElementoInteres(e.target.value)}
-            />
-            <button
-              type="button"
-              className="bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600 transition"
-              onClick={() =>
-                addToList(
-                  elementosInteres,
-                  setElementosInteres,
-                  nuevoElementoInteres,
-                  setNuevoElementoInteres
-                )
-              }
-            >
-              Agregar
-            </button>
-          </div>
-          <ul className="flex flex-wrap gap-2">
-            {elementosInteres.map((el, i) => (
-              <li key={i} className="bg-gray-200 px-2 py-1 rounded flex items-center gap-1 text-sm">
-                {el}
-                <button
-                  type="button"
-                  className="text-red-500 hover:text-red-700 ml-1 font-bold"
-                  onClick={() => removeFromList(elementosInteres, setElementosInteres, i)}
+      {/* Listas Dinámicas */}
+      <div className="col-span-1 md:col-span-2 space-y-6 mt-4">
+        {[
+          {
+            label: 'Elementos de interés',
+            list: elementosInteres,
+            setList: setElementosInteres,
+            value: nuevoElementoInteres,
+            setValue: setNuevoElementoInteres,
+          },
+          {
+            label: 'Actividades agroturísticas',
+            list: actividadesAgroturisticas,
+            setList: setActividadesAgroturisticas,
+            value: nuevaActividad,
+            setValue: setNuevaActividad,
+          },
+          {
+            label: 'Principios de sustentabilidad',
+            list: principiosSustentabilidad,
+            setList: setPrincipiosSustentabilidad,
+            value: nuevoPrincipio,
+            setValue: setNuevoPrincipio,
+          },
+          {
+            label: 'Acciones ambientales',
+            list: accionesAmbientales,
+            setList: setAccionesAmbientales,
+            value: nuevaAccion,
+            setValue: setNuevaAccion,
+          },
+        ].map((item, idx) => (
+          <div
+            key={idx}
+            className="bg-gray-50 dark:bg-slate-900/50 p-3 rounded-lg border border-gray-200 dark:border-slate-800"
+          >
+            <label className={`${labelClasses} mb-2`}>{item.label}</label>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                className={inputClasses}
+                value={item.value}
+                onChange={(e) => item.setValue(e.target.value)}
+                onKeyDown={(e) =>
+                  e.key === 'Enter' &&
+                  (e.preventDefault(),
+                  addToList(item.list, item.setList, item.value, item.setValue))
+                }
+              />
+              <button
+                type="button"
+                onClick={() => addToList(item.list, item.setList, item.value, item.setValue)}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm transition"
+              >
+                +
+              </button>
+            </div>
+            <div className="flex flex-wrap gap-2 mt-3">
+              {item.list.map((el, i) => (
+                <span
+                  key={i}
+                  className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 px-2 py-1 rounded-md text-xs flex items-center gap-2 text-gray-700 dark:text-slate-300"
                 >
-                  ×
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* Actividades agroturísticas */}
-        <div>
-          <label className="block text-gray-700 font-medium">Actividades agroturísticas</label>
-          <div className="flex gap-2 mb-2">
-            <input
-              type="text"
-              className="flex-1 border rounded px-3 py-2"
-              value={nuevaActividad}
-              onChange={(e) => setNuevaActividad(e.target.value)}
-            />
-            <button
-              type="button"
-              className="bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600 transition"
-              onClick={() =>
-                addToList(
-                  actividadesAgroturisticas,
-                  setActividadesAgroturisticas,
-                  nuevaActividad,
-                  setNuevaActividad
-                )
-              }
-            >
-              Agregar
-            </button>
+                  {el}
+                  <button
+                    type="button"
+                    className="text-red-500 font-bold"
+                    onClick={() => removeFromList(item.list, item.setList, i)}
+                  >
+                    ×
+                  </button>
+                </span>
+              ))}
+            </div>
           </div>
-          <ul className="flex flex-wrap gap-2">
-            {actividadesAgroturisticas.map((el, i) => (
-              <li key={i} className="bg-gray-200 px-2 py-1 rounded flex items-center gap-1 text-sm">
-                {el}
-                <button
-                  type="button"
-                  className="text-red-500 hover:text-red-700 ml-1 font-bold"
-                  onClick={() =>
-                    removeFromList(actividadesAgroturisticas, setActividadesAgroturisticas, i)
-                  }
-                >
-                  ×
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* Principios de sustentabilidad */}
-        <div>
-          <label className="block text-gray-700 font-medium">Principios de sustentabilidad</label>
-          <div className="flex gap-2 mb-2">
-            <input
-              type="text"
-              className="flex-1 border rounded px-3 py-2"
-              value={nuevoPrincipio}
-              onChange={(e) => setNuevoPrincipio(e.target.value)}
-            />
-            <button
-              type="button"
-              className="bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600 transition"
-              onClick={() =>
-                addToList(
-                  principiosSustentabilidad,
-                  setPrincipiosSustentabilidad,
-                  nuevoPrincipio,
-                  setNuevoPrincipio
-                )
-              }
-            >
-              Agregar
-            </button>
-          </div>
-          <ul className="flex flex-wrap gap-2">
-            {principiosSustentabilidad.map((el, i) => (
-              <li key={i} className="bg-gray-200 px-2 py-1 rounded flex items-center gap-1 text-sm">
-                {el}
-                <button
-                  type="button"
-                  className="text-red-500 hover:text-red-700 ml-1 font-bold"
-                  onClick={() =>
-                    removeFromList(principiosSustentabilidad, setPrincipiosSustentabilidad, i)
-                  }
-                >
-                  ×
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* Acciones ambientales */}
-        <div>
-          <label className="block text-gray-700 font-medium">Acciones ambientales</label>
-          <div className="flex gap-2 mb-2">
-            <input
-              type="text"
-              className="flex-1 border rounded px-3 py-2"
-              value={nuevaAccion}
-              onChange={(e) => setNuevaAccion(e.target.value)}
-            />
-            <button
-              type="button"
-              className="bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600 transition"
-              onClick={() =>
-                addToList(accionesAmbientales, setAccionesAmbientales, nuevaAccion, setNuevaAccion)
-              }
-            >
-              Agregar
-            </button>
-          </div>
-          <ul className="flex flex-wrap gap-2">
-            {accionesAmbientales.map((el, i) => (
-              <li key={i} className="bg-gray-200 px-2 py-1 rounded flex items-center gap-1 text-sm">
-                {el}
-                <button
-                  type="button"
-                  className="text-red-500 hover:text-red-700 ml-1 font-bold"
-                  onClick={() => removeFromList(accionesAmbientales, setAccionesAmbientales, i)}
-                >
-                  ×
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
+        ))}
       </div>
 
-      {/* Botón de submit */}
+      {/* Botón Submit */}
       <div className="col-span-1 md:col-span-2 mt-6">
         <button
           type="submit"
-          className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition disabled:bg-gray-400"
           disabled={loading || isPending}
+          className="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-400 dark:disabled:bg-slate-700 text-white font-bold py-3 rounded-lg shadow-lg shadow-green-900/20 transition-all transform active:scale-[0.98]"
         >
-          {fincaToEdit
-            ? loading || isPending
-              ? 'Editando...'
-              : 'Editar finca'
-            : loading || isPending
-            ? 'Registrando...'
-            : 'Registrar finca'}
+          {loading || isPending
+            ? 'Procesando...'
+            : fincaToEdit
+            ? 'Guardar Cambios'
+            : 'Registrar Finca'}
         </button>
       </div>
     </form>

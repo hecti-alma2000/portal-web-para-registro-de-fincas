@@ -8,21 +8,17 @@ import { useFincaEditStore } from '../../../store/modal/fincaEdit.store';
 import { Plus } from 'lucide-react';
 import dynamic from 'next/dynamic';
 
-// Definición básica de la interfaz de Finca para tipado
 interface Finca {
   id: number;
   nombre: string;
   status: 'PENDING' | 'APPROVED' | 'REJECTED';
-  // ... otras propiedades
 }
 
-// Carga perezosa del componente FincaCard
 const FincaCard = dynamic(() => import('../../../components/registro-finca/FincaCard'), {
-  loading: () => <p>Cargando fincas...</p>,
+  loading: () => <p className="text-zinc-500 dark:text-zinc-400">Cargando fincas...</p>,
   ssr: false,
 });
 
-// Carga perezosa del componente del modal.
 const RegistroFincaModal = dynamic(
   () => import('../../../components/registro-finca/RegistroFincaModal'),
   {
@@ -51,6 +47,8 @@ export default function RegistroFincaPage({ fincas }: { fincas: Finca[] }) {
       showCancelButton: true,
       confirmButtonText: 'Sí, eliminar',
       cancelButtonText: 'Cancelar',
+      // Estilos custom para Swal en modo oscuro se manejan aparte,
+      // pero Tailwind no afecta dentro de Swal por defecto.
     }).then((result) => {
       if (result.isConfirmed) {
         startTransition(async () => {
@@ -91,21 +89,32 @@ export default function RegistroFincaPage({ fincas }: { fincas: Finca[] }) {
   }, []);
 
   return (
-    <main className="flex min-h-screen flex-col items-center p-8">
-      <div className="w-full flex justify-between items-center mt-20">
-        <h1 className="text-3xl text-green-500 font-bold">Registro de Fincas</h1>
+    // AGREGADO: dark:bg-zinc-950 para el fondo general
+    <main className="flex min-h-screen flex-col items-center p-8  transition-colors">
+      <div className="w-full flex justify-between items-center mt-20 max-w-2xl">
+        <h1 className="text-3xl text-green-600 dark:text-green-500 font-bold">
+          Registro de Fincas
+        </h1>
         <button
-          className="bg-green-600 text-white p-2 rounded-full hover:bg-green-700 transition flex items-center justify-center"
+          className="bg-green-600 dark:bg-green-600 text-white p-2 rounded-full hover:bg-green-700 dark:hover:bg-green-500 transition flex items-center justify-center shadow-lg shadow-green-600/20"
           onClick={open}
           title="Registrar nueva finca"
         >
-          <Plus size={20} />
+          <Plus size={24} />
         </button>
       </div>
-      {fincasList.length !== 0 && <h2 className="text-2xl text-green-500 mb-4">Lista de Fincas</h2>}
-      <div className="w-full max-w-2xl">
+
+      {fincasList.length !== 0 && (
+        <h2 className="text-2xl text-green-600 dark:text-green-500 mb-4 mt-8 w-full max-w-2xl">
+          Lista de Fincas
+        </h2>
+      )}
+
+      <div className="w-full max-w-2xl mt-4">
         {fincasList.length === 0 ? (
-          <div className="text-center ">No hay fincas activas registradas.</div>
+          <div className="text-center py-10 text-zinc-500 dark:text-zinc-400">
+            No hay fincas activas registradas.
+          </div>
         ) : (
           <ul className="space-y-4">
             {fincasList.map((finca) => (
@@ -113,8 +122,6 @@ export default function RegistroFincaPage({ fincas }: { fincas: Finca[] }) {
                 <FincaCard
                   finca={finca}
                   onEdit={() => {
-                    // 🔑 CAMBIO REALIZADO: Eliminado Swal.fire.
-                    // Ahora se carga la finca y se abre el modal directamente.
                     useFincaEditStore.getState().setFincaToEdit(finca);
                     open();
                   }}

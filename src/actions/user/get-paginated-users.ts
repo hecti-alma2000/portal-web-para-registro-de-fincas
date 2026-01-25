@@ -17,9 +17,15 @@ export const getPaginatedUser = async () => {
         name: 'desc',
       },
     });
+    // Marcar el usuario principal en base a la variable de entorno usada en seed
+    const primaryEmail = process.env.SEED_ADMIN_EMAIL;
+    const usersWithFlag = users.map((u) => ({
+      ...u,
+      isPrimary: primaryEmail ? u.email === primaryEmail : false,
+    }));
     return {
       ok: true,
-      users: users,
+      users: usersWithFlag,
     };
   } catch (error) {
     return {

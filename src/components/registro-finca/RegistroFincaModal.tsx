@@ -11,69 +11,80 @@ export default function RegistroFincaModal() {
 
   if (!isOpen) return null;
 
-  // const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
-  //   if (e.target === e.currentTarget) {
-  //     close();
-  //     setFincaToEdit(null);
-  //   }
-  // };
-
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/10"
-      // onClick={handleBackdropClick}
-    >
+    // AGREGADO: backdrop-blur-sm bg-black/50 (más oscuro para mejor enfoque)
+    <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/60 p-4">
       <div
-        className="bg-white dark:bg-slate-800 text-black dark:text-white rounded-lg shadow-lg p-8 w-full max-w-4xl h-[90vh] flex flex-col relative prose dark:prose-invert"
+        className="bg-white dark:bg-slate-800 text-zinc-900 dark:text-zinc-100 rounded-2xl shadow-2xl w-full max-w-4xl h-[90vh] flex flex-col relative border border-zinc-200 dark:border-slate-700"
         style={{ maxHeight: '90vh' }}
       >
         <button
-          className="absolute top-2 right-2 text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-white"
+          className="absolute top-4 right-4 p-2 rounded-full hover:bg-zinc-100 dark:hover:bg-slate-700 text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-white transition-all z-10"
           onClick={() => {
             close();
             setFincaToEdit(null);
           }}
         >
-          ✕
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M18 6 6 18" />
+            <path d="m6 6 18 18" />
+          </svg>
         </button>
-        <h2 className="text-2xl font-bold mb-4">
-          {fincaToEdit ? 'Editar Finca' : 'Registro de Finca'}
-        </h2>
-        {fincaToEdit && (
-          <div className="mb-4 p-4 bg-gray-50 rounded flex items-center gap-4">
-            {fincaToEdit.fotoUrl ? (
-              <img
-                src={fincaToEdit.fotoUrl}
-                alt={fincaToEdit.nombre}
-                className="w-40 h-24 object-cover rounded"
-              />
-            ) : (
-              <div className="w-40 h-24 bg-gray-100 rounded flex items-center justify-center text-gray-400">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-10 h-10"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V7M8 7V5a4 4 0 018 0v2"
-                  />
-                </svg>
-              </div>
-            )}
-            <div>
-              <div className="font-bold text-lg">{fincaToEdit.nombre}</div>
-              <div className="text-sm text-gray-600">
-                {fincaToEdit.ubicacion || fincaToEdit.localizacion}
+
+        <div className="p-6 sm:p-8 border-b border-zinc-100 dark:border-slate-700">
+          <h2 className="text-2xl font-bold text-zinc-900 dark:text-white">
+            {fincaToEdit ? 'Editar Finca' : 'Registro de Finca'}
+          </h2>
+
+          {fincaToEdit && (
+            <div className="mt-4 p-4 bg-zinc-50 dark:bg-slate-700/50 rounded-xl flex items-center gap-4 border border-zinc-100 dark:border-slate-600">
+              {fincaToEdit.fotoUrl ? (
+                <img
+                  src={fincaToEdit.fotoUrl}
+                  alt={fincaToEdit.nombre}
+                  className="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-lg bg-zinc-200 dark:bg-slate-600"
+                />
+              ) : (
+                <div className="w-20 h-20 sm:w-24 sm:h-24 bg-zinc-200 dark:bg-slate-600 rounded-lg flex items-center justify-center text-zinc-400 dark:text-slate-400">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-8 h-8"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    />
+                  </svg>
+                </div>
+              )}
+              <div>
+                <div className="font-bold text-lg text-zinc-900 dark:text-white">
+                  {fincaToEdit.nombre}
+                </div>
+                <div className="text-sm text-zinc-500 dark:text-zinc-400">
+                  {fincaToEdit.ubicacion || fincaToEdit.localizacion}
+                </div>
               </div>
             </div>
-          </div>
-        )}
-        <div className="overflow-y-auto flex-1 pr-2">
+          )}
+        </div>
+
+        <div className="overflow-y-auto flex-1 p-6 sm:p-8">
           <RegistroFincaForm
             onSuccess={() => {
               close();

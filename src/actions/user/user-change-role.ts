@@ -13,6 +13,15 @@ export const userChangeRole = async (userId: string, role: string) => {
     };
   }
   try {
+    // Evitar cambiar el role del usuario principal (semilla)
+    const targetUser = await prisma.user.findUnique({ where: { id: userId } });
+    const primaryEmail = process.env.SEED_ADMIN_EMAIL;
+    if (targetUser && primaryEmail && targetUser.email === primaryEmail) {
+      return {
+        ok: false,
+        message: 'No se puede cambiar el role del usuario principal',
+      };
+    }
     const newRole = role === 'admin' ? 'admin' : 'user';
     const user = await prisma.user.update({
       where: { id: userId },

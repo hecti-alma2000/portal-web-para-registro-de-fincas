@@ -6,4 +6,5 @@ export interface User {
   password: string;
   role: String;
   image?: string | null;
+  isPrimary?: boolean;
 }
