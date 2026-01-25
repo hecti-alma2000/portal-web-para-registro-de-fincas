@@ -1,6 +1,6 @@
 export const AgroturismoDescription = () => (
-  <div className="animate__animated animate__lightSpeedInLeft flex flex-col justify-center">
-    <h2 className="mb-4 text-center text-2xl font-semibold md:text-left">
+  <div className="animate__animated animate__lightSpeedInLeft flex flex-col justify-center p-6 shadow-lg rounded-xl prose dark:prose-invert max-w-none bg-white text-black dark:bg-zinc-900 dark:text-white">
+    <h2 className="mb-4 text-center text-2xl font-semibold md:text-left prose dark:prose-invert">
       ¿Qué es el Agroturismo?
     </h2>
     <p className="text-justify leading-relaxed">
@@ -12,4 +12,3 @@ export const AgroturismoDescription = () => (
     </p>
   </div>
 );
-//prose dark:prose-invert

@@ -11,53 +11,80 @@ export const LoginForm = () => {
   const router = useRouter();
   const [state, dispatch] = useActionState(authenticate, undefined);
   const [showPassword, setShowPassword] = React.useState(false);
+
   useEffect(() => {
     if (state === 'Success') {
-      // router.replace("/");
       window.location.replace('/');
     }
   }, [state]);
 
+  // Estilo común para inputs
+  const inputStyles =
+    'px-5 py-2 border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 rounded-xl focus:ring-2 focus:ring-green-500 outline-none transition-all';
+
   return (
-    <form action={dispatch} className="flex flex-col">
-      <label htmlFor="email">Correo electrónico</label>
-      <input className="px-5 py-2 border bg-gray-200 rounded mb-5" type="email" name="email" />
-      <label htmlFor="email">Contraseña</label>
-      <div className="relative">
+    <form action={dispatch} className="flex flex-col w-full">
+      <label htmlFor="email" className="mb-2 text-sm font-medium text-zinc-700 dark:text-zinc-300">
+        Correo electrónico
+      </label>
+      <input
+        className={`${inputStyles} mb-5`}
+        type="email"
+        name="email"
+        placeholder="correo@google.com"
+        required
+      />
+
+      <label
+        htmlFor="password"
+        className="mb-2 text-sm font-medium text-zinc-700 dark:text-zinc-300"
+      >
+        Contraseña
+      </label>
+      <div className="relative mb-2">
         <input
-          className="px-5 py-2 border bg-gray-200 rounded mb-1 pr-12 w-full"
+          className={`${inputStyles} w-full pr-12`}
           type={showPassword ? 'text' : 'password'}
           name="password"
+          placeholder="••••••••"
+          required
         />
         <button
           type="button"
-          aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
-          className="absolute right-3 top-0 bottom-0 m-auto h-9 w-9 flex items-center justify-center text-gray-600 bg-transparent border-0"
+          className="absolute right-3 top-0 bottom-0 m-auto h-9 w-9 flex items-center justify-center text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
           onMouseDown={() => setShowPassword(true)}
           onMouseUp={() => setShowPassword(false)}
           onMouseLeave={() => setShowPassword(false)}
-          onTouchStart={() => setShowPassword(true)}
-          onTouchEnd={() => setShowPassword(false)}
         >
-          {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+          {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
         </button>
       </div>
-      <div className="flex h-8 items-end space-x-1" aria-live="polite" aria-atomic="true">
+
+      {/* Mensaje de Error */}
+      <div className="flex h-10 items-center space-x-1" aria-live="polite">
         {state === 'CredentialsSignin' && (
-          <div className="mb-2 flex flex-row">
-            <OctagonAlert className="h-5 w-5 text-red-500" />{' '}
-            <p className="text-sm text-red-500">Las Credenciales no son Correctas </p>
+          <div className="flex items-center gap-2 bg-red-50 dark:bg-red-900/20 p-2 rounded-lg w-full">
+            <OctagonAlert className="h-4 w-4 text-red-600 dark:text-red-400" />
+            <p className="text-xs text-red-600 dark:text-red-400 font-medium">
+              Credenciales incorrectas
+            </p>
           </div>
         )}
       </div>
+
       <LoginButton />
-      {/* divisor line */}
-      <div className="flex items-center my-5">
-        <div className="flex-1 border-t border-gray-500"></div>
-        <div className="px-2 text-gray-800">O</div>
-        <div className="flex-1 border-t border-gray-500"></div>
+
+      {/* Divisor "O" adaptable */}
+      <div className="flex items-center my-6">
+        <div className="flex-1 border-t border-zinc-300 dark:border-zinc-700"></div>
+        <div className="px-3 text-zinc-500 dark:text-zinc-400 text-sm font-medium">O</div>
+        <div className="flex-1 border-t border-zinc-300 dark:border-zinc-700"></div>
       </div>
-      <Link href="/auth/new-account" className="btn-secondary text-center">
+
+      <Link
+        href="/auth/new-account"
+        className="text-center py-2 text-zinc-700 dark:text-zinc-300 hover:text-green-600 dark:hover:text-green-400 font-medium transition-colors"
+      >
         Crear una nueva cuenta
       </Link>
     </form>
@@ -69,13 +96,16 @@ export const LoginButton = () => {
   return (
     <button
       type="submit"
-      className={clsx({
-        'btn-primary': !pending,
-        'btn-disable': pending,
-      })}
+      className={clsx(
+        'w-full py-3 rounded-xl font-bold transition-all active:scale-[0.98] shadow-lg',
+        {
+          'bg-green-600 hover:bg-green-700 text-white shadow-green-900/20': !pending,
+          'bg-zinc-300 dark:bg-zinc-800 text-zinc-500 cursor-not-allowed': pending,
+        }
+      )}
       disabled={pending}
     >
-      Ingresar
+      {pending ? 'Ingresando...' : 'Ingresar'}
     </button>
   );
 };

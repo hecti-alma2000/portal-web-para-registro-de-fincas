@@ -52,7 +52,7 @@ const DetailItem = ({
   color?: string;
 }) => (
   <div className="flex justify-between items-start border-b pb-2">
-    <span className="text-sm font-medium text-gray-500">{label}</span>
+    <span className="text-sm font-medium ">{label}</span>
     <span className={`text-base font-semibold text-right ${color} flex items-center`}>
       <span className="mr-2">{icon}</span> {value}
     </span>
@@ -94,12 +94,12 @@ const renderTagList = (title: string, items: string[] | undefined) => {
 
   return (
     <div className="mb-6">
-      <h3 className="text-xl font-bold text-gray-800 mb-3">{title}</h3>
+      <h3 className="text-xl font-bold t mb-3">{title}</h3>
       <div className="flex flex-wrap gap-2">
         {items.map((item, index) => (
           <span
             key={index}
-            className="bg-blue-500 text-white text-sm font-medium px-3 py-1 rounded-full shadow-md"
+            className=" text-white text-sm font-medium px-3 py-1 rounded-full shadow-md"
           >
             {item}
           </span>
@@ -149,14 +149,14 @@ export const FincaDetails = ({ finca }: Props) => {
       {/* Volver y Encabezado */}
       <span
         onClick={handleBack}
-        className="cursor-pointer hover:underline hover:text-blue-500 inline-block text-gray-600 transition"
+        className="cursor-pointer hover:underline hover:text-blue-500 inline-block  transition"
         role="button"
       >
         ← Volver
       </span>
 
       <div className="mt-6 flex justify-between items-center border-b pb-4">
-        <h1 className="text-4xl font-extrabold text-gray-900 leading-tight">{finca.nombre}</h1>
+        <h1 className="text-4xl font-extrabold  leading-tight">{finca.nombre}</h1>
         {/* 🔑 Badge de Estado de Aprobación */}
         <StatusBadge status={finca.status} />
       </div>
@@ -174,7 +174,7 @@ export const FincaDetails = ({ finca }: Props) => {
       {/* --- Grid Principal: Imagen y Datos Clave --- */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-6">
         {/* Columna de la Imagen */}
-        <div className="lg:col-span-2 relative h-[400px] md:h-[600px] overflow-hidden rounded-xl shadow-2xl">
+        <div className="lg:col-span-2 relative h-100 md:h- overflow-hidden rounded-xl shadow-2xl">
           {finca.fotoUrl ? (
             <Image
               src={finca.fotoUrl}
@@ -190,7 +190,7 @@ export const FincaDetails = ({ finca }: Props) => {
             </div>
           )}
 
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent p-6 flex flex-col justify-end">
+          <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent p-6 flex flex-col justify-end">
             <span className="text-sm font-semibold text-white/80 uppercase">
               {finca.localizacion}
             </span>
@@ -241,7 +241,7 @@ export const FincaDetails = ({ finca }: Props) => {
       <div className="mt-12 space-y-10">
         {/* Descripción Detallada */}
         <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-lg">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Descripción y Detalle</h2>
+          <h2 className="text-2xl font-bold  mb-4">Descripción y Detalle</h2>
           <p className="text-gray-700 dark:text-gray-200 leading-relaxed whitespace-pre-line">
             {finca.descripcion || 'No se proporcionó una descripción detallada.'}
           </p>
@@ -252,9 +252,7 @@ export const FincaDetails = ({ finca }: Props) => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-white dark:bg-slate-800 p-6 rounded-xl shadow-lg">
             {finca.tradicionesHistoria && (
               <div>
-                <h3 className="text-xl font-bold text-gray-800 dark:text-white pt-4">
-                  Tradiciones e Historia
-                </h3>
+                <h3 className="text-xl font-bold  dark:text-white pt-4">Tradiciones e Historia</h3>
                 <p className="text-gray-600 dark:text-gray-300 leading-relaxed italic mt-2">
                   {finca.tradicionesHistoria}
                 </p>

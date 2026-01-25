@@ -105,7 +105,7 @@ export default function RegistroFincaPage({ fincas }: { fincas: Finca[] }) {
       {fincasList.length !== 0 && <h2 className="text-2xl text-green-500 mb-4">Lista de Fincas</h2>}
       <div className="w-full max-w-2xl">
         {fincasList.length === 0 ? (
-          <div className="text-center text-gray-500">No hay fincas activas registradas.</div>
+          <div className="text-center ">No hay fincas activas registradas.</div>
         ) : (
           <ul className="space-y-4">
             {fincasList.map((finca) => (

@@ -2,12 +2,10 @@
 
 import Script from 'next/script';
 import { useEffect, useState } from 'react';
-import { MessageSquare, RefreshCw, X } from 'lucide-react'; // Importamos el ícono X para cerrar
+import { MessageSquare, RefreshCw, X } from 'lucide-react';
 
 // URL principal del script de n8n
 const N8N_SCRIPT_URL = 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
-
-// --- CORRECCIÓN DE TIPADO PARA TYPESCRIPT ---
 
 interface N8nChatConfig {
   webhookUrl: string;
@@ -17,24 +15,20 @@ interface N8nChatConfig {
   subtitle: string;
   defaultOpen: boolean;
 }
+
 declare global {
   interface Window {
     createChat?: (config: N8nChatConfig) => void;
   }
 }
-// ---------------------------------------------
 
 export default function ChatWidget() {
-  // 1. Controla si el widget dinámico de n8n ha tomado el control.
   const [isN8nWidgetLoaded, setIsN8nWidgetLoaded] = useState(false);
-
-  // 2. Controla si el modal interno de fallback está abierto.
   const [isFallbackChatOpen, setIsFallbackChatOpen] = useState(false);
 
   useEffect(() => {
     if (typeof document === 'undefined') return;
 
-    // Inyectar CSS personalizado
     if (!document.getElementById('n8n-chat-custom')) {
       const customStyle = document.createElement('link');
       customStyle.id = 'n8n-chat-custom';
@@ -43,7 +37,6 @@ export default function ChatWidget() {
       document.head.appendChild(customStyle);
     }
 
-    // Cleanup del CSS personalizado al desmontar
     return () => {
       const c = document.getElementById('n8n-chat-custom');
       if (c && c.parentNode) c.parentNode.removeChild(c);
@@ -51,11 +44,8 @@ export default function ChatWidget() {
   }, []);
 
   const initializeN8nChat = () => {
-    // Intentamos inicializar el widget dinámico
     if (typeof window.createChat === 'function') {
-      // ÉXITO: El script cargó. N8n tomará el control.
       setIsN8nWidgetLoaded(true);
-
       window.createChat({
         webhookUrl:
           'https://nochonelpepe2.app.n8n.cloud/webhook/5f1c0c82-0ff9-40c7-9e2e-b1a96ffe24cd/chat',
@@ -69,67 +59,83 @@ export default function ChatWidget() {
   };
 
   const handleFallbackClick = () => {
-    // Si n8n no se cargó, abrimos el modal interno de indisponibilidad.
     if (!isN8nWidgetLoaded) {
       setIsFallbackChatOpen(true);
     }
-    // Si n8n se cargó, el botón ya debería estar oculto, pero si se clica,
-    // no hacemos nada porque el widget de n8n es el que debe manejar su apertura.
   };
 
   return (
     <>
-      {/* 1. Script principal de n8n. Llama a initializeN8nChat al cargarse. */}
       <Script src={N8N_SCRIPT_URL} strategy="lazyOnload" onLoad={initializeN8nChat} />
 
-      {/* 2. Botón/Widget Estático (FALLBACK): Siempre visible si el script de n8n no se cargó. */}
+      {/* 1. Botón Flotante de Carga/Fallback */}
       {!isN8nWidgetLoaded && (
         <button
-          // 🔑 Cambiamos el <a> por un <button> y le asignamos el manejador interno
           onClick={handleFallbackClick}
-          className="fixed bottom-6 right-6 z-9999 p-4 bg-green-500 text-white rounded-full shadow-lg hover:bg-green-600 transition-colors"
+          className="fixed bottom-6 right-6 z-[100] p-4 bg-green-600 dark:bg-green-500 text-white rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all duration-300 group"
           title="Abrir Chat"
         >
           <MessageSquare size={28} />
-
-          <span className="sr-only">Cargando chat o abrir chat de soporte</span>
-          <RefreshCw size={16} className="absolute top-0 right-0 animate-spin text-yellow-300" />
+          <span className="sr-only">Cargando chat...</span>
+          <RefreshCw
+            size={16}
+            className="absolute -top-1 -right-1 animate-spin text-yellow-400 bg-white dark:bg-zinc-800 rounded-full border border-zinc-200 dark:border-zinc-700 p-0.5"
+          />
         </button>
       )}
 
-      {/* 3. Modal de Error Interno (Aparece al hacer clic en el botón de fallback) */}
+      {/* 2. Modal de Error (Fallback) Adaptable */}
       {isFallbackChatOpen && (
-        <div
-          className="fixed inset-0 z-9998 flex items-end justify-end p-4 pointer-events-none"
-          // Backdrop para cerrar el chat al hacer clic fuera (opcional)
-        >
-          {/* 🔑 La ventana del chat de error */}
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-2xl w-full max-w-sm h-96 flex flex-col pointer-events-auto text-black dark:text-white prose dark:prose-invert">
-            {/* Header (Estilo WhatsApp) */}
-            <div className="bg-green-600 text-white p-4 rounded-t-lg flex justify-between items-center">
-              <h3 className="text-lg font-semibold">ChatBot Fincas</h3>
+        <div className="fixed inset-0 z-[110] flex items-end justify-end p-4 pointer-events-none sm:p-6">
+          <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] w-full max-w-[350px] h-[450px] flex flex-col pointer-events-auto border border-zinc-200 dark:border-zinc-800 transition-all duration-500 overflow-hidden animate-in slide-in-from-bottom-5">
+            {/* Header Estilo WhatsApp con degradado */}
+            <div className="bg-linear-to-r from-green-600 to-green-700 dark:from-green-700 dark:to-green-800 text-white p-5 flex justify-between items-center">
+              <div>
+                <h3 className="text-lg font-bold">ChatBot Fincas</h3>
+                <p className="text-xs text-green-100 opacity-80">No disponible</p>
+              </div>
               <button
                 onClick={() => setIsFallbackChatOpen(false)}
-                className="p-1 rounded-full hover:bg-green-700 transition"
+                className="p-2 rounded-full hover:bg-white/20 transition-colors"
               >
                 <X size={20} />
               </button>
             </div>
 
-            {/* Cuerpo del Mensaje de Error */}
-            <div className="grow p-4 text-center flex flex-col justify-center items-center">
-              <p className="text-xl text-red-600 font-bold mb-4">❌ Error de Conexión ❌</p>
-              <p className="text-gray-700 leading-relaxed">
-                El servicio automático de chat (n8n) no está disponible en este momento.
+            {/* Cuerpo del Mensaje */}
+            <div className="flex-1 p-6 text-center flex flex-col justify-center items-center bg-zinc-50 dark:bg-zinc-900/50">
+              <div className="w-16 h-16 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-full flex items-center justify-center mb-6">
+                <RefreshCw size={32} />
+              </div>
+
+              <h4 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 mb-2">
+                Error de Conexión
+              </h4>
+
+              <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed text-sm">
+                El servicio automático de chat no está disponible en este momento.
                 <br />
-                Por favor, inténtalo de nuevo más tarde.
+                <br />
+                Estamos trabajando para restaurar la conexión con <strong>n8n</strong>.
+              </p>
+
+              <button
+                onClick={() => window.location.reload()}
+                className="mt-8 px-6 py-2 bg-zinc-200 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 rounded-full text-sm font-semibold hover:bg-zinc-300 dark:hover:bg-zinc-700 transition-colors"
+              >
+                Reintentar
+              </button>
+            </div>
+
+            {/* Footer del Modal */}
+            <div className="p-3 bg-white dark:bg-zinc-950 text-center border-t border-zinc-100 dark:border-zinc-800">
+              <p className="text-[10px] text-zinc-400 uppercase tracking-widest">
+                Estado del Sistema
               </p>
             </div>
           </div>
         </div>
       )}
-
-      {null}
     </>
   );
 }

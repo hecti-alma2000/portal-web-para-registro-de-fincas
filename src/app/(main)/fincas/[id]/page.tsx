@@ -36,7 +36,7 @@ export default async function FincaDetailsPage({ params }: { params: Promise<{ i
   }
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="min-h-screen">
       <FincaDetails finca={finca} />
     </div>
   );

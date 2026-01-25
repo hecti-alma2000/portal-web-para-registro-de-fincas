@@ -49,21 +49,29 @@ export default function HeroBanner() {
     setNombre(f.nombre);
   }
 
+  // Función para limpiar la búsqueda
+  const clearSearch = () => {
+    setNombre('');
+    setSugerencias([]);
+    setDropdownVisible(false);
+  };
+
   return (
-    <section className="w-full relative flex flex-col items-center justify-start min-h-100 transition-all duration-500 overflow-hidden bg-white dark:bg-zinc-950 prose dark:prose-invert ">
-      {/* IMAGEN DE FONDO Y GRADIENTES */}
-      <div className="absolute inset-0 z-0">
+    /* Eliminamos overflow-hidden de la sección principal para que el dropdown no se corte */
+    <section className="w-full relative flex flex-col items-center justify-start min-h-[500px] transition-all duration-500 bg-white dark:bg-zinc-950">
+      {/* IMAGEN DE FONDO: Aquí sí aplicamos el recorte para que la imagen no se salga */}
+      <div className="absolute inset-0 z-0 overflow-hidden">
         <img
           src="/imgs_bg/pasadia-vinnales.webp"
           alt="Finca"
           className="object-cover w-full h-full brightness-110 dark:brightness-30 transition-all duration-700"
         />
-        <div className="absolute top-0 left-0 w-full h-48 bg-linear-to-b from-white dark:from-zinc-950 to-transparent transition-colors duration-500" />
-        <div className="absolute bottom-0 left-0 w-full h-48 bg-linear-to-t from-white dark:from-zinc-950 to-transparent transition-colors duration-500" />
+        <div className="absolute top-0 left-0 w-full h-48 bg-linear-to-b from-white dark:from-zinc-950 to-transparent" />
+        <div className="absolute bottom-0 left-0 w-full h-48 bg-linear-to-t from-white dark:from-zinc-950 to-transparent" />
       </div>
 
       {/* CONTENIDO */}
-      <div className="relative z-20 flex flex-col items-center w-full px-4 pt-24 prose dark:prose-invert">
+      <div className="relative z-20 flex flex-col items-center w-full px-4 pt-24">
         <h1
           className="text-5xl md:text-7xl font-bold text-white drop-shadow-[0_4px_20px_rgba(0,0,0,0.5)] mb-8 text-center"
           style={{ fontFamily: 'Pacifico, cursive' }}
@@ -71,24 +79,44 @@ export default function HeroBanner() {
           Fincas y Agroturismo
         </h1>
 
-        {/* BUSCADOR: Fondo sólido para que destaque en Light Mode */}
+        {/* BUSCADOR */}
         <form
-          className="bg-white dark:bg-zinc-900 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.2)] flex flex-row items-center gap-2 p-2 w-full max-w-2xl border border-gray-100 dark:border-zinc-800 transition-all "
+          className="bg-white dark:bg-zinc-900 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.2)] flex flex-row items-center gap-2 p-2 w-full max-w-2xl border border-gray-100 dark:border-zinc-800 transition-all relative"
           onSubmit={handleBuscar}
           autoComplete="off"
         >
-          <div className="relative flex-1">
+          <div className="relative flex-1 flex items-center">
             <input
               type="text"
               placeholder="¿Qué finca buscas hoy?..."
               value={nombre}
               onChange={handleInputChange}
-              className="bg-transparent border-none w-full focus:ring-0 text-xl py-3 px-4 outline-none text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400"
+              className="bg-transparent border-none w-full focus:ring-0 text-xl py-3 pl-4 pr-10 outline-none text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400"
             />
 
-            {/* SUGERENCIAS DROPDOWN */}
+            {/* BOTÓN X PARA LIMPIAR */}
+            {nombre && (
+              <button
+                type="button"
+                onClick={clearSearch}
+                className="absolute right-2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={2.5}
+                  stroke="currentColor"
+                  className="w-5 h-5"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            )}
+
+            {/* SUGERENCIAS DROPDOWN: Ajustado con Scroll y Z-Index alto */}
             {dropdownVisible && sugerencias.length > 0 && (
-              <ul className="absolute left-0 top-full mt-4 w-full bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl z-50 border border-gray-100 dark:border-zinc-800 overflow-hidden">
+              <ul className="absolute left-0 top-full mt-3 w-full bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl z-[100] border border-gray-100 dark:border-zinc-800 overflow-y-auto max-h-[300px] scrollbar-thin scrollbar-thumb-zinc-300 dark:scrollbar-thumb-zinc-700">
                 {sugerencias.map((f) => (
                   <li
                     key={f.id}
@@ -113,7 +141,7 @@ export default function HeroBanner() {
 
         {/* MODAL DE RESULTADOS */}
         {showModal && (
-          <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="fixed inset-0 z-150 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
             <div className="bg-white dark:bg-zinc-950 rounded-4xl shadow-3xl max-w-lg w-full relative border border-gray-100 dark:border-zinc-800 p-8 animate-in zoom-in-95 duration-200">
               <button
                 className="absolute top-6 right-6 text-zinc-400 hover:text-red-500 transition-colors"

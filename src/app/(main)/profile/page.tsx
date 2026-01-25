@@ -22,12 +22,10 @@ export default async function ProfilePage() {
   const fincasRegistradas = stats?.isAdmin ? stats.totalFincas : stats?.userFincas;
 
   return (
-    <div className="py-12 px-4 min-h-screen bg-gradient-to-b from-white to-slate-100">
+    <div className="py-12 px-4 min-h-screen  from-white to-slate-100 prose dark:prose-inevrt">
       <header className="text-center mb-10 reveal" data-delay="100">
-        <h1 className="text-4xl font-extrabold text-gray-900">Mi Perfil</h1>
-        <p className="text-lg text-gray-600 mt-2">
-          Gestiona tu información y visualiza tus estadísticas
-        </p>
+        <h1 className="text-4xl font-extrabold ">Mi Perfil</h1>
+        <p className="text-lg mt-2">Gestiona tu información y visualiza tus estadísticas</p>
       </header>
 
       <div className="max-w-7xl mx-auto space-y-8">
