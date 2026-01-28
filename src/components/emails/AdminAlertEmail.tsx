@@ -32,7 +32,7 @@ export const AdminAlertEmail = ({ nombreFinca, nombrePropietario }: AdminAlertEm
             {/*CABECERA CON LOGO Y TÍTULO ALINEADOS */}
             <div className="flex items-center justify-center my-8">
               <Img
-                src={`${baseUrl}/icons/logo.png`}
+                src={`/icons/logo.png`}
                 width="50"
                 height="50"
                 alt="Logo Agroturismo"
@@ -46,14 +46,14 @@ export const AdminAlertEmail = ({ nombreFinca, nombrePropietario }: AdminAlertEm
             <Text className="text-black text-[14px] leading-6">Hola Admin,</Text>
 
             <Text className="text-black text-[14px] leading-6">
-              El usuario <strong>{nombrePropietario}</strong> ha solicitado registrar la finca{' '}
-              <strong>"{nombreFinca}"</strong> y requiere de tu revisión técnica.
+              El usuario <strong>{nombrePropietario}</strong> ha solicitado registrar o editar la
+              finca <strong>"{nombreFinca}"</strong> y requiere de tu revisión técnica.
             </Text>
 
             {/* BOTÓN DE ACCIÓN PARA EL ADMIN */}
             <div className="text-center my-8">
               <Link
-                href={`${baseUrl}/admin/request`} // Sugerencia: Enviar al panel de solicitudes
+                href={`https://fincas.cuanticosurl.com/admin/request`} // Sugerencia: Enviar al panel de solicitudes
                 className="bg-black text-white px-6 py-3 rounded text-[14px] font-semibold no-underline inline-block"
               >
                 Revisar en el Panel Admin
