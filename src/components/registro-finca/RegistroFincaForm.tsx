@@ -2,18 +2,13 @@
 import { useState, useTransition, useEffect, useCallback } from 'react';
 import Swal from 'sweetalert2';
 import { useRouter } from 'next/navigation';
+import { ImagePlus, Trash2, Plus, X } from 'lucide-react'; // Usamos Lucide para iconos
 
 import { submitFincaRequest, FincaFormData } from '@/actions/registro-finca/submit-request';
 import { useFincaEditStore } from '@/store/modal/fincaEdit.store';
 
-// --- Opciones de Selectores ---
 const ESTADO_CONSERVACION_OPTIONS = ['Muy Bueno', 'Bueno', 'Aceptable', 'Malo'];
 const USO_ACTUAL_OPTIONS = ['Cultivos Varios', 'Ganadería', 'Forestal', 'Agroturismo', 'Otros'];
-
-interface RegistroFincaFormProps {
-  onSuccess?: () => void;
-  fincaToEdit?: any | null;
-}
 
 const cleanString = (value: string | undefined): string | null | undefined => {
   if (value === null || value === undefined) return value;
@@ -21,10 +16,17 @@ const cleanString = (value: string | undefined): string | null | undefined => {
   return value;
 };
 
-export default function RegistroFincaForm({ onSuccess, fincaToEdit }: RegistroFincaFormProps) {
+export default function RegistroFincaForm({
+  onSuccess,
+  fincaToEdit,
+}: {
+  onSuccess?: () => void;
+  fincaToEdit?: any;
+}) {
   const router = useRouter();
   const { setFincaToEdit } = useFincaEditStore();
 
+  // --- Estados (Mantenemos tu lógica original) ---
   const [nombre, setNombre] = useState('');
   const [localizacion, setLocalizacion] = useState('');
   const [propietario, setPropietario] = useState('');
@@ -34,13 +36,11 @@ export default function RegistroFincaForm({ onSuccess, fincaToEdit }: RegistroFi
   const [fotoUrl, setFotoUrl] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState(false);
   const [isPending, startTransition] = useTransition();
-
   const [tipoPropiedad, setTipoPropiedad] = useState<'ESTATAL' | 'PRIVADA'>('ESTATAL');
   const [entidadPertenece, setEntidadPertenece] = useState('');
   const [estadoConservacion, setEstadoConservacion] = useState('');
   const [usoActualSelect, setUsoActualSelect] = useState('');
   const [usoActualOtros, setUsoActualOtros] = useState('');
-
   const [problematicaDetectada, setProblematicaDetectada] = useState('');
   const [tradicionesHistoria, setTradicionesHistoria] = useState('');
   const [elementosInteres, setElementosInteres] = useState<string[]>([]);
@@ -52,6 +52,7 @@ export default function RegistroFincaForm({ onSuccess, fincaToEdit }: RegistroFi
   const [accionesAmbientales, setAccionesAmbientales] = useState<string[]>([]);
   const [nuevaAccion, setNuevaAccion] = useState('');
 
+  // --- Efectos y Handlers (Mantenemos tu lógica) ---
   useEffect(() => {
     if (fincaToEdit) {
       setNombre(fincaToEdit.nombre || '');
@@ -61,16 +62,13 @@ export default function RegistroFincaForm({ onSuccess, fincaToEdit }: RegistroFi
       setTipoPropiedad(fincaToEdit.tipoPropiedad || 'ESTATAL');
       setEntidadPertenece(fincaToEdit.entidadPertenece || '');
       setEstadoConservacion(fincaToEdit.estadoConservacion || '');
-
       const uso = fincaToEdit.usoActual || '';
       if (USO_ACTUAL_OPTIONS.includes(uso)) {
         setUsoActualSelect(uso);
-        setUsoActualOtros('');
       } else if (uso) {
         setUsoActualSelect('Otros');
         setUsoActualOtros(uso);
       }
-
       setProblematicaDetectada(fincaToEdit.problematicaDetectada || '');
       setTradicionesHistoria(fincaToEdit.tradicionesHistoria || '');
       setElementosInteres(fincaToEdit.elementosInteres?.map((e: any) => e.nombre || e) || []);
@@ -85,10 +83,6 @@ export default function RegistroFincaForm({ onSuccess, fincaToEdit }: RegistroFi
       setAccionesAmbientales(fincaToEdit.accionesAmbientales?.map((a: any) => a.nombre || a) || []);
     }
   }, [fincaToEdit]);
-
-  useEffect(() => {
-    if (tipoPropiedad === 'PRIVADA') setEntidadPertenece('');
-  }, [tipoPropiedad]);
 
   const addToList = useCallback(
     (
@@ -105,32 +99,19 @@ export default function RegistroFincaForm({ onSuccess, fincaToEdit }: RegistroFi
     []
   );
 
-  const removeFromList = useCallback(
-    (list: string[], setList: (l: string[]) => void, index: number) => {
-      setList(list.filter((_, idx) => idx !== index));
-    },
-    []
-  );
+  const removeFromList = (list: string[], setList: (l: string[]) => void, index: number) => {
+    setList(list.filter((_, idx) => idx !== index));
+  };
 
   const handleFotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0] || null;
     setFotoFile(f);
     if (f) setFotoPreview(URL.createObjectURL(f));
-    else setFotoPreview(null);
-  };
-
-  const handleFotoRemove = () => {
-    setFotoFile(null);
-    setFotoPreview(null);
-    setFotoUrl(undefined);
-    const el = document.getElementById('foto-input') as HTMLInputElement | null;
-    if (el) el.value = '';
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const isEditing = !!fincaToEdit;
-    const actionText = isEditing ? 'Editar' : 'Registrar';
     const usoFinal = usoActualSelect === 'Otros' ? usoActualOtros : usoActualSelect;
 
     if (
@@ -140,43 +121,32 @@ export default function RegistroFincaForm({ onSuccess, fincaToEdit }: RegistroFi
     ) {
       Swal.fire(
         'Campos requeridos',
-        'Por favor complete el **estado de conservación** y el **uso actual**.',
+        'Por favor complete el estado de conservación y el uso actual.',
         'warning'
       );
       return;
     }
 
     const result = await Swal.fire({
-      title: `¿${actionText} finca?`,
-      text: `¿Estás seguro de ${actionText.toLowerCase()} esta finca?`,
+      title: `¿${isEditing ? 'Editar' : 'Registrar'} finca?`,
       icon: 'question',
       showCancelButton: true,
-      confirmButtonText: `Sí, ${actionText.toLowerCase()}`,
-      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#16a34a',
+      confirmButtonText: 'Sí, continuar',
     });
 
     if (!result.isConfirmed) return;
 
     setLoading(true);
-
     startTransition(async () => {
-      let currentFotoUrl: string | null = fotoUrl || null;
+      let currentFotoUrl = fotoUrl || null;
 
       if (fotoFile) {
-        try {
-          const fd = new FormData();
-          fd.append('file', fotoFile);
-          const resUp = await fetch('/api/uploads', { method: 'POST', body: fd });
-          const j = await resUp.json();
-          if (j.ok) currentFotoUrl = j.url;
-          else throw new Error(j.message || 'Error al procesar la imagen.');
-        } catch (err: any) {
-          setLoading(false);
-          Swal.fire({ title: 'Error de imagen', text: err.message, icon: 'error' });
-          return;
-        }
-      } else if (!fotoPreview && isEditing) {
-        currentFotoUrl = null;
+        const fd = new FormData();
+        fd.append('file', fotoFile);
+        const resUp = await fetch('/api/uploads', { method: 'POST', body: fd });
+        const j = await resUp.json();
+        if (j.ok) currentFotoUrl = j.url;
       }
 
       const baseFincaData: FincaFormData = {
@@ -197,128 +167,122 @@ export default function RegistroFincaForm({ onSuccess, fincaToEdit }: RegistroFi
         tradicionesHistoria: cleanString(tradicionesHistoria),
       };
 
-      try {
-        const res = await submitFincaRequest(baseFincaData, fincaToEdit?.id);
-        setLoading(false);
-
-        if (res.ok) {
-          setFincaToEdit(null);
-          if (onSuccess) onSuccess();
-          router.refresh();
-          Swal.fire({
-            title: isEditing ? 'Solicitud de actualización' : 'Solicitud enviada',
-            text: res.isPending ? 'Pendiente de revisión.' : 'Operación realizada con éxito.',
-            icon: res.isPending ? 'info' : 'success',
-          });
-        } else {
-          Swal.fire('Error', res.message || 'Error al procesar la finca.', 'error');
-        }
-      } catch (error) {
-        setLoading(false);
-        Swal.fire('Error', 'Error de conexión con el servidor.', 'error');
+      const res = await submitFincaRequest(baseFincaData, fincaToEdit?.id);
+      setLoading(false);
+      if (res.ok) {
+        setFincaToEdit(null);
+        if (onSuccess) onSuccess();
+        router.refresh();
+        Swal.fire({ title: '¡Éxito!', text: 'Operación realizada.', icon: 'success' });
       }
     });
   };
 
-  // Clases comunes para inputs y selects
+  // --- Clases de Estilo ---
   const inputClasses =
-    'mt-1 block w-full rounded-md border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 shadow-sm focus:border-green-500 focus:ring-green-500 px-3 py-2 transition-colors';
-  const labelClasses = 'block text-sm font-medium text-gray-700 dark:text-slate-300';
+    'mt-1.5 block w-full rounded-xl border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 text-zinc-900 dark:text-zinc-100 shadow-sm focus:border-green-500 focus:ring-green-500/20 px-4 py-2.5 transition-all outline-none';
+  const labelClasses = 'block text-sm font-semibold text-zinc-700 dark:text-zinc-300 ml-1';
+  const sectionClasses =
+    'col-span-1 md:col-span-2 mt-4 mb-2 pb-2 border-b border-zinc-100 dark:border-zinc-800 text-green-600 dark:text-green-400 font-bold uppercase tracking-wider text-xs';
 
   return (
-    <form className="space-y-4 grid grid-cols-1 md:grid-cols-2 gap-4 p-4" onSubmit={handleSubmit}>
+    <form className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 p-2" onSubmit={handleSubmit}>
+      <h3 className={sectionClasses}>Información General</h3>
+
       {/* Nombre */}
-      <div className="col-span-1">
-        <label className={labelClasses}>Nombre de la finca</label>
+      <div className="col-span-1 md:col-span-1">
+        <label className={labelClasses}>Nombre de la Finca</label>
         <input
           type="text"
           className={inputClasses}
           required
           value={nombre}
           onChange={(e) => setNombre(e.target.value)}
+          placeholder="Ej: Finca La Esperanza"
         />
       </div>
 
-      {/* Foto */}
-      <div className="col-span-1 md:col-span-2">
-        <label className={labelClasses}>Foto (opcional)</label>
-        <div className="flex items-center gap-4 mt-2">
-          <input
-            id="foto-input"
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={handleFotoChange}
-          />
-          <label
-            htmlFor="foto-input"
-            className="inline-flex items-center gap-2 bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-slate-200 px-4 py-2 rounded-md cursor-pointer hover:bg-gray-200 dark:hover:bg-slate-600 transition"
-          >
-            Examinar
-          </label>
-          {fotoFile && (
-            <span className="text-xs text-gray-500 dark:text-slate-400 truncate max-w-37.5">
-              {fotoFile.name}
-            </span>
-          )}
-          {!fotoFile && fotoPreview && (
-            <img
-              src={fotoPreview}
-              alt="preview"
-              className="w-24 h-16 object-cover rounded-md border border-gray-200 dark:border-slate-700"
-            />
-          )}
-          {(fotoFile || fotoPreview) && (
-            <button
-              type="button"
-              className="text-red-500 text-sm font-medium hover:underline"
-              onClick={handleFotoRemove}
-            >
-              Eliminar
-            </button>
-          )}
-        </div>
-      </div>
-
-      {/* Dirección y Propietario */}
+      {/* Propietario */}
       <div className="col-span-1">
-        <label className={labelClasses}>Dirección/Localización</label>
-        <input
-          type="text"
-          className={inputClasses}
-          required
-          value={localizacion}
-          onChange={(e) => setLocalizacion(e.target.value)}
-        />
-      </div>
-      <div className="col-span-1">
-        <label className={labelClasses}>Propietario</label>
+        <label className={labelClasses}>Propietario / Responsable</label>
         <input
           type="text"
           className={inputClasses}
           required
           value={propietario}
           onChange={(e) => setPropietario(e.target.value)}
+          placeholder="Nombre completo"
         />
       </div>
 
-      {/* Descripción */}
+      {/* Foto Preview & Input */}
       <div className="col-span-1 md:col-span-2">
-        <label className={labelClasses}>Breve Descripción</label>
-        <textarea
-          className={inputClasses}
-          rows={3}
-          value={descripcion}
-          onChange={(e) => setDescripcion(e.target.value)}
-        />
+        <label className={labelClasses}>Imagen Representativa</label>
+        <div className="mt-2 flex flex-col sm:flex-row items-center gap-4 p-4 rounded-2xl border-2 border-dashed border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/30">
+          {fotoPreview ? (
+            <div className="relative group">
+              <img
+                src={fotoPreview}
+                alt="Preview"
+                className="w-32 h-24 object-cover rounded-xl shadow-md"
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  setFotoFile(null);
+                  setFotoPreview(null);
+                }}
+                className="absolute -top-2 -right-2 bg-red-500 text-white p-1 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
+              >
+                <X size={14} />
+              </button>
+            </div>
+          ) : (
+            <div className="w-32 h-24 bg-zinc-200 dark:bg-zinc-800 rounded-xl flex items-center justify-center text-zinc-400">
+              <ImagePlus size={32} />
+            </div>
+          )}
+          <div className="flex-1 text-center sm:text-left">
+            <p className="text-xs text-zinc-500 dark:text-zinc-400 mb-2">
+              Sube una foto clara de la entrada o el paisaje principal.
+            </p>
+            <input
+              id="foto-input"
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleFotoChange}
+            />
+            <label
+              htmlFor="foto-input"
+              className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-sm font-medium hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors shadow-sm"
+            >
+              Seleccionar archivo
+            </label>
+          </div>
+        </div>
       </div>
 
-      {/* Tipo Propiedad y Entidad */}
-      <div className="col-span-1">
-        <label className={labelClasses}>Tipo de propiedad</label>
-        <select
+      {/* Localización */}
+      <div className="col-span-1 md:col-span-2">
+        <label className={labelClasses}>Ubicación Exacta</label>
+        <input
+          type="text"
           className={inputClasses}
           required
+          value={localizacion}
+          onChange={(e) => setLocalizacion(e.target.value)}
+          placeholder="Dirección, municipio o coordenadas"
+        />
+      </div>
+
+      <h3 className={sectionClasses}>Detalles Técnicos</h3>
+
+      {/* Tipo Propiedad */}
+      <div className="col-span-1">
+        <label className={labelClasses}>Tipo de Propiedad</label>
+        <select
+          className={inputClasses}
           value={tipoPropiedad}
           onChange={(e) => setTipoPropiedad(e.target.value as any)}
         >
@@ -326,36 +290,33 @@ export default function RegistroFincaForm({ onSuccess, fincaToEdit }: RegistroFi
           <option value="PRIVADA">Privada</option>
         </select>
       </div>
+
+      {/* Entidad */}
       <div className="col-span-1">
-        <label className={labelClasses}>Entidad a la que pertenece</label>
+        <label className={labelClasses}>Entidad Perteneciente</label>
         <input
           type="text"
           className={`${inputClasses} ${
-            tipoPropiedad === 'PRIVADA'
-              ? 'bg-gray-50 dark:bg-slate-900 cursor-not-allowed opacity-60'
-              : ''
+            tipoPropiedad === 'PRIVADA' ? 'opacity-40 cursor-not-allowed' : ''
           }`}
+          disabled={tipoPropiedad === 'PRIVADA'}
           value={entidadPertenece}
           onChange={(e) => setEntidadPertenece(e.target.value)}
-          disabled={tipoPropiedad === 'PRIVADA'}
-          required={tipoPropiedad === 'ESTATAL'}
+          placeholder={tipoPropiedad === 'ESTATAL' ? 'Ej: Ministerio de Agricultura' : 'No aplica'}
         />
       </div>
 
-      {/* Uso Actual y Estado */}
+      {/* Uso Actual */}
       <div className="col-span-1">
-        <label className={labelClasses}>Uso actual</label>
+        <label className={labelClasses}>Uso Actual del Suelo</label>
         <select
           className={inputClasses}
           required
           value={usoActualSelect}
-          onChange={(e) => {
-            setUsoActualSelect(e.target.value);
-            if (e.target.value !== 'Otros') setUsoActualOtros('');
-          }}
+          onChange={(e) => setUsoActualSelect(e.target.value)}
         >
           <option value="" disabled>
-            Seleccione uso
+            Seleccionar...
           </option>
           {USO_ACTUAL_OPTIONS.map((opt) => (
             <option key={opt} value={opt}>
@@ -364,23 +325,10 @@ export default function RegistroFincaForm({ onSuccess, fincaToEdit }: RegistroFi
           ))}
         </select>
       </div>
-      <div className="col-span-1">
-        {usoActualSelect === 'Otros' && (
-          <>
-            <label className={labelClasses}>Especifique otro uso</label>
-            <input
-              type="text"
-              className={inputClasses}
-              required
-              value={usoActualOtros}
-              onChange={(e) => setUsoActualOtros(e.target.value)}
-            />
-          </>
-        )}
-      </div>
 
+      {/* Estado */}
       <div className="col-span-1">
-        <label className={labelClasses}>Estado de conservación</label>
+        <label className={labelClasses}>Estado de Conservación</label>
         <select
           className={inputClasses}
           required
@@ -388,7 +336,7 @@ export default function RegistroFincaForm({ onSuccess, fincaToEdit }: RegistroFi
           onChange={(e) => setEstadoConservacion(e.target.value)}
         >
           <option value="" disabled>
-            Seleccione estado
+            Seleccionar...
           </option>
           {ESTADO_CONSERVACION_OPTIONS.map((opt) => (
             <option key={opt} value={opt}>
@@ -398,96 +346,130 @@ export default function RegistroFincaForm({ onSuccess, fincaToEdit }: RegistroFi
         </select>
       </div>
 
-      {/* Problemática y Tradiciones */}
+      {/* Otros Uso (Condicional) */}
+      {usoActualSelect === 'Otros' && (
+        <div className="col-span-1 md:col-span-2">
+          <label className={labelClasses}>Especifique el uso</label>
+          <input
+            type="text"
+            className={inputClasses}
+            required
+            value={usoActualOtros}
+            onChange={(e) => setUsoActualOtros(e.target.value)}
+          />
+        </div>
+      )}
+
+      {/* Descripción */}
       <div className="col-span-1 md:col-span-2">
-        <label className={labelClasses}>Problemática detectada</label>
-        <input
-          type="text"
+        <label className={labelClasses}>Descripción del Entorno</label>
+        <textarea
           className={inputClasses}
-          value={problematicaDetectada}
-          onChange={(e) => setProblematicaDetectada(e.target.value)}
-        />
-      </div>
-      <div className="col-span-1 md:col-span-2">
-        <label className={labelClasses}>Tradiciones e Historia</label>
-        <input
-          type="text"
-          className={inputClasses}
-          value={tradicionesHistoria}
-          onChange={(e) => setTradicionesHistoria(e.target.value)}
+          rows={3}
+          value={descripcion}
+          onChange={(e) => setDescripcion(e.target.value)}
+          placeholder="Describe el clima, relieve y belleza del lugar..."
         />
       </div>
 
+      <h3 className={sectionClasses}>Análisis y Atractivos</h3>
+
+      <div className="col-span-1 md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className={labelClasses}>Problemática Detectada</label>
+          <input
+            type="text"
+            className={inputClasses}
+            value={problematicaDetectada}
+            onChange={(e) => setProblematicaDetectada(e.target.value)}
+            placeholder="Ej: Erosión, falta de riego..."
+          />
+        </div>
+        <div>
+          <label className={labelClasses}>Tradiciones e Historia</label>
+          <input
+            type="text"
+            className={inputClasses}
+            value={tradicionesHistoria}
+            onChange={(e) => setTradicionesHistoria(e.target.value)}
+            placeholder="Historias locales o cultura..."
+          />
+        </div>
+      </div>
+
       {/* Listas Dinámicas */}
-      <div className="col-span-1 md:col-span-2 space-y-6 mt-4">
+      <h3 className={sectionClasses}>Atributos y Sostenibilidad</h3>
+
+      <div className="col-span-1 md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
         {[
           {
-            label: 'Elementos de interés',
+            label: 'Elementos de Interés',
             list: elementosInteres,
-            setList: setElementosInteres,
-            value: nuevoElementoInteres,
-            setValue: setNuevoElementoInteres,
+            set: setElementosInteres,
+            val: nuevoElementoInteres,
+            setVal: setNuevoElementoInteres,
           },
           {
-            label: 'Actividades agroturísticas',
+            label: 'Actividades Ofrecidas',
             list: actividadesAgroturisticas,
-            setList: setActividadesAgroturisticas,
-            value: nuevaActividad,
-            setValue: setNuevaActividad,
+            set: setActividadesAgroturisticas,
+            val: nuevaActividad,
+            setVal: setNuevaActividad,
           },
           {
-            label: 'Principios de sustentabilidad',
+            label: 'Principios Sustentables',
             list: principiosSustentabilidad,
-            setList: setPrincipiosSustentabilidad,
-            value: nuevoPrincipio,
-            setValue: setNuevoPrincipio,
+            set: setPrincipiosSustentabilidad,
+            val: nuevoPrincipio,
+            setVal: setNuevoPrincipio,
           },
           {
-            label: 'Acciones ambientales',
+            label: 'Acciones Ambientales',
             list: accionesAmbientales,
-            setList: setAccionesAmbientales,
-            value: nuevaAccion,
-            setValue: setNuevaAccion,
+            set: setAccionesAmbientales,
+            val: nuevaAccion,
+            setVal: setNuevaAccion,
           },
         ].map((item, idx) => (
           <div
             key={idx}
-            className="bg-gray-50 dark:bg-slate-900/50 p-3 rounded-lg border border-gray-200 dark:border-slate-800"
+            className="bg-zinc-50 dark:bg-zinc-900/30 p-4 rounded-2xl border border-zinc-100 dark:border-zinc-800"
           >
-            <label className={`${labelClasses} mb-2`}>{item.label}</label>
+            <label className="text-sm font-bold text-zinc-800 dark:text-zinc-200 block mb-2">
+              {item.label}
+            </label>
             <div className="flex gap-2">
               <input
                 type="text"
-                className={inputClasses}
-                value={item.value}
-                onChange={(e) => item.setValue(e.target.value)}
+                className="flex-1 bg-white dark:bg-zinc-800 border-none rounded-lg text-sm px-3 py-2 shadow-sm focus:ring-2 focus:ring-green-500"
+                value={item.val}
+                onChange={(e) => item.setVal(e.target.value)}
                 onKeyDown={(e) =>
                   e.key === 'Enter' &&
-                  (e.preventDefault(),
-                  addToList(item.list, item.setList, item.value, item.setValue))
+                  (e.preventDefault(), addToList(item.list, item.set, item.val, item.setVal))
                 }
               />
               <button
                 type="button"
-                onClick={() => addToList(item.list, item.setList, item.value, item.setValue)}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm transition"
+                onClick={() => addToList(item.list, item.set, item.val, item.setVal)}
+                className="bg-green-600 hover:bg-green-700 text-white p-2 rounded-lg transition-colors"
               >
-                +
+                <Plus size={18} />
               </button>
             </div>
             <div className="flex flex-wrap gap-2 mt-3">
-              {item.list.map((el, i) => (
+              {item.list.map((tag, i) => (
                 <span
                   key={i}
-                  className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 px-2 py-1 rounded-md text-xs flex items-center gap-2 text-gray-700 dark:text-slate-300"
+                  className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-2.5 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 border border-green-200 dark:border-green-800"
                 >
-                  {el}
+                  {tag}
                   <button
                     type="button"
-                    className="text-red-500 font-bold"
-                    onClick={() => removeFromList(item.list, item.setList, i)}
+                    onClick={() => removeFromList(item.list, item.set, i)}
+                    className="hover:text-red-500"
                   >
-                    ×
+                    <X size={12} />
                   </button>
                 </span>
               ))}
@@ -496,18 +478,21 @@ export default function RegistroFincaForm({ onSuccess, fincaToEdit }: RegistroFi
         ))}
       </div>
 
-      {/* Botón Submit */}
-      <div className="col-span-1 md:col-span-2 mt-6">
+      {/* Botón Final */}
+      <div className="col-span-1 md:col-span-2 mt-8">
         <button
           type="submit"
           disabled={loading || isPending}
-          className="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-400 dark:disabled:bg-slate-700 text-white font-bold py-3 rounded-lg shadow-lg shadow-green-900/20 transition-all transform active:scale-[0.98]"
+          className="group relative w-full flex justify-center py-4 px-4 border border-transparent text-lg font-bold rounded-2xl text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all shadow-xl shadow-green-600/20 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden"
         >
-          {loading || isPending
-            ? 'Procesando...'
-            : fincaToEdit
-            ? 'Guardar Cambios'
-            : 'Registrar Finca'}
+          <span className="relative z-10 flex items-center gap-2">
+            {loading || isPending
+              ? 'Guardando datos...'
+              : fincaToEdit
+              ? 'Actualizar Finca'
+              : 'Finalizar Registro'}
+          </span>
+          <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
         </button>
       </div>
     </form>

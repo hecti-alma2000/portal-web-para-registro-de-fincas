@@ -1,13 +1,15 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState, Fragment } from 'react';
+import { useState, Fragment, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { Transition } from '@headlessui/react';
 import { DropdownMenu } from './ui/DropdownMenu';
 import { ThemeToggle } from './ui/ThemeToggle';
-import { signOut, useSession } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
+import { getPendingRequestsCount } from '@/actions/registro-finca/get-pending-count'; // 👈 Importamos la action
 
+// Importamos iconos dinámicos (sin cambios)
 const DynamicHome = dynamic(() => import('lucide-react').then((mod) => mod.Home), { ssr: false });
 const DynamicSearch = dynamic(() => import('lucide-react').then((mod) => mod.Search), {
   ssr: false,
@@ -26,14 +28,11 @@ const DynamicShieldCheck = dynamic(() => import('lucide-react').then((mod) => mo
 });
 const DynamicMenu = dynamic(() => import('lucide-react').then((mod) => mod.Menu), { ssr: false });
 const DynamicX = dynamic(() => import('lucide-react').then((mod) => mod.X), { ssr: false });
-const DynamicLogOut = dynamic(() => import('lucide-react').then((mod) => mod.LogOut), {
+const DynamicBell = dynamic(() => import('lucide-react').then((mod) => mod.BellRing), {
   ssr: false,
-});
-const DynamicShield = dynamic(() => import('lucide-react').then((mod) => mod.Shield), {
-  ssr: false,
-});
+}); // 👈 Nuevo icono
 
-const navigation = [
+const baseNavigation = [
   { href: '/', name: 'Inicio', Icon: DynamicHome },
   { href: '/registro-finca', name: 'Registrar', Icon: DynamicPlusCircle },
   { href: '/certificacion', name: 'Certificar', Icon: DynamicShieldCheck },
@@ -46,8 +45,37 @@ export default function MainNav() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const { data: session } = useSession();
-  const isAuthenticated = !!session?.user;
   const isAdmin = session?.user?.role === 'admin';
+
+  // Estado para las notificaciones
+  const [pendingCount, setPendingCount] = useState(0);
+
+  // Efecto para consultar notificaciones si es admin
+  useEffect(() => {
+    if (isAdmin) {
+      const fetchCount = async () => {
+        const count = await getPendingRequestsCount();
+        setPendingCount(count);
+      };
+
+      fetchCount();
+
+      // Opcional: Polling cada 60 segundos para actualizar sin recargar
+      const interval = setInterval(fetchCount, 60000);
+      return () => clearInterval(interval);
+    }
+  }, [isAdmin]);
+
+  // Construimos la navegación final agregando el link de admin si corresponde
+  const navigation = [...baseNavigation];
+
+  if (isAdmin) {
+    navigation.push({
+      href: '/admin/request', // Asegúrate que esta sea tu ruta real
+      name: 'Solicitudes',
+      Icon: DynamicBell,
+    });
+  }
 
   return (
     <nav className="sticky top-0 z-50 w-full bg-white dark:bg-zinc-950 border-b border-zinc-100 dark:border-zinc-900 transition-colors duration-500 prose dark:prose-invert">
@@ -59,7 +87,7 @@ export default function MainNav() {
             alt="Logo"
             className="h-12 w-12 transition-transform group-hover:rotate-6"
           />
-          <span className="text-green-700 dark:text-green-500 text-2xl font-bold tracking-tight">
+          <span className="text-green-700 dark:text-green-500 text-2xl font-bold tracking-tight hidden md:block">
             Turismo Alternativo
           </span>
         </Link>
@@ -68,8 +96,11 @@ export default function MainNav() {
         <div className="hidden lg:flex items-center space-x-2">
           {navigation.map((item) => {
             const active = pathname === item.href;
+            // Detectamos si es el ítem de Solicitudes para mostrar el badge
+            const isRequestsItem = item.name === 'Solicitudes';
+
             return (
-              <Link key={item.name} href={item.href}>
+              <Link key={item.name} href={item.href} className="relative group">
                 <span
                   className={`flex flex-col items-center px-4 py-2 rounded-2xl transition-all ${
                     active
@@ -77,7 +108,17 @@ export default function MainNav() {
                       : 'text-zinc-800 dark:text-zinc-400 hover:text-green-600 hover:bg-zinc-50 dark:hover:bg-zinc-900'
                   }`}
                 >
-                  <item.Icon className="w-5 h-5 mb-1" />
+                  <div className="relative">
+                    <item.Icon className="w-5 h-5 mb-1" />
+
+                    {/* 🔴 BADGE DE NOTIFICACIÓN */}
+                    {isRequestsItem && pendingCount > 0 && (
+                      <span className="absolute -top-1 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] text-white animate-pulse">
+                        {pendingCount > 9 ? '+9' : pendingCount}
+                      </span>
+                    )}
+                  </div>
+
                   <span className="text-[10px] font-bold uppercase tracking-widest">
                     {item.name}
                   </span>
@@ -95,6 +136,17 @@ export default function MainNav() {
 
         {/* MOBILE TOGGLE */}
         <div className="lg:hidden flex items-center gap-3">
+          {/* Si es admin, mostramos un badge pequeño también en móvil cerca del menú */}
+          {isAdmin && pendingCount > 0 && (
+            <Link
+              href="/admin/requests"
+              className="relative p-2 bg-zinc-100 dark:bg-zinc-800 rounded-full mr-2"
+            >
+              <DynamicBell className="w-5 h-5 text-zinc-600 dark:text-zinc-300" />
+              <span className="absolute top-0 right-0 h-3 w-3 bg-red-500 rounded-full border-2 border-white dark:border-zinc-950"></span>
+            </Link>
+          )}
+
           <ThemeToggle />
           <button
             onClick={() => setIsOpen(!isOpen)}
@@ -118,25 +170,36 @@ export default function MainNav() {
       >
         <div className="absolute top-20 inset-x-0 bg-white dark:bg-zinc-950 border-b border-zinc-200 dark:border-zinc-800 shadow-2xl lg:hidden">
           <div className="p-4 space-y-2">
-            {navigation.map((item) => (
-              <Link
-                key={item.name}
-                href={item.href}
-                onClick={() => setIsOpen(false)}
-                className="block"
-              >
-                <span
-                  className={`flex items-center p-4 rounded-xl text-lg font-semibold ${
-                    pathname === item.href
-                      ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400'
-                      : 'text-zinc-900 dark:text-zinc-300'
-                  }`}
+            {navigation.map((item) => {
+              const isRequestsItem = item.name === 'Solicitudes';
+              return (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  onClick={() => setIsOpen(false)}
+                  className="block"
                 >
-                  <item.Icon className="mr-4 w-6 h-6" />
-                  {item.name}
-                </span>
-              </Link>
-            ))}
+                  <span
+                    className={`flex items-center justify-between p-4 rounded-xl text-lg font-semibold ${
+                      pathname === item.href
+                        ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400'
+                        : 'text-zinc-900 dark:text-zinc-300'
+                    }`}
+                  >
+                    <div className="flex items-center">
+                      <item.Icon className="mr-4 w-6 h-6" />
+                      {item.name}
+                    </div>
+                    {/* Badge para Móvil dentro del menú */}
+                    {isRequestsItem && pendingCount > 0 && (
+                      <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                        {pendingCount} Nuevas
+                      </span>
+                    )}
+                  </span>
+                </Link>
+              );
+            })}
           </div>
         </div>
       </Transition>

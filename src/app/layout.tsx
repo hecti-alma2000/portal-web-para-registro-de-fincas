@@ -6,7 +6,7 @@ import { Providers as ThemeProviders } from '@/components/Providers';
 // Client ScrollReveal component (client component - can be statically imported)
 import ScrollReveal from '@/components/ScrollReveal';
 import { auth } from '@/auth.config';
-
+import { Toaster } from 'sonner';
 export const metadata = {
   title: 'Portal web para el registro de fincas',
   description: '',
@@ -30,6 +30,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <SessionProviders session={session}>
             <ScrollReveal />
             {children}
+            <Toaster position="top-center" richColors />
           </SessionProviders>
         </ThemeProviders>
       </body>
