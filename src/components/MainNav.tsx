@@ -1,4 +1,5 @@
 'use client';
+
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, Fragment, useEffect } from 'react';
@@ -6,11 +7,13 @@ import dynamic from 'next/dynamic';
 import { Transition } from '@headlessui/react';
 import { DropdownMenu } from './ui/DropdownMenu';
 import { ThemeToggle } from './ui/ThemeToggle';
-import { useSession } from 'next-auth/react';
-import { getPendingRequestsCount } from '@/actions/registro-finca/get-pending-count'; // 👈 Importamos la action
+import { useSession, signIn, signOut } from 'next-auth/react';
+import { getPendingRequestsCount } from '@/actions/registro-finca/get-pending-count';
 
-// Importamos iconos dinámicos (sin cambios)
-const DynamicHome = dynamic(() => import('lucide-react').then((mod) => mod.Home), { ssr: false });
+// ICONOS DINÁMICOS
+const DynamicHome = dynamic(() => import('lucide-react').then((mod) => mod.Home), {
+  ssr: false,
+});
 const DynamicSearch = dynamic(() => import('lucide-react').then((mod) => mod.Search), {
   ssr: false,
 });
@@ -26,11 +29,21 @@ const DynamicTractor = dynamic(() => import('lucide-react').then((mod) => mod.Tr
 const DynamicShieldCheck = dynamic(() => import('lucide-react').then((mod) => mod.ShieldCheck), {
   ssr: false,
 });
-const DynamicMenu = dynamic(() => import('lucide-react').then((mod) => mod.Menu), { ssr: false });
-const DynamicX = dynamic(() => import('lucide-react').then((mod) => mod.X), { ssr: false });
+const DynamicMenu = dynamic(() => import('lucide-react').then((mod) => mod.Menu), {
+  ssr: false,
+});
+const DynamicX = dynamic(() => import('lucide-react').then((mod) => mod.X), {
+  ssr: false,
+});
 const DynamicBell = dynamic(() => import('lucide-react').then((mod) => mod.BellRing), {
   ssr: false,
-}); // 👈 Nuevo icono
+});
+const DynamicLogIn = dynamic(() => import('lucide-react').then((mod) => mod.LogIn), {
+  ssr: false,
+});
+const DynamicLogOut = dynamic(() => import('lucide-react').then((mod) => mod.LogOut), {
+  ssr: false,
+});
 
 const baseNavigation = [
   { href: '/', name: 'Inicio', Icon: DynamicHome },
@@ -44,13 +57,14 @@ const baseNavigation = [
 export default function MainNav() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+
+  const isAuthenticated = status === 'authenticated';
   const isAdmin = session?.user?.role === 'admin';
 
-  // Estado para las notificaciones
+  // NOTIFICACIONES ADMIN
   const [pendingCount, setPendingCount] = useState(0);
 
-  // Efecto para consultar notificaciones si es admin
   useEffect(() => {
     if (isAdmin) {
       const fetchCount = async () => {
@@ -60,18 +74,17 @@ export default function MainNav() {
 
       fetchCount();
 
-      // Opcional: Polling cada 60 segundos para actualizar sin recargar
       const interval = setInterval(fetchCount, 60000);
       return () => clearInterval(interval);
     }
   }, [isAdmin]);
 
-  // Construimos la navegación final agregando el link de admin si corresponde
+  // CONSTRUCCIÓN NAV FINAL
   const navigation = [...baseNavigation];
 
   if (isAdmin) {
     navigation.push({
-      href: '/admin/request', // Asegúrate que esta sea tu ruta real
+      href: '/admin/request',
       name: 'Solicitudes',
       Icon: DynamicBell,
     });
@@ -96,7 +109,6 @@ export default function MainNav() {
         <div className="hidden lg:flex items-center space-x-2">
           {navigation.map((item) => {
             const active = pathname === item.href;
-            // Detectamos si es el ítem de Solicitudes para mostrar el badge
             const isRequestsItem = item.name === 'Solicitudes';
 
             return (
@@ -111,7 +123,6 @@ export default function MainNav() {
                   <div className="relative">
                     <item.Icon className="w-5 h-5 mb-1" />
 
-                    {/* 🔴 BADGE DE NOTIFICACIÓN */}
                     {isRequestsItem && pendingCount > 0 && (
                       <span className="absolute -top-1 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] text-white animate-pulse">
                         {pendingCount > 9 ? '+9' : pendingCount}
@@ -128,15 +139,15 @@ export default function MainNav() {
           })}
 
           <div className="h-8 w-px bg-zinc-200 dark:bg-zinc-800 mx-4" />
+
           <div className="flex items-center gap-3">
             <ThemeToggle />
             <DropdownMenu />
           </div>
         </div>
 
-        {/* MOBILE TOGGLE */}
+        {/* MOBILE HEADER */}
         <div className="lg:hidden flex items-center gap-3">
-          {/* Si es admin, mostramos un badge pequeño también en móvil cerca del menú */}
           {isAdmin && pendingCount > 0 && (
             <Link
               href="/admin/requests"
@@ -148,6 +159,7 @@ export default function MainNav() {
           )}
 
           <ThemeToggle />
+
           <button
             onClick={() => setIsOpen(!isOpen)}
             className="p-2 text-zinc-900 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg"
@@ -172,6 +184,7 @@ export default function MainNav() {
           <div className="p-4 space-y-2">
             {navigation.map((item) => {
               const isRequestsItem = item.name === 'Solicitudes';
+
               return (
                 <Link
                   key={item.name}
@@ -190,7 +203,7 @@ export default function MainNav() {
                       <item.Icon className="mr-4 w-6 h-6" />
                       {item.name}
                     </div>
-                    {/* Badge para Móvil dentro del menú */}
+
                     {isRequestsItem && pendingCount > 0 && (
                       <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
                         {pendingCount} Nuevas
@@ -200,6 +213,35 @@ export default function MainNav() {
                 </Link>
               );
             })}
+
+            {/* ?? NUEVA SECCIÓN LOGIN / LOGOUT EN MOBILE */}
+            <div className="border-t border-zinc-200 dark:border-zinc-800 pt-4 mt-4 space-y-2">
+              {!isAuthenticated && (
+                <button
+                  onClick={() => {
+                    setIsOpen(false);
+                    signIn();
+                  }}
+                  className="w-full flex items-center p-4 rounded-xl text-lg font-semibold text-zinc-900 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-900"
+                >
+                  <DynamicLogIn className="mr-4 w-6 h-6" />
+                  Ingresar
+                </button>
+              )}
+
+              {isAuthenticated && (
+                <button
+                  onClick={() => {
+                    setIsOpen(false);
+                    signOut();
+                  }}
+                  className="w-full flex items-center p-4 rounded-xl text-lg font-semibold text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+                >
+                  <DynamicLogOut className="mr-4 w-6 h-6" />
+                  Salir
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </Transition>
