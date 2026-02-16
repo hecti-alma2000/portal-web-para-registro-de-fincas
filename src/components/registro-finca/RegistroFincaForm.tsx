@@ -2,13 +2,14 @@
 import { useState, useTransition, useEffect, useCallback } from 'react';
 import Swal from 'sweetalert2';
 import { useRouter } from 'next/navigation';
-import { ImagePlus, Trash2, Plus, X } from 'lucide-react'; // Usamos Lucide para iconos
+import { ImagePlus, Trash2, Plus, X } from 'lucide-react';
 
 import { submitFincaRequest, FincaFormData } from '@/actions/registro-finca/submit-request';
 import { useFincaEditStore } from '@/store/modal/fincaEdit.store';
 
 const ESTADO_CONSERVACION_OPTIONS = ['Muy Bueno', 'Bueno', 'Aceptable', 'Malo'];
 const USO_ACTUAL_OPTIONS = ['Cultivos Varios', 'Ganadería', 'Forestal', 'Agroturismo', 'Otros'];
+const DRAFT_KEY = 'registro_finca_draft'; // Llave para guardar el borrador
 
 const cleanString = (value: string | undefined): string | null | undefined => {
   if (value === null || value === undefined) return value;
@@ -26,7 +27,6 @@ export default function RegistroFincaForm({
   const router = useRouter();
   const { setFincaToEdit } = useFincaEditStore();
 
-  // --- Estados (Mantenemos tu lógica original) ---
   const [nombre, setNombre] = useState('');
   const [localizacion, setLocalizacion] = useState('');
   const [propietario, setPropietario] = useState('');
@@ -52,9 +52,10 @@ export default function RegistroFincaForm({
   const [accionesAmbientales, setAccionesAmbientales] = useState<string[]>([]);
   const [nuevaAccion, setNuevaAccion] = useState('');
 
-  // --- Efectos y Handlers (Mantenemos tu lógica) ---
+  // 1. CARGAR DATOS (Edición o Borrador)
   useEffect(() => {
     if (fincaToEdit) {
+      // Modo Edición: Cargar datos del servidor
       setNombre(fincaToEdit.nombre || '');
       setLocalizacion(fincaToEdit.localizacion || '');
       setPropietario(fincaToEdit.propietario || '');
@@ -81,8 +82,75 @@ export default function RegistroFincaForm({
         fincaToEdit.principiosSustentabilidad?.map((p: any) => p.nombre || p) || []
       );
       setAccionesAmbientales(fincaToEdit.accionesAmbientales?.map((a: any) => a.nombre || a) || []);
+    } else {
+      // Modo Creación: Recuperar borrador de LocalStorage si la página se refrescó accidentalmente
+      const savedDraft = localStorage.getItem(DRAFT_KEY);
+      if (savedDraft) {
+        try {
+          const parsed = JSON.parse(savedDraft);
+          setNombre(parsed.nombre || '');
+          setLocalizacion(parsed.localizacion || '');
+          setPropietario(parsed.propietario || '');
+          setDescripcion(parsed.descripcion || '');
+          setTipoPropiedad(parsed.tipoPropiedad || 'ESTATAL');
+          setEntidadPertenece(parsed.entidadPertenece || '');
+          setEstadoConservacion(parsed.estadoConservacion || '');
+          setUsoActualSelect(parsed.usoActualSelect || '');
+          setUsoActualOtros(parsed.usoActualOtros || '');
+          setProblematicaDetectada(parsed.problematicaDetectada || '');
+          setTradicionesHistoria(parsed.tradicionesHistoria || '');
+          setElementosInteres(parsed.elementosInteres || []);
+          setActividadesAgroturisticas(parsed.actividadesAgroturisticas || []);
+          setPrincipiosSustentabilidad(parsed.principiosSustentabilidad || []);
+          setAccionesAmbientales(parsed.accionesAmbientales || []);
+        } catch (e) {
+          console.error('Error parseando borrador', e);
+        }
+      }
     }
   }, [fincaToEdit]);
+
+  // 2. GUARDAR BORRADOR AUTOMÁTICAMENTE
+  useEffect(() => {
+    // Solo guardamos borrador si es un registro nuevo (no edición)
+    if (!fincaToEdit) {
+      const formDraft = {
+        nombre,
+        localizacion,
+        propietario,
+        descripcion,
+        tipoPropiedad,
+        entidadPertenece,
+        estadoConservacion,
+        usoActualSelect,
+        usoActualOtros,
+        problematicaDetectada,
+        tradicionesHistoria,
+        elementosInteres,
+        actividadesAgroturisticas,
+        principiosSustentabilidad,
+        accionesAmbientales,
+      };
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(formDraft));
+    }
+  }, [
+    nombre,
+    localizacion,
+    propietario,
+    descripcion,
+    tipoPropiedad,
+    entidadPertenece,
+    estadoConservacion,
+    usoActualSelect,
+    usoActualOtros,
+    problematicaDetectada,
+    tradicionesHistoria,
+    elementosInteres,
+    actividadesAgroturisticas,
+    principiosSustentabilidad,
+    accionesAmbientales,
+    fincaToEdit,
+  ]);
 
   const addToList = useCallback(
     (
@@ -107,6 +175,15 @@ export default function RegistroFincaForm({
     const f = e.target.files?.[0] || null;
     setFotoFile(f);
     if (f) setFotoPreview(URL.createObjectURL(f));
+  };
+
+  // 3. PREVENIR SUBMIT AL PRESIONAR "ENTER" EN LOS CAMPOS
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
+    // Si presionan Enter, y el elemento no es un TextArea ni un botón, evitamos el submit.
+    const target = e.target as HTMLElement;
+    if (e.key === 'Enter' && target.tagName !== 'TEXTAREA' && target.tagName !== 'BUTTON') {
+      e.preventDefault();
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -139,46 +216,76 @@ export default function RegistroFincaForm({
 
     setLoading(true);
     startTransition(async () => {
-      let currentFotoUrl = fotoUrl || null;
+      // 4. BLOQUE TRY-CATCH PARA PREVENIR CRASHES DEL COMPONENTE
+      try {
+        let currentFotoUrl = fotoUrl || null;
 
-      if (fotoFile) {
-        const fd = new FormData();
-        fd.append('file', fotoFile);
-        const resUp = await fetch('/api/uploads', { method: 'POST', body: fd });
-        const j = await resUp.json();
-        if (j.ok) currentFotoUrl = j.url;
-      }
+        if (fotoFile) {
+          const fd = new FormData();
+          fd.append('file', fotoFile);
+          const resUp = await fetch('/api/uploads', { method: 'POST', body: fd });
 
-      const baseFincaData: FincaFormData = {
-        nombre,
-        localizacion,
-        propietario,
-        elementosInteres,
-        actividadesAgroturisticas,
-        principiosSustentabilidad,
-        accionesAmbientales,
-        descripcion: cleanString(descripcion),
-        fotoUrl: currentFotoUrl,
-        tipoPropiedad,
-        entidadPertenece: tipoPropiedad === 'PRIVADA' ? null : cleanString(entidadPertenece),
-        usoActual: cleanString(usoFinal),
-        estadoConservacion: cleanString(estadoConservacion),
-        problematicaDetectada: cleanString(problematicaDetectada),
-        tradicionesHistoria: cleanString(tradicionesHistoria),
-      };
+          if (!resUp.ok) throw new Error('Error al subir la imagen');
 
-      const res = await submitFincaRequest(baseFincaData, fincaToEdit?.id);
-      setLoading(false);
-      if (res.ok) {
-        setFincaToEdit(null);
-        if (onSuccess) onSuccess();
-        router.refresh();
-        Swal.fire({ title: '¡Éxito!', text: 'Operación realizada.', icon: 'success' });
+          const j = await resUp.json();
+          if (j.ok) currentFotoUrl = j.url;
+          else throw new Error(j.message || 'Error en el servidor de imágenes');
+        }
+
+        const baseFincaData: FincaFormData = {
+          nombre,
+          localizacion,
+          propietario,
+          elementosInteres,
+          actividadesAgroturisticas,
+          principiosSustentabilidad,
+          accionesAmbientales,
+          descripcion: cleanString(descripcion),
+          fotoUrl: currentFotoUrl,
+          tipoPropiedad,
+          entidadPertenece: tipoPropiedad === 'PRIVADA' ? null : cleanString(entidadPertenece),
+          usoActual: cleanString(usoFinal),
+          estadoConservacion: cleanString(estadoConservacion),
+          problematicaDetectada: cleanString(problematicaDetectada),
+          tradicionesHistoria: cleanString(tradicionesHistoria),
+        };
+
+        const res = await submitFincaRequest(baseFincaData, fincaToEdit?.id);
+
+        if (res.ok) {
+          // Si todo salió bien, limpiamos el borrador de LocalStorage
+          localStorage.removeItem(DRAFT_KEY);
+
+          setFincaToEdit(null);
+          if (onSuccess) onSuccess();
+          router.refresh();
+          Swal.fire({
+            title: '¡Éxito!',
+            text: 'Operación realizada correctamente.',
+            icon: 'success',
+          });
+        } else {
+          // Si la API responde con un error pero no crashea
+          Swal.fire(
+            'Error',
+            res.message || 'Error al guardar los datos en base de datos.',
+            'error'
+          );
+        }
+      } catch (error: any) {
+        // Si hay una excepción en el fetch, Next.js no se romperá, lo atrapamos aquí
+        console.error('Error crítico durante el envío:', error);
+        Swal.fire(
+          'Error Crítico',
+          error.message || 'No se pudo conectar con el servidor.',
+          'error'
+        );
+      } finally {
+        setLoading(false); // Garantizamos que siempre se desactiva el loading
       }
     });
   };
 
-  // --- Clases de Estilo ---
   const inputClasses =
     'mt-1.5 block w-full rounded-xl border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 text-zinc-900 dark:text-zinc-100 shadow-sm focus:border-green-500 focus:ring-green-500/20 px-4 py-2.5 transition-all outline-none';
   const labelClasses = 'block text-sm font-semibold text-zinc-700 dark:text-zinc-300 ml-1';
@@ -186,10 +293,13 @@ export default function RegistroFincaForm({
     'col-span-1 md:col-span-2 mt-4 mb-2 pb-2 border-b border-zinc-100 dark:border-zinc-800 text-green-600 dark:text-green-400 font-bold uppercase tracking-wider text-xs';
 
   return (
-    <form className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 p-2" onSubmit={handleSubmit}>
+    <form
+      className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 p-2"
+      onSubmit={handleSubmit}
+      onKeyDown={handleKeyDown} // Evitar el Enter en todo el form
+    >
       <h3 className={sectionClasses}>Información General</h3>
 
-      {/* Nombre */}
       <div className="col-span-1 md:col-span-1">
         <label className={labelClasses}>Nombre de la Finca</label>
         <input
@@ -202,7 +312,6 @@ export default function RegistroFincaForm({
         />
       </div>
 
-      {/* Propietario */}
       <div className="col-span-1">
         <label className={labelClasses}>Propietario / Responsable</label>
         <input
@@ -215,7 +324,6 @@ export default function RegistroFincaForm({
         />
       </div>
 
-      {/* Foto Preview & Input */}
       <div className="col-span-1 md:col-span-2">
         <label className={labelClasses}>Imagen Representativa</label>
         <div className="mt-2 flex flex-col sm:flex-row items-center gap-4 p-4 rounded-2xl border-2 border-dashed border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/30">
@@ -263,7 +371,6 @@ export default function RegistroFincaForm({
         </div>
       </div>
 
-      {/* Localización */}
       <div className="col-span-1 md:col-span-2">
         <label className={labelClasses}>Ubicación Exacta</label>
         <input
@@ -278,7 +385,6 @@ export default function RegistroFincaForm({
 
       <h3 className={sectionClasses}>Detalles Técnicos</h3>
 
-      {/* Tipo Propiedad */}
       <div className="col-span-1">
         <label className={labelClasses}>Tipo de Propiedad</label>
         <select
@@ -291,7 +397,6 @@ export default function RegistroFincaForm({
         </select>
       </div>
 
-      {/* Entidad */}
       <div className="col-span-1">
         <label className={labelClasses}>Entidad Perteneciente</label>
         <input
@@ -306,7 +411,6 @@ export default function RegistroFincaForm({
         />
       </div>
 
-      {/* Uso Actual */}
       <div className="col-span-1">
         <label className={labelClasses}>Uso Actual del Suelo</label>
         <select
@@ -326,7 +430,6 @@ export default function RegistroFincaForm({
         </select>
       </div>
 
-      {/* Estado */}
       <div className="col-span-1">
         <label className={labelClasses}>Estado de Conservación</label>
         <select
@@ -346,7 +449,6 @@ export default function RegistroFincaForm({
         </select>
       </div>
 
-      {/* Otros Uso (Condicional) */}
       {usoActualSelect === 'Otros' && (
         <div className="col-span-1 md:col-span-2">
           <label className={labelClasses}>Especifique el uso</label>
@@ -360,7 +462,6 @@ export default function RegistroFincaForm({
         </div>
       )}
 
-      {/* Descripción */}
       <div className="col-span-1 md:col-span-2">
         <label className={labelClasses}>Descripción del Entorno</label>
         <textarea
@@ -397,7 +498,6 @@ export default function RegistroFincaForm({
         </div>
       </div>
 
-      {/* Listas Dinámicas */}
       <h3 className={sectionClasses}>Atributos y Sostenibilidad</h3>
 
       <div className="col-span-1 md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -444,10 +544,12 @@ export default function RegistroFincaForm({
                 className="flex-1 bg-white dark:bg-zinc-800 border-none rounded-lg text-sm px-3 py-2 shadow-sm focus:ring-2 focus:ring-green-500"
                 value={item.val}
                 onChange={(e) => item.setVal(e.target.value)}
-                onKeyDown={(e) =>
-                  e.key === 'Enter' &&
-                  (e.preventDefault(), addToList(item.list, item.set, item.val, item.setVal))
-                }
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault(); // Detenemos propagación explícita
+                    addToList(item.list, item.set, item.val, item.setVal);
+                  }
+                }}
               />
               <button
                 type="button"
@@ -478,7 +580,6 @@ export default function RegistroFincaForm({
         ))}
       </div>
 
-      {/* Botón Final */}
       <div className="col-span-1 md:col-span-2 mt-8">
         <button
           type="submit"
