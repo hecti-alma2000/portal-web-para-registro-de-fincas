@@ -53,7 +53,7 @@ export const AdminAlertEmail = ({ nombreFinca, nombrePropietario }: AdminAlertEm
             {/* BOTÓN DE ACCIÓN PARA EL ADMIN */}
             <div className="text-center my-8">
               <Link
-                href={`https://fincas.cuanticosurl.com/admin/request`} // Sugerencia: Enviar al panel de solicitudes
+                href={`https://fincas.cuanticosurl.com/admin/request`}
                 className="bg-black text-white px-6 py-3 rounded text-[14px] font-semibold no-underline inline-block"
               >
                 Revisar en el Panel Admin

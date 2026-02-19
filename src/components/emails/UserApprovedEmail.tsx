@@ -77,7 +77,7 @@ export const UserApprovedEmail = ({ nombreFinca, nombreUsuario }: UserApprovedEm
             {/* 3. BOTÓN O LINK DE ACCIÓN */}
             <Section className="text-center mt-8 mb-8">
               <Link
-                href={`${baseUrl}/fincas`}
+                href={`https://fincas.cuanticosurl.com/fincas`}
                 className="bg-green-600 rounded text-white text-[14px] font-semibold no-underline text-center px-5 py-3"
               >
                 Ver mi finca en el portal

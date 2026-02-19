@@ -52,9 +52,7 @@ export const LoginForm = () => {
         <button
           type="button"
           className="absolute right-3 top-0 bottom-0 m-auto h-9 w-9 flex items-center justify-center text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
-          onMouseDown={() => setShowPassword(true)}
-          onMouseUp={() => setShowPassword(false)}
-          onMouseLeave={() => setShowPassword(false)}
+          onClick={() => setShowPassword(!showPassword)}
         >
           {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
         </button>
