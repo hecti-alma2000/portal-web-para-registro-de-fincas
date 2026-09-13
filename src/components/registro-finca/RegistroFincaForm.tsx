@@ -2,10 +2,16 @@
 import { useState, useTransition, useEffect, useCallback } from 'react';
 import Swal from 'sweetalert2';
 import { useRouter } from 'next/navigation';
-import { ImagePlus, Trash2, Plus, X } from 'lucide-react';
+import dynamic from 'next/dynamic';
+import { ImagePlus, Trash2, Plus, X, MapPin } from 'lucide-react';
 
 import { submitFincaRequest, FincaFormData } from '@/actions/registro-finca/submit-request';
 import { useFincaEditStore } from '@/store/modal/fincaEdit.store';
+
+const DynamicCoordinatePicker = dynamic(
+  () => import('./CoordinatePicker').then((mod) => mod.CoordinatePicker),
+  { ssr: false }
+);
 
 const ESTADO_CONSERVACION_OPTIONS = ['Muy Bueno', 'Bueno', 'Aceptable', 'Malo'];
 const USO_ACTUAL_OPTIONS = ['Cultivos Varios', 'Ganadería', 'Forestal', 'Agroturismo', 'Otros'];
@@ -34,6 +40,8 @@ export default function RegistroFincaForm({
   const [fotoFile, setFotoFile] = useState<File | null>(null);
   const [fotoPreview, setFotoPreview] = useState<string | null>(null);
   const [fotoUrl, setFotoUrl] = useState<string | undefined>(undefined);
+  const [latitude, setLatitude] = useState('');
+  const [longitude, setLongitude] = useState('');
   const [loading, setLoading] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [tipoPropiedad, setTipoPropiedad] = useState<'ESTATAL' | 'PRIVADA'>('ESTATAL');
@@ -75,6 +83,8 @@ export default function RegistroFincaForm({
       setElementosInteres(fincaToEdit.elementosInteres?.map((e: any) => e.nombre || e) || []);
       setFotoPreview(fincaToEdit.fotoUrl || null);
       setFotoUrl(fincaToEdit.fotoUrl || undefined);
+      setLatitude(fincaToEdit.latitude != null ? String(fincaToEdit.latitude) : '');
+      setLongitude(fincaToEdit.longitude != null ? String(fincaToEdit.longitude) : '');
       setActividadesAgroturisticas(
         fincaToEdit.actividadesAgroturisticas?.map((a: any) => a.nombre || a) || []
       );
@@ -103,6 +113,8 @@ export default function RegistroFincaForm({
           setActividadesAgroturisticas(parsed.actividadesAgroturisticas || []);
           setPrincipiosSustentabilidad(parsed.principiosSustentabilidad || []);
           setAccionesAmbientales(parsed.accionesAmbientales || []);
+          setLatitude(parsed.latitude || '');
+          setLongitude(parsed.longitude || '');
         } catch (e) {
           console.error('Error parseando borrador', e);
         }
@@ -126,6 +138,8 @@ export default function RegistroFincaForm({
         usoActualOtros,
         problematicaDetectada,
         tradicionesHistoria,
+        latitude,
+        longitude,
         elementosInteres,
         actividadesAgroturisticas,
         principiosSustentabilidad,
@@ -145,6 +159,8 @@ export default function RegistroFincaForm({
     usoActualOtros,
     problematicaDetectada,
     tradicionesHistoria,
+    latitude,
+    longitude,
     elementosInteres,
     actividadesAgroturisticas,
     principiosSustentabilidad,
@@ -204,6 +220,45 @@ export default function RegistroFincaForm({
       return;
     }
 
+    // Validación de coordenadas (opcionales, pero si se indica una debe indicarse la otra)
+    const latTrim = latitude.trim();
+    const lngTrim = longitude.trim();
+    let parsedLat: number | null = null;
+    let parsedLng: number | null = null;
+
+    if (latTrim === '' && lngTrim !== '') {
+      Swal.fire(
+        'Coordenadas incompletas',
+        'Indicó una longitud pero falta la latitud. Debe completar ambas o dejar ambas vacías.',
+        'warning'
+      );
+      return;
+    }
+    if (lngTrim === '' && latTrim !== '') {
+      Swal.fire(
+        'Coordenadas incompletas',
+        'Indicó una latitud pero falta la longitud. Debe completar ambas o dejar ambas vacías.',
+        'warning'
+      );
+      return;
+    }
+    if (latTrim !== '' && lngTrim !== '') {
+      parsedLat = Number(latTrim);
+      parsedLng = Number(lngTrim);
+      if (!Number.isFinite(parsedLat) || !Number.isFinite(parsedLng)) {
+        Swal.fire('Coordenadas inválidas', 'Introduzca valores numéricos válidos.', 'warning');
+        return;
+      }
+      if (parsedLat < -90 || parsedLat > 90 || parsedLng < -180 || parsedLng > 180) {
+        Swal.fire(
+          'Coordenadas fuera de rango',
+          'La latitud debe estar entre -90 y 90, y la longitud entre -180 y 180.',
+          'warning'
+        );
+        return;
+      }
+    }
+
     const result = await Swal.fire({
       title: `¿${isEditing ? 'Editar' : 'Registrar'} finca?`,
       icon: 'question',
@@ -248,6 +303,8 @@ export default function RegistroFincaForm({
           estadoConservacion: cleanString(estadoConservacion),
           problematicaDetectada: cleanString(problematicaDetectada),
           tradicionesHistoria: cleanString(tradicionesHistoria),
+          latitude: parsedLat,
+          longitude: parsedLng,
         };
 
         const res = await submitFincaRequest(baseFincaData, fincaToEdit?.id);
@@ -381,6 +438,49 @@ export default function RegistroFincaForm({
           onChange={(e) => setLocalizacion(e.target.value)}
           placeholder="Dirección, municipio o coordenadas"
         />
+      </div>
+
+      <div className="col-span-1 md:col-span-2">
+        <p className="flex items-center gap-2 text-sm font-bold text-zinc-700 dark:text-zinc-300 ml-1 mb-2">
+          <MapPin className="w-4 h-4 text-green-600" />
+          Coordenadas Geográficas (opcional)
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+          <div>
+            <label className={labelClasses}>Latitud</label>
+            <input
+              type="number"
+              step="any"
+              className={inputClasses}
+              value={latitude}
+              onChange={(e) => setLatitude(e.target.value)}
+              placeholder="Ej: 20.869128"
+            />
+          </div>
+          <div>
+            <label className={labelClasses}>Longitud</label>
+            <input
+              type="number"
+              step="any"
+              className={inputClasses}
+              value={longitude}
+              onChange={(e) => setLongitude(e.target.value)}
+              placeholder="Ej: -76.653746"
+            />
+          </div>
+        </div>
+        <DynamicCoordinatePicker
+          latitude={latitude}
+          longitude={longitude}
+          onChange={(lat, lng) => {
+            setLatitude(lat);
+            setLongitude(lng);
+          }}
+        />
+        <p className="mt-2 text-[11px] text-zinc-400 dark:text-zinc-500">
+          Las fincas con coordenadas se muestran automáticamente en el Mapa de Exploración. Si deja
+          estos campos vacíos, la finca se publicará únicamente en el catálogo.
+        </p>
       </div>
 
       <h3 className={sectionClasses}>Detalles Técnicos</h3>

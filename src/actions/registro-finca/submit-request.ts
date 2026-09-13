@@ -22,6 +22,8 @@ export type FincaFormData = {
   estadoConservacion?: string | null;
   problematicaDetectada?: string | null;
   tradicionesHistoria?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
   elementosInteres: string[];
   actividadesAgroturisticas: string[];
   principiosSustentabilidad: string[];
@@ -58,6 +60,8 @@ export async function submitFincaRequest(data: FincaFormData, fincaId?: number) 
       estadoConservacion: data.estadoConservacion,
       problematicaDetectada: data.problematicaDetectada,
       tradicionesHistoria: data.tradicionesHistoria,
+      latitude: data.latitude ?? null,
+      longitude: data.longitude ?? null,
     };
 
     let finca;

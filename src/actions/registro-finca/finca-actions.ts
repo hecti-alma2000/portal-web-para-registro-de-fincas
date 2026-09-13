@@ -3,6 +3,7 @@ import { auth } from '@/auth.config';
 import prisma from '@/lib/prisma';
 import fs from 'fs';
 import path from 'path';
+import type { MapFinca } from '@/interfaces/finca-map.interface';
 
 export async function getAllFincas() {
   try {
@@ -121,5 +122,52 @@ export async function getFincaByName(nombre: string) {
     return finca;
   } catch (error) {
     return null;
+  }
+}
+
+// Fincas aprobadas con coordenadas geográficas, listas para dibujarse en el mapa
+export async function getPublicMapFincas(): Promise<MapFinca[]> {
+  try {
+    const fincas = await prisma.finca.findMany({
+      where: {
+        status: 'APPROVED',
+        latitude: { not: null },
+        longitude: { not: null },
+      },
+      select: {
+        id: true,
+        nombre: true,
+        fotoUrl: true,
+        localizacion: true,
+        propietario: true,
+        tipoPropiedad: true,
+        usoActual: true,
+        estadoConservacion: true,
+        latitude: true,
+        longitude: true,
+        diagnosticos: {
+          select: { resultadoFinal: true },
+          take: 1,
+        },
+      },
+      orderBy: { nombre: 'asc' },
+    });
+
+    return fincas.map((f) => ({
+      id: f.id,
+      nombre: f.nombre,
+      fotoUrl: f.fotoUrl,
+      localizacion: f.localizacion,
+      propietario: f.propietario,
+      tipoPropiedad: f.tipoPropiedad,
+      usoActual: f.usoActual,
+      estadoConservacion: f.estadoConservacion,
+      latitude: f.latitude as number,
+      longitude: f.longitude as number,
+      certificada: (f.diagnosticos ?? []).some((d) => d.resultadoFinal === 'Apta'),
+    }));
+  } catch (error) {
+    console.error('Error obteniendo fincas para el mapa:', error);
+    return [];
   }
 }

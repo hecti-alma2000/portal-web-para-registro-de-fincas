@@ -36,6 +36,8 @@ type FincaDataTemplate = {
   problematicaDetectada: string | null;
   tradicionesHistoria: string | null;
   fotoUrl: string | null;
+  latitude?: number;
+  longitude?: number;
   // 🔑 Nuevos campos de lista
   elementosInteres: string[];
   actividadesAgroturisticas: string[];
@@ -58,6 +60,8 @@ const fincasDataTemplate: FincaDataTemplate[] = [
     problematicaDetectada: 'Falta de insumos',
     tradicionesHistoria: 'Mantiene tradiciones campesinas.',
     fotoUrl: '/uploads/la-bendecida.webp',
+    latitude: 20.88586,
+    longitude: -76.66603,
     // 🔑 Datos de las listas (nuevos)
     elementosInteres: ['Espejo de agua', 'Vegetación acuática', 'Minindustria'],
     actividadesAgroturisticas: ['Degustación de conservas', 'Observación de aves'],
@@ -79,6 +83,8 @@ const fincasDataTemplate: FincaDataTemplate[] = [
     tradicionesHistoria:
       'Declarada de referencia nacional en diversificación agropecuaria y coto genético.',
     fotoUrl: '/uploads/el-troncon.webp',
+    latitude: 20.86979227902078,
+    longitude: -76.65062229885747,
     // 🔑 Datos de las listas
     elementosInteres: ['Jardín ornamental', 'Coto genético', 'Especies exóticas'],
     actividadesAgroturisticas: ['Tour por coto genético', 'Rutas por sendero'],
@@ -104,6 +110,8 @@ const fincasDataTemplate: FincaDataTemplate[] = [
     problematicaDetectada: null,
     tradicionesHistoria: 'Mantiene las tradiciones campesinas y desarrollo de reforestación.',
     fotoUrl: '/uploads/la-gloria.webp',
+    latitude: 20.869128,
+    longitude: -76.653746,
     elementosInteres: ['Minindustria', 'Áreas boscosas'],
     actividadesAgroturisticas: ['Visita a minindustria', 'Reforestación participativa'],
     principiosSustentabilidad: ['Valor agregado', 'Suelo saludable'],
@@ -141,6 +149,8 @@ const fincasDataTemplate: FincaDataTemplate[] = [
     problematicaDetectada: null,
     tradicionesHistoria: 'Especializada en cítricos, con comercialización al sector turismo.',
     fotoUrl: '/uploads/la-prospera.webp',
+    latitude: 20.90925,
+    longitude: -76.6241,
     elementosInteres: ['Cultivos cítricos', 'Recursos turísticos'],
     actividadesAgroturisticas: ['Cosecha de cítricos', 'Venta a turismo'],
     principiosSustentabilidad: ['Comercialización directa', 'Monocultivo diversificado'],
@@ -159,6 +169,8 @@ const fincasDataTemplate: FincaDataTemplate[] = [
     problematicaDetectada: null,
     tradicionesHistoria: 'Presencia de siete palmas reales, símbolo nacional, en el paisaje.',
     fotoUrl: '/uploads/la-margarita.webp',
+    latitude: 20.90083,
+    longitude: -76.53986,
     elementosInteres: ['Palmas reales (símbolo nacional)', 'Cultivo de limón'],
     actividadesAgroturisticas: ['Avistamiento de palmas'],
     principiosSustentabilidad: ['Respeto a la flora nativa'],
@@ -177,6 +189,8 @@ const fincasDataTemplate: FincaDataTemplate[] = [
     problematicaDetectada: null,
     tradicionesHistoria: 'Un riachuelo atraviesa la propiedad, ideal para actividades.',
     fotoUrl: '/uploads/la-alegria.webp',
+    latitude: 20.85272,
+    longitude: -76.52072,
     elementosInteres: ['Riachuelo'],
     actividadesAgroturisticas: ['Senderismo acuático'],
     principiosSustentabilidad: ['Recurso hídrico'],
@@ -196,6 +210,8 @@ const fincasDataTemplate: FincaDataTemplate[] = [
     tradicionesHistoria:
       'Reconocimiento a diferentes niveles por rendimiento de leche y carne. Polígono de experimentación.',
     fotoUrl: '/uploads/las-maravillas.webp',
+    latitude: 20.86202,
+    longitude: -76.62822,
     elementosInteres: ['Polígono de experimentación', 'Inseminación artificial'],
     actividadesAgroturisticas: ['Tour de genética bovina', 'Visita a cultivos orgánicos'],
     principiosSustentabilidad: ['Innovación', 'Fertilizantes orgánicos'],

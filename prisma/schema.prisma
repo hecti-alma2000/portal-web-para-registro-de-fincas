@@ -54,6 +54,9 @@ model Finca {
   estadoConservacion          String?
   problematicaDetectada       String?
   tradicionesHistoria         String?
+  // Coordenadas geográficas opcionales para mostrar la finca en el mapa
+  latitude                    Float?
+  longitude                   Float?
   infraestructura             InfraestructuraFinca?
   createdAt                   DateTime @default(now())
   updatedAt                   DateTime @updatedAt

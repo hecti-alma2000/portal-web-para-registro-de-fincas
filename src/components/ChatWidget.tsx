@@ -24,7 +24,7 @@ declare global {
 
 export default function ChatWidget() {
   const [isN8nWidgetLoaded, setIsN8nWidgetLoaded] = useState(false);
-  const [isFallbackChatOpen, setIsFallbackChatOpen] = useState(false);
+  const [isFallbackChatOpen, setIsFallbackChatOpen] = useState(true);
 
   useEffect(() => {
     if (typeof document === 'undefined') return;
@@ -48,7 +48,7 @@ export default function ChatWidget() {
       setIsN8nWidgetLoaded(true);
       window.createChat({
         webhookUrl:
-          'https://nochonelpepe2.app.n8n.cloud/webhook/5f1c0c82-0ff9-40c7-9e2e-b1a96ffe24cd/chat',
+          'https://hecti-alma00.app.n8n.cloud/webhook/b02d7b64-fa54-4eda-a4d5-2d781041c918/chat',
         webhookConfig: { method: 'POST' },
         theme: 'whatsapp',
         title: 'ChatBot Fincas',

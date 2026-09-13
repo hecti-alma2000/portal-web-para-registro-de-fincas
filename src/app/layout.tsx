@@ -7,9 +7,29 @@ import { Providers as ThemeProviders } from '@/components/Providers';
 import ScrollReveal from '@/components/ScrollReveal';
 import { auth } from '@/auth.config';
 import { Toaster } from 'sonner';
-export const metadata = {
+import type { Metadata, Viewport } from 'next';
+
+export const metadata: Metadata = {
   title: 'Portal web para el registro de fincas',
-  description: '',
+  description: 'Sistema web para el registro, certificación y exploración de fincas agroturísticas.',
+  applicationName: 'Registro de Fincas',
+  manifest: '/manifest.webmanifest',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'Registro de Fincas',
+  },
+  icons: {
+    icon: [
+      { url: '/icons/icon-192x192.png', type: 'image/png', sizes: '192x192' },
+      { url: '/icons/icon-512x512.png', type: 'image/png', sizes: '512x512' },
+    ],
+    apple: [{ url: '/icons/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }],
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: '#16a34a',
 };
 
 //  CAMBIO CLAVE: Función asíncrona para obtener la sesión del servidor
