@@ -1,4 +1,5 @@
 'use client';
+import { useEffect } from 'react';
 import Image from 'next/image';
 import { useRegistroFincaModalStore } from '@/store/modal/registroFincaModal.store';
 import { useFincaEditStore } from '@/store/modal/fincaEdit.store';
@@ -10,21 +11,37 @@ export default function RegistroFincaModal() {
   const fincaToEdit = useFincaEditStore((state) => state.fincaToEdit);
   const setFincaToEdit = useFincaEditStore((state) => state.setFincaToEdit);
 
+  const handleClose = () => {
+    close();
+    setFincaToEdit(null);
+  };
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') handleClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   return (
     // AGREGADO: backdrop-blur-sm bg-black/50 (más oscuro para mejor enfoque)
-    <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/60 p-4">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/60 p-4"
+      onClick={handleClose}
+    >
       <div
         className="bg-white dark:bg-slate-800 text-zinc-900 dark:text-zinc-100 rounded-2xl shadow-2xl w-full max-w-4xl h-[90vh] flex flex-col relative border border-zinc-200 dark:border-slate-700"
         style={{ maxHeight: '90vh' }}
+        onClick={(e) => e.stopPropagation()}
       >
         <button
           className="absolute top-4 right-4 p-2 rounded-full hover:bg-zinc-100 dark:hover:bg-slate-700 text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-white transition-all z-10"
-          onClick={() => {
-            close();
-            setFincaToEdit(null);
-          }}
+          onClick={handleClose}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -88,13 +105,7 @@ export default function RegistroFincaModal() {
         </div>
 
         <div className="overflow-y-auto flex-1 p-6 sm:p-8">
-          <RegistroFincaForm
-            onSuccess={() => {
-              close();
-              setFincaToEdit(null);
-            }}
-            fincaToEdit={fincaToEdit}
-          />
+          <RegistroFincaForm onSuccess={handleClose} fincaToEdit={fincaToEdit} />
         </div>
       </div>
     </div>

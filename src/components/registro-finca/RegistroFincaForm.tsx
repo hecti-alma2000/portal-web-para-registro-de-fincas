@@ -1,6 +1,6 @@
 'use client';
 import { useState, useTransition, useEffect, useCallback } from 'react';
-import Swal from 'sweetalert2';
+import Swal from '@/lib/swal';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { ImagePlus, Trash2, Plus, X, MapPin } from 'lucide-react';

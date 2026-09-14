@@ -16,6 +16,15 @@ export default function HeroSearch() {
     getPublicFincas().then((fincas) => setTodasFincas(fincas || []));
   }, []);
 
+  useEffect(() => {
+    if (!showModal) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setShowModal(false);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [showModal]);
+
   async function handleBuscar(e: React.FormEvent) {
     e.preventDefault();
     if (!nombre.trim()) return;
@@ -119,8 +128,14 @@ export default function HeroSearch() {
 
       {/* MODAL DE RESULTADOS */}
       {showModal && (
-        <div className="fixed inset-0 z-150 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="bg-white dark:bg-zinc-950 rounded-4xl shadow-3xl max-w-lg w-full relative border border-gray-100 dark:border-zinc-800 p-8 animate-in zoom-in-95 duration-200">
+        <div
+          className="fixed inset-0 z-150 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+          onClick={() => setShowModal(false)}
+        >
+          <div
+            className="bg-white dark:bg-zinc-950 rounded-2xl shadow-2xl max-w-lg w-full relative border border-gray-100 dark:border-zinc-800 p-8 animate-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
             <button
               className="absolute top-6 right-6 text-zinc-400 hover:text-red-500 transition-colors"
               onClick={() => setShowModal(false)}

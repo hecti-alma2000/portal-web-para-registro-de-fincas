@@ -3,7 +3,7 @@
 import { deleteFinca } from '@/actions/registro-finca/finca-actions';
 import { useRegistroFincaModalStore } from '../../../store/modal/registroFincaModal.store';
 import { useState, useTransition, useEffect } from 'react';
-import Swal from 'sweetalert2';
+import Swal from '@/lib/swal';
 import { useFincaEditStore } from '../../../store/modal/fincaEdit.store';
 import { Plus } from 'lucide-react';
 import dynamic from 'next/dynamic';

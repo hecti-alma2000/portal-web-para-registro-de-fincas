@@ -3,7 +3,7 @@
 import { useFormStatus } from 'react-dom';
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
-import Swal from 'sweetalert2';
+import Swal from '@/lib/swal';
 import { getAllFincas } from '@/actions/registro-finca/finca-actions';
 import { generateCertificate } from '@/actions/registro-finca/generate-certificate';
 
@@ -37,35 +37,47 @@ interface RadioCriterioInputProps {
   name: string; // El nombre del criterio (ej: criterioA)
   label: string; // La descripción del criterio
   maxValoracion: number; // El valor máximo de valoración (2, 3 o 4)
+  onAnswered?: (name: string) => void;
 }
 
-const RadioCriterioInput: React.FC<RadioCriterioInputProps> = ({ name, label, maxValoracion }) => {
+const RadioCriterioInput: React.FC<RadioCriterioInputProps> = ({
+  name,
+  label,
+  maxValoracion,
+  onAnswered,
+}) => {
   // Generamos un array con los valores posibles: [1, 2, 3, 4, ...]
   const valoraciones = Array.from({ length: maxValoracion }, (_, i) => i + 1);
 
-  // Clase de Tailwind para el estilo del radio button
-  const radioColorClass =
-    'text-green-600 border-gray-300 focus:ring-green-500 dark:text-green-400 dark:border-slate-600 dark:focus:ring-green-400';
-
   return (
-    <div className="p-4 bg-white dark:bg-slate-800 rounded-lg border-2 border-gray-200 dark:border-slate-700 shadow-sm transition hover:shadow-md">
-      <h4 className="text-gray-800 dark:text-slate-100 font-semibold mb-3">{label}</h4>
+    <div className="p-4 bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm transition hover:shadow-md hover:border-green-300 dark:hover:border-green-700 h-full">
+      <h4 className="text-gray-800 dark:text-slate-100 font-semibold mb-3 text-sm leading-snug">
+        {label}
+      </h4>
 
-      <div className="flex items-center space-x-6">
-        <span className="text-sm text-gray-500 dark:text-slate-400 font-medium">Valoración:</span>
+      <div className="flex items-center gap-4">
+        <span className="text-xs text-gray-500 dark:text-slate-400 font-medium shrink-0">
+          Valoración
+        </span>
 
-        {valoraciones.map((valor) => (
-          <label key={valor} className="flex items-center space-x-1 cursor-pointer">
-            <input
-              type="radio"
-              name={name} // Usamos el mismo nombre para agrupar los radios
-              value={valor} // El valor que se enviará: 1, 2, 3 o 4
-              required // Hacemos que la selección sea obligatoria
-              className={`h-4 w-4 ${radioColorClass}`}
-            />
-            <span className="text-sm text-gray-700 dark:text-slate-100 font-medium">{valor}</span>
-          </label>
-        ))}
+        <div className="flex flex-wrap items-center gap-2">
+          {valoraciones.map((valor) => (
+            <label
+              key={valor}
+              className="relative flex items-center justify-center h-9 w-9 rounded-full border-2 border-gray-300 dark:border-slate-600 text-sm font-semibold text-gray-600 dark:text-slate-300 cursor-pointer select-none transition-colors hover:border-green-400 has-[:checked]:bg-green-600 has-[:checked]:border-green-600 has-[:checked]:text-white dark:has-[:checked]:bg-green-500 dark:has-[:checked]:border-green-500 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-green-400 has-[:focus-visible]:ring-offset-2"
+            >
+              <input
+                type="radio"
+                name={name} // Usamos el mismo nombre para agrupar los radios
+                value={valor} // El valor que se enviará: 1, 2, 3 o 4
+                required // Hacemos que la selección sea obligatoria
+                onChange={() => onAnswered?.(name)}
+                className="sr-only"
+              />
+              {valor}
+            </label>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -74,12 +86,20 @@ const RadioCriterioInput: React.FC<RadioCriterioInputProps> = ({ name, label, ma
 // ----------------------------------------------------
 // Componente principal CertificacionForm
 // ----------------------------------------------------
+const TOTAL_CRITERIOS = 11;
+
 interface CertificacionFormProps {
   role: 'user' | 'admin';
 }
 export const CertificacionForm = ({ role }: CertificacionFormProps) => {
   const [fincas, setFincas] = useState<Array<{ id: number; nombre: string }>>([]);
   const [loadingFincas, setLoadingFincas] = useState(false);
+  const [answered, setAnswered] = useState<Set<string>>(new Set());
+
+  const handleAnswered = (name: string) => {
+    setAnswered((prev) => (prev.has(name) ? prev : new Set(prev).add(name)));
+  };
+  const progress = Math.round((answered.size / TOTAL_CRITERIOS) * 100);
 
   useEffect(() => {
     const load = async () => {
@@ -185,6 +205,7 @@ export const CertificacionForm = ({ role }: CertificacionFormProps) => {
           }
         }); // Optionally reset the form
         form.reset();
+        setAnswered(new Set());
       } else {
         // ... (manejo de error) ...
       }
@@ -196,32 +217,35 @@ export const CertificacionForm = ({ role }: CertificacionFormProps) => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-6 max-w-4xl mx-auto p-8 bg-gray-50 dark:bg-slate-900 text-black dark:text-white rounded-xl shadow-2xl"
+      className="space-y-6 max-w-5xl mx-auto p-6 sm:p-8 bg-gray-50 dark:bg-slate-900 text-black dark:text-white rounded-2xl shadow-2xl border border-gray-100 dark:border-slate-800"
     >
-      <div className="flex items-center justify-between flex-col sm:flex-row">
-        <p className="text-green-500 dark:text-green-400 text-lg mb-6 border-b pb-4 text-center">
-          Valora cada criterio para obtener el resultado ponderado del índice de FPAT y si es apta
-          para su certificación avalada
-        </p>
-        <span className="flex items-center ">
-          <Image
-            src="/icons/logo.png"
-            alt="Logo"
-            width={96}
-            height={96}
-            className="h-24 w-24 rounded-md bg-white dark:bg-slate-700 p-1"
-          />
-        </span>
+      <div className="flex items-center justify-between gap-6 flex-col sm:flex-row border-b border-gray-200 dark:border-slate-700 pb-6">
+        <div className="text-center sm:text-left">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
+            Diagnóstico FPAT
+          </h2>
+          <p className="text-green-600 dark:text-green-400 text-sm sm:text-base">
+            Valora cada criterio para obtener el resultado ponderado del índice de FPAT y si es
+            apta para su certificación avalada.
+          </p>
+        </div>
+        <Image
+          src="/icons/logo.png"
+          alt="Logo"
+          width={80}
+          height={80}
+          className="h-20 w-20 shrink-0 rounded-md bg-white dark:bg-slate-700 p-1"
+        />
       </div>
 
-      <div className="mb-4">
+      <div>
         <label className="block text-sm font-medium text-gray-700 dark:text-slate-200 mb-2">
           Selecciona la finca
         </label>
         <select
           name="fincaId"
           required
-          className="w-full p-2 border rounded bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 border-gray-300 dark:border-slate-700"
+          className="w-full p-2.5 border rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 border-gray-300 dark:border-slate-700 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
         >
           <option value="">{loadingFincas ? 'Cargando fincas...' : 'Selecciona una finca'}</option>
           {fincas.map((f) => (
@@ -232,54 +256,89 @@ export const CertificacionForm = ({ role }: CertificacionFormProps) => {
         </select>
       </div>
 
-      <div className="space-y-4">
+      {/* Progreso del cuestionario */}
+      <div>
+        <div className="flex items-center justify-between text-sm font-medium text-gray-600 dark:text-slate-300 mb-1.5">
+          <span>Progreso del cuestionario</span>
+          <span>
+            {answered.size} de {TOTAL_CRITERIOS} completados
+          </span>
+        </div>
+        <div className="h-2 w-full rounded-full bg-gray-200 dark:bg-slate-700 overflow-hidden">
+          <div
+            className="h-full bg-green-600 dark:bg-green-500 rounded-full transition-all duration-300"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <RadioCriterioInput
           name="criterioA"
           label="A. Existencia de una casa rural o rancho campestre"
           maxValoracion={2}
+          onAnswered={handleAnswered}
         />
         <RadioCriterioInput
           name="criterioB"
           label="B. Capacidad de recibir clientes"
           maxValoracion={2}
+          onAnswered={handleAnswered}
         />
-        <RadioCriterioInput name="criterioC" label="C. Accesibilidad" maxValoracion={3} />
+        <RadioCriterioInput
+          name="criterioC"
+          label="C. Accesibilidad"
+          maxValoracion={3}
+          onAnswered={handleAnswered}
+        />
         <RadioCriterioInput
           name="criterioD"
           label="D. Distribución de las áreas según su uso agropecuario"
           maxValoracion={3}
+          onAnswered={handleAnswered}
         />
         <RadioCriterioInput
           name="criterioE"
           label="E. Sustentabilidad agrícola"
           maxValoracion={4}
+          onAnswered={handleAnswered}
         />
         <RadioCriterioInput
           name="criterioF"
           label="F. Categorización del espacio rural circundante"
           maxValoracion={3}
+          onAnswered={handleAnswered}
         />
         <RadioCriterioInput
           name="criterioG"
           label="G. Manejo sostenible de las tierras"
           maxValoracion={4}
+          onAnswered={handleAnswered}
         />
         <RadioCriterioInput
           name="criterioH"
           label="H. Aprovechamiento de los recursos naturales o construidos"
           maxValoracion={4}
+          onAnswered={handleAnswered}
         />
         <RadioCriterioInput
           name="criterioI"
           label="I. Infraestructura disponible"
           maxValoracion={4}
+          onAnswered={handleAnswered}
         />
         <RadioCriterioInput
           name="criterioJ"
           label="J. Cercanía a sitios con valores socioculturales y centros nodales"
           maxValoracion={4}
+          onAnswered={handleAnswered}
         />
-        <RadioCriterioInput name="criterioK" label="K. Entorno atractivo" maxValoracion={4} />
+        <RadioCriterioInput
+          name="criterioK"
+          label="K. Entorno atractivo"
+          maxValoracion={4}
+          onAnswered={handleAnswered}
+        />
       </div>
 
       <SubmitButton />
