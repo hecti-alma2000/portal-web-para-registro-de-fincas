@@ -1,3 +1,5 @@
+import Image from 'next/image';
+
 interface FincaCardSimpleProps {
   finca: any;
 }
@@ -8,7 +10,13 @@ const FincaCardSimple: React.FC<FincaCardSimpleProps> = ({ finca }) => {
     <div className="bg-green-50 border border-green-200 rounded-2xl shadow-lg p-6 w-full max-w-lg mx-auto">
       <div className="flex items-center gap-4 mb-4">
         {finca.fotoUrl ? (
-          <img src={finca.fotoUrl} alt={finca.nombre} className="w-24 h-16 object-cover rounded" />
+          <Image
+            src={finca.fotoUrl}
+            alt={finca.nombre}
+            width={96}
+            height={64}
+            className="w-24 h-16 object-cover rounded"
+          />
         ) : (
           <div className="w-24 h-16 bg-green-100 rounded flex items-center justify-center text-green-400">
             <svg

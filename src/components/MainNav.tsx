@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useState, Fragment, useEffect } from 'react';
 import dynamic from 'next/dynamic';
@@ -95,9 +96,12 @@ export default function MainNav() {
       <div className="max-w-7xl mx-auto px-4 h-20 flex justify-between items-center">
         {/* LOGO */}
         <Link href="/" className="flex items-center gap-2 group">
-          <img
+          <Image
             src="/icons/logo.png"
             alt="Logo"
+            width={48}
+            height={48}
+            priority
             className="h-12 w-12 transition-transform group-hover:rotate-6"
           />
           <span className="text-green-700 dark:text-green-500 text-2xl font-bold tracking-tight hidden md:block">

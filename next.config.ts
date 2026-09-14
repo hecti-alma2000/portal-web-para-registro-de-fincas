@@ -48,6 +48,9 @@ const withSerwist = withSerwistInit({
 
 const nextConfig: NextConfig = {
   reactStrictMode: false, // Activa el modo estricto de React
+  images: {
+    formats: ['image/avif', 'image/webp'],
+  },
   env: {
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
     NEXTAUTH_URL_INTERNAL: process.env.NEXTAUTH_URL_INTERNAL,

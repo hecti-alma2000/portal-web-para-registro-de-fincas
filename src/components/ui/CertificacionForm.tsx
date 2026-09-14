@@ -2,6 +2,7 @@
 'use client';
 import { useFormStatus } from 'react-dom';
 import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
 import Swal from 'sweetalert2';
 import { getAllFincas } from '@/actions/registro-finca/finca-actions';
 import { generateCertificate } from '@/actions/registro-finca/generate-certificate';
@@ -203,12 +204,12 @@ export const CertificacionForm = ({ role }: CertificacionFormProps) => {
           para su certificación avalada
         </p>
         <span className="flex items-center ">
-          {/* Carga perezosa de la imagen del logo */}
-          <img
+          <Image
             src="/icons/logo.png"
             alt="Logo"
+            width={96}
+            height={96}
             className="h-24 w-24 rounded-md bg-white dark:bg-slate-700 p-1"
-            loading="lazy"
           />
         </span>
       </div>

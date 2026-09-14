@@ -8,6 +8,7 @@ import ScrollReveal from '@/components/ScrollReveal';
 import { auth } from '@/auth.config';
 import { Toaster } from 'sonner';
 import type { Metadata, Viewport } from 'next';
+import { roboto, pacifico } from '@/config/fonts';
 
 const SITE_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 const SITE_DESCRIPTION =
@@ -63,7 +64,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="es" suppressHydrationWarning>
       <head />
-      <body>
+      <body className={`${roboto.variable} ${pacifico.variable}`}>
         <ThemeProviders
           attribute="class"
           defaultTheme="system"

@@ -1,4 +1,5 @@
 'use client';
+import Image from 'next/image';
 import { useRegistroFincaModalStore } from '@/store/modal/registroFincaModal.store';
 import { useFincaEditStore } from '@/store/modal/fincaEdit.store';
 import RegistroFincaForm from './RegistroFincaForm';
@@ -49,9 +50,11 @@ export default function RegistroFincaModal() {
           {fincaToEdit && (
             <div className="mt-4 p-4 bg-zinc-50 dark:bg-slate-700/50 rounded-xl flex items-center gap-4 border border-zinc-100 dark:border-slate-600">
               {fincaToEdit.fotoUrl ? (
-                <img
+                <Image
                   src={fincaToEdit.fotoUrl}
                   alt={fincaToEdit.nombre}
+                  width={96}
+                  height={96}
                   className="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-lg bg-zinc-200 dark:bg-slate-600"
                 />
               ) : (

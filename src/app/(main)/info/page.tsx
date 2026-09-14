@@ -1,6 +1,7 @@
 // app/info/page.tsx
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { ActivityCard } from '@/components/ui/ActivityCard';
 import { ContentSection } from '@/components/ui/ContentSection';
 import { FAQSection } from '@/components/ui/FAQSection';
@@ -59,11 +60,15 @@ export default function AgroturismoInfoPage() {
             clave para el desarrollo sostenible, ofreciendo una fuente de ingresos adicional para
             los agricultores y educando a la sociedad sobre el origen de sus alimentos.
           </p>
-          <img
-            src="/campo-introduccion.jpg" // Usa el tag para la imagen
-            alt="Paisaje campestre con agricultores y visitantes"
-            className="rounded-xl shadow-lg my-6 max-h-96 object-cover w-full border border-gray-100"
-          />
+          <div className="relative h-96 w-full my-6">
+            <Image
+              src="/campo-introduccion.jpg"
+              alt="Paisaje campestre con agricultores y visitantes"
+              fill
+              sizes="(max-width: 1024px) 100vw, 768px"
+              className="rounded-xl shadow-lg object-cover border border-gray-100"
+            />
+          </div>
         </ContentSection>
 
         {/* ==================== SECCIÓN 2: TIPOS DE FINCAS ==================== */}

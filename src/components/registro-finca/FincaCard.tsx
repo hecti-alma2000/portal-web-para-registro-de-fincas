@@ -2,6 +2,7 @@
 
 import { ChevronDown, ChevronUp, Pencil, Trash2 } from 'lucide-react';
 import { useState } from 'react';
+import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 
 interface FincaCardProps {
@@ -18,9 +19,11 @@ const FincaCardComponent = ({ finca, onEdit, onDelete }: FincaCardProps) => {
     <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-zinc-200 dark:border-slate-700 p-4 w-full max-w-2xl mx-auto transition-all hover:shadow-md">
       <div className="flex gap-4 items-start mb-2">
         {finca.fotoUrl ? (
-          <img
+          <Image
             src={finca.fotoUrl}
             alt={finca.nombre}
+            width={128}
+            height={80}
             className="w-32 h-20 object-cover rounded-lg border border-zinc-100 dark:border-slate-600"
           />
         ) : (

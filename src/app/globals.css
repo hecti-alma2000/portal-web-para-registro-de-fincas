@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
 @import 'tailwindcss';
 
 /* AGREGAR ESTO: Define que el modo oscuro se activa con la clase .dark */
@@ -14,17 +13,21 @@
 }
 
 body {
-  font-family: 'Roboto';
+  font-family: var(--font-roboto), sans-serif;
   background-image: url('/imgs_bg/gb_image.webp');
-  background-attachment: fixed;
   background-repeat: no-repeat;
   background-size: cover;
+  background-position: top center;
   /* Aseguramos color de texto base que responda al tema */
   @apply text-zinc-900 dark:text-zinc-100;
 }
 
 [class~='dark'] body {
   background-image: url('/imgs_bg/gb_black_image.webp');
+}
+
+.font-pacifico {
+  font-family: var(--font-pacifico), cursive;
 }
 
 .btn-primary {
