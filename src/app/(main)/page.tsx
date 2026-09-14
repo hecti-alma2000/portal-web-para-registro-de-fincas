@@ -1,5 +1,4 @@
 // app/page.tsx
-import dynamic from 'next/dynamic';
 import type { Metadata } from 'next';
 import { Divider } from '@/components/ui/Divider';
 import { AgroturismoDescription } from '@/components/AgroturismoDescription';
@@ -7,21 +6,13 @@ import { CertificacionContent } from '@/components/CertificacionContent';
 import { FincasValidationShortcut } from '@/components/FincasValidationShortcut';
 import { FastActionButtons } from '@/components/FastActionButtons';
 import HeroBanner from '@/components/HeroBanner';
+import LazyCarrusel from '@/components/ui/carrusel/LazyCarrusel';
 
 export const metadata: Metadata = {
   title: 'Inicio',
   description:
     'Busca, registra y certifica fincas agroturísticas. Descubre el potencial agroturístico de tu finca con el sistema FPAT.',
 };
-
-const LazyCarrusel = dynamic(() => import('../../components/ui/carrusel/Carrusel'), {
-  ssr: false,
-  loading: () => (
-    <div className="w-full h-125 bg-gray-200 animate-pulse flex items-center justify-center">
-      <p>Cargando Carrusel...</p>
-    </div>
-  ),
-});
 
 export default function Home() {
   return (
