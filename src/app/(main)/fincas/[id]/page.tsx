@@ -11,8 +11,31 @@ interface GenerateMetadataProps {
 
 export async function generateMetadata({ params }: GenerateMetadataProps): Promise<Metadata> {
   const resolvedParams = await params;
+  const id = Number(resolvedParams.id);
+  const finca = Number.isNaN(id) ? null : await getFincaById(id);
+
+  if (!finca) {
+    return { title: 'Finca no encontrada' };
+  }
+
+  const description =
+    finca.descripcion?.slice(0, 160) ||
+    `Conoce la finca agroturística ${finca.nombre}, ubicada en ${finca.localizacion}.`;
+
   return {
-    title: `Detalles de Finca ${resolvedParams.id}`,
+    title: finca.nombre,
+    description,
+    openGraph: {
+      title: finca.nombre,
+      description,
+      images: finca.fotoUrl ? [{ url: finca.fotoUrl }] : undefined,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: finca.nombre,
+      description,
+      images: finca.fotoUrl ? [finca.fotoUrl] : undefined,
+    },
   };
 }
 

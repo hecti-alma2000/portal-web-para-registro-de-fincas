@@ -52,15 +52,6 @@ const nextConfig: NextConfig = {
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
     NEXTAUTH_URL_INTERNAL: process.env.NEXTAUTH_URL_INTERNAL,
   },
-  async redirects() {
-    return [
-      {
-        source: '/old-path',
-        destination: '/new-path',
-        permanent: true,
-      },
-    ];
-  },
 };
 
 export default withSerwist(nextConfig);

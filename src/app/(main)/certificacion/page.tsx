@@ -3,6 +3,13 @@
 import { auth } from '@/auth.config';
 import { CertificacionForm } from '@/components/ui/CertificacionForm';
 import { redirect } from 'next/navigation';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Certificación de Fincas',
+  description:
+    'Evalúa el potencial agroturístico de tu finca y obtén su certificación de Fincas de Potencial Agroturístico (FPAT).',
+};
 
 /**
  * Página principal del Sistema de Certificación de Fincas.
