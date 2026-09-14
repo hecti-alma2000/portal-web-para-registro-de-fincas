@@ -49,10 +49,7 @@ export default async function AdminRequestsPage() {
                 <RequestButtons id={f.id} nombre={f.nombre} />
                 <Link
                   href={`/fincas/${f.id}`}
-                  onClick={(e) =>
-                    e.currentTarget.classList.add('opacity-50', 'pointer-events-none')
-                  }
-                  className="px-4 py-2 border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 rounded hover:bg-zinc-50 dark:hover:bg-zinc-800 text-center transition"
+                  className="px-4 py-2 border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 rounded hover:bg-zinc-50 dark:hover:bg-zinc-800 text-center transition active:opacity-50"
                 >
                   Ver Detalles
                 </Link>
