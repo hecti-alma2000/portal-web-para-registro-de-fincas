@@ -1,10 +1,11 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from 'react-leaflet';
 import { divIcon } from 'leaflet';
+import { MapTileWatch } from '@/components/maps/location/MapTileWatch';
 import 'leaflet/dist/leaflet.css';
-import { MapPinned, LocateFixed, X } from 'lucide-react';
+import { LocateFixed, WifiOff, X } from 'lucide-react';
 
 interface CoordinatePickerProps {
   latitude: string;
@@ -13,10 +14,6 @@ interface CoordinatePickerProps {
 }
 
 const DEFAULT_CENTER: [number, number] = [20.886992464628573, -76.5981011376514];
-
-const url =
-  'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-const darkUrl = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
 
 const getPinIcon = () =>
   divIcon({
@@ -50,22 +47,7 @@ const Recenter = ({ lat, lng }: { lat: number | null; lng: number | null }) => {
 };
 
 export const CoordinatePicker = ({ latitude, longitude, onChange }: CoordinatePickerProps) => {
-  const [isDarkMode, setIsDarkMode] = useState(false);
-
-  useEffect(() => {
-    const getDarkStatus = () => {
-      if (typeof document === 'undefined') return false;
-      const hasHtmlClass = document.documentElement.classList.contains('dark');
-      const ls = window.localStorage.getItem('theme');
-      if (ls === 'dark') return true;
-      if (ls === 'light') return false;
-      return window.matchMedia('(prefers-color-scheme: dark)').matches;
-    };
-    setIsDarkMode(getDarkStatus());
-    const observer = new MutationObserver(() => setIsDarkMode(getDarkStatus()));
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-    return () => observer.disconnect();
-  }, []);
+  const [noTiles, setNoTiles] = useState(false);
 
   const parsedLat = latitude.trim() === '' ? null : Number(latitude);
   const parsedLng = longitude.trim() === '' ? null : Number(longitude);
@@ -117,7 +99,11 @@ export const CoordinatePicker = ({ latitude, longitude, onChange }: CoordinatePi
         </div>
       </div>
 
-      <div className="relative h-64 rounded-xl overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-inner">
+      <div
+        className={`relative h-64 rounded-xl overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-inner ${
+          noTiles ? 'map-no-tiles' : ''
+        }`}
+      >
         <MapContainer
           center={center}
           zoom={hasPoint ? 14 : 11}
@@ -125,14 +111,21 @@ export const CoordinatePicker = ({ latitude, longitude, onChange }: CoordinatePi
           scrollWheelZoom={true}
         >
           <TileLayer
-            key={isDarkMode ? 'dark-tile' : 'light-tile'}
-            url={isDarkMode ? darkUrl : url}
-            attribution="&copy; OpenStreetMap contributors &copy; CARTO"
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            attribution="&copy; OpenStreetMap contributors"
           />
+          <MapTileWatch onStatusChange={setNoTiles} />
           <ClickHandler onPick={handlePick} />
           <Recenter lat={parsedLat} lng={parsedLng} />
           {hasPoint && <Marker position={[parsedLat!, parsedLng!]} icon={getPinIcon()} />}
         </MapContainer>
+
+        {noTiles && (
+          <div className="absolute top-2 left-1/2 -translate-x-1/2 z-[1050] flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-900/85 dark:bg-black/70 text-white text-[10px] font-semibold shadow-lg backdrop-blur-sm">
+            <WifiOff className="w-3 h-3" />
+            Sin conexión
+          </div>
+        )}
       </div>
     </div>
   );

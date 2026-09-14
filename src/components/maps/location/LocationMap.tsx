@@ -7,6 +7,7 @@ import { divIcon } from 'leaflet';
 import { MapFlyTo } from '@/utiles/MapFlyTo';
 import MapInitializer from './MapInitializer';
 import { FitBounds } from './FitBounds';
+import { MapTileWatch } from './MapTileWatch';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import {
@@ -18,6 +19,7 @@ import {
   Award,
   RotateCcw,
   FilterX,
+  WifiOff,
   X,
 } from 'lucide-react';
 import type { MapFinca } from '@/interfaces/finca-map.interface';
@@ -83,6 +85,7 @@ export const LocationMap = ({ fincas }: LocationMapProps) => {
   const [onlyCertificadas, setOnlyCertificadas] = useState(false);
   const [showFincas, setShowFincas] = useState(true);
   const [showRoutes, setShowRoutes] = useState(true);
+  const [noTiles, setNoTiles] = useState(false);
 
   // --- Opciones derivadas de las fincas reales ---
   const usos = useMemo(
@@ -330,7 +333,11 @@ export const LocationMap = ({ fincas }: LocationMapProps) => {
       </div>
 
       {/* ---------- Mapa ---------- */}
-      <div className="relative rounded-xl overflow-hidden shadow-2xl border dark:border-slate-700">
+      <div
+        className={`relative rounded-xl overflow-hidden shadow-2xl border dark:border-slate-700 ${
+          noTiles ? 'map-no-tiles' : ''
+        }`}
+      >
         <MapContainer
           bounds={bounds}
           center={[20.886992464628573, -76.5981011376514]}
@@ -341,16 +348,12 @@ export const LocationMap = ({ fincas }: LocationMapProps) => {
         >
           <MapInitializer />
           <FitBounds bounds={bounds} />
+          <MapTileWatch onStatusChange={setNoTiles} />
 
-          <TileLayer
-            key={isDarkMode ? 'dark-tile' : 'light-tile'}
-            url={
-              isDarkMode
-                ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-                : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-            }
-            attribution="&copy; OpenStreetMap contributors &copy; CARTO"
-          />
+<TileLayer
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution="&copy; OpenStreetMap contributors"
+        />
 
           <MapFlyTo targetZoom={15} />
 
@@ -379,6 +382,14 @@ export const LocationMap = ({ fincas }: LocationMapProps) => {
 
           {showFincas && <FincaMarkers fincas={filteredFincas} />}
         </MapContainer>
+
+        {/* Aviso de mapa sin conexión */}
+        {noTiles && (
+          <div className="absolute top-3 left-1/2 -translate-x-1/2 z-[1050] flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/85 dark:bg-black/70 text-white text-xs font-semibold shadow-lg backdrop-blur-sm">
+            <WifiOff className="w-3.5 h-3.5" />
+            Sin conexión: se muestra el mapa base simplificado
+          </div>
+        )}
 
         {/* Capa sin resultados */}
         {showFincas && filteredFincas.length === 0 && (

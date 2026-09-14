@@ -35,7 +35,13 @@ model User{
   password String
   role Role @default(user)
 
+  // Recuperación de contraseña: token con hash + caducidad (un solo uso)
+  passwordResetToken String?
+  passwordResetTokenExpires DateTime?
+
   fincas      Finca[]
+
+  @@index([passwordResetToken])
 }
 // Modelo principal para la Finca
 model Finca {

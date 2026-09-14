@@ -70,6 +70,15 @@ export const LoginForm = () => {
         )}
       </div>
 
+      <div className="flex justify-end -mt-1 mb-1">
+        <Link
+          href="/auth/forgot-password"
+          className="text-sm text-zinc-500 dark:text-zinc-400 hover:text-green-600 dark:hover:text-green-400 font-medium transition-colors"
+        >
+          ¿Olvidaste tu contraseña?
+        </Link>
+      </div>
+
       <LoginButton />
 
       {/* Divisor "O" adaptable */}

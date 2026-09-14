@@ -110,6 +110,32 @@ body {
   line-height: 1.1;
 }
 
+/* Modo oscuro del mapa usando tiles de OSM estándar con filtro CSS (sin API key de CARTO) */
+.dark .leaflet-tile-pane {
+  filter: invert(1) hue-rotate(180deg) brightness(0.95) contrast(0.9);
+}
+.dark .leaflet-tile-pane .leaflet-tile {
+  background-color: #111827;
+}
+
+/* Sin conexión: mapa base simplificado con rejilla (rutas y marcadores visibles) */
+.map-no-tiles .leaflet-container {
+  background-color: #eef0f2;
+  background-image:
+    linear-gradient(to right, rgba(15, 23, 42, 0.07) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(15, 23, 42, 0.07) 1px, transparent 1px);
+  background-size: 140px 140px;
+}
+.map-no-tiles .leaflet-tile-pane {
+  opacity: 0 !important;
+}
+.dark .map-no-tiles .leaflet-container {
+  background-color: #16202e;
+  background-image:
+    linear-gradient(to right, rgba(148, 163, 184, 0.09) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(148, 163, 184, 0.09) 1px, transparent 1px);
+}
+
 /* Widgets que deben superponerse al mapa (chat global, botones flotantes) */
 .map-overlay-top {
   position: relative;
