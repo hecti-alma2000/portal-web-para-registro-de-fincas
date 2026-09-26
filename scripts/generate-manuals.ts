@@ -24,9 +24,10 @@ const TEXT_COLOR = rgb(0.18, 0.2, 0.24);
 const MUTED_COLOR = rgb(0.4, 0.42, 0.46);
 
 type Block =
-  | { type: 'heading'; text: string }
+  | { type: 'subheading'; text: string }
   | { type: 'paragraph'; text: string }
-  | { type: 'bullets'; items: string[] };
+  | { type: 'bullets'; items: string[] }
+  | { type: 'numbered'; items: string[] };
 
 interface ManualSection {
   title: string;
@@ -145,6 +146,19 @@ class ManualWriter {
     this.y -= 6;
   }
 
+  drawSubheading(text: string) {
+    this.ensureSpace(28);
+    this.y -= 4;
+    this.page.drawText(text, {
+      x: MARGIN,
+      y: this.y,
+      size: 13,
+      font: this.bold,
+      color: rgb(0.1, 0.12, 0.15),
+    });
+    this.y -= 18;
+  }
+
   drawBullets(items: string[]) {
     const size = 11;
     const lineHeight = 16;
@@ -166,6 +180,36 @@ class ManualWriter {
         this.y -= lineHeight;
       });
     }
+    this.y -= 6;
+  }
+
+  drawNumbered(items: string[]) {
+    const size = 11;
+    const lineHeight = 16;
+    const indent = 20;
+    items.forEach((item, index) => {
+      const lines = wrapText(item, this.regular, size, CONTENT_WIDTH - indent);
+      lines.forEach((line, i) => {
+        this.ensureSpace(lineHeight);
+        if (i === 0) {
+          this.page.drawText(`${index + 1}.`, {
+            x: MARGIN,
+            y: this.y,
+            size,
+            font: this.bold,
+            color: BRAND_GREEN,
+          });
+        }
+        this.page.drawText(line, {
+          x: MARGIN + indent,
+          y: this.y,
+          size,
+          font: this.regular,
+          color: TEXT_COLOR,
+        });
+        this.y -= lineHeight;
+      });
+    });
     this.y -= 6;
   }
 
@@ -197,6 +241,8 @@ async function buildManual(def: ManualDefinition, filePath: string) {
     for (const block of section.blocks) {
       if (block.type === 'paragraph') writer.drawParagraph(block.text);
       else if (block.type === 'bullets') writer.drawBullets(block.items);
+      else if (block.type === 'numbered') writer.drawNumbered(block.items);
+      else if (block.type === 'subheading') writer.drawSubheading(block.text);
     }
   });
 
@@ -216,7 +262,11 @@ const manualUsuario: ManualDefinition = {
       blocks: [
         {
           type: 'paragraph',
-          text: 'El Portal de Registro de Fincas permite a propietarios y visitantes registrar fincas agroturísticas, evaluar su potencial mediante el sistema de certificación FPAT y explorar las fincas ya aprobadas en un mapa interactivo. Este manual describe las funciones disponibles para el usuario final.',
+          text: 'El Portal de Registro de Fincas es un sistema web para el registro, certificación y exploración de fincas agroturísticas. Permite a cualquier propietario registrar su finca, evaluar su potencial agroturístico mediante el sistema de certificación FPAT (Finca con Potencial Agroturístico) y descargar un certificado en PDF cuando la finca resulta apta. También permite a cualquier visitante buscar y explorar las fincas ya aprobadas, tanto en un catálogo con filtros como en un mapa interactivo.',
+        },
+        {
+          type: 'paragraph',
+          text: 'Este manual describe, paso a paso, todas las funciones disponibles para una cuenta de usuario normal (no administrador).',
         },
       ],
     },
@@ -224,25 +274,73 @@ const manualUsuario: ManualDefinition = {
       title: 'Crear una cuenta e iniciar sesión',
       blocks: [
         {
-          type: 'paragraph',
-          text: 'Desde la pantalla de acceso puedes crear una cuenta nueva con tu correo electrónico y contraseña, o iniciar sesión si ya estás registrado.',
+          type: 'subheading',
+          text: 'Crear una cuenta',
         },
         {
-          type: 'bullets',
+          type: 'paragraph',
+          text: 'Desde la pantalla de acceso, selecciona "Crear cuenta" y completa el formulario de registro con tu nombre, correo electrónico y contraseña. Una vez creada la cuenta, inicia sesión con esos mismos datos.',
+        },
+        {
+          type: 'subheading',
+          text: 'Iniciar sesión',
+        },
+        {
+          type: 'paragraph',
+          text: 'En la pantalla de acceso, introduce tu correo electrónico y contraseña y presiona "Iniciar sesión". Si tus datos son correctos, accederás a la página de inicio con tu sesión activa (verás tu nombre y tus opciones de cuenta en el menú superior).',
+        },
+        {
+          type: 'subheading',
+          text: 'Recuperar la contraseña',
+        },
+        {
+          type: 'numbered',
           items: [
-            'Registro: completa nombre, correo y contraseña en "Crear cuenta".',
-            'Inicio de sesión: ingresa con tu correo y contraseña en "Iniciar sesión".',
-            '¿Olvidaste tu contraseña? Usa el enlace "¿Olvidaste tu contraseña?" en la pantalla de acceso: recibirás un correo con un enlace para restablecerla.',
+            'En la pantalla de inicio de sesión, presiona el enlace "¿Olvidaste tu contraseña?".',
+            'Escribe el correo electrónico de tu cuenta y presiona "Enviar enlace de recuperación".',
+            'Revisa tu bandeja de entrada: recibirás un correo con un enlace para crear una nueva contraseña. El sistema muestra un aviso de confirmación en pantalla independientemente de si el correo existe o no, por seguridad.',
+            'Abre el enlace recibido, define tu nueva contraseña y vuelve a iniciar sesión con ella.',
           ],
         },
       ],
     },
     {
-      title: 'Buscar una finca',
+      title: 'Buscar una finca desde el inicio',
       blocks: [
         {
           type: 'paragraph',
-          text: 'En la página de inicio puedes escribir el nombre de una finca en el buscador principal. A medida que escribes aparecen sugerencias; al seleccionar una o presionar "Buscar" se muestra una ficha con sus datos principales (ubicación, propietario, descripción).',
+          text: 'La página de inicio incluye un buscador rápido en la parte superior. A medida que escribes el nombre de una finca aparece un listado de sugerencias con coincidencias; puedes seleccionar una sugerencia o presionar "Buscar" para ver la ficha de resultado, con el nombre, la ubicación, el propietario y la descripción de la finca encontrada. Si no existe ninguna coincidencia, se muestra el mensaje "No encontrada". La ventana de resultado se puede cerrar con el botón de cierre, presionando la tecla Escape o haciendo clic fuera de ella.',
+        },
+      ],
+    },
+    {
+      title: 'Catálogo de fincas y filtros',
+      blocks: [
+        {
+          type: 'paragraph',
+          text: 'La sección "Fincas" del menú principal muestra el catálogo completo de fincas aprobadas en formato de tarjetas, con una barra de filtros en la parte superior. Los filtros disponibles son:',
+        },
+        {
+          type: 'bullets',
+          items: [
+            'Tipo de entidad: Estatal o Privada.',
+            'Uso actual del suelo.',
+            'Estado de conservación.',
+            'Dirección o localización: búsqueda por coincidencia de texto sobre el nombre, la ubicación o el propietario de la finca.',
+          ],
+        },
+        {
+          type: 'paragraph',
+          text: 'Los filtros se aplican combinados; si ninguna finca cumple los criterios seleccionados, se muestra un aviso de "No se encontraron fincas con esos criterios."',
+        },
+      ],
+    },
+    {
+      title: 'Explorar el mapa interactivo',
+      blocks: [
+        {
+          type: 'paragraph',
+          text: 'La sección "Explorar" muestra un mapa interactivo con las fincas aprobadas que tienen coordenadas geográficas registradas. Al hacer clic en un marcador se abre una ficha emergente con la foto, el nombre y los datos principales de la finca. Solo se ubican en el mapa las fincas cuyo registro incluyó latitud y longitud; las que no tienen coordenadas siguen visibles en el catálogo de "Fincas" pero no aparecen en el mapa.',
         },
       ],
     },
@@ -251,21 +349,88 @@ const manualUsuario: ManualDefinition = {
       blocks: [
         {
           type: 'paragraph',
-          text: 'Desde el menú "Registrar" puedes abrir el formulario de registro de finca. Completa los siguientes datos:',
+          text: 'Desde el menú "Registrar" se abre una ventana con el formulario de registro, organizado en cuatro bloques.',
+        },
+        {
+          type: 'subheading',
+          text: '1. Información General',
         },
         {
           type: 'bullets',
           items: [
-            'Nombre, propietario y tipo de propiedad de la finca.',
-            'Descripción, uso actual y estado de conservación.',
-            'Ubicación geográfica: puedes marcarla directamente en el mapa o introducir latitud y longitud.',
-            'Una fotografía representativa de la finca (opcional).',
-            'Elementos de interés, actividades agroturísticas, principios de sustentabilidad y acciones ambientales aplicables.',
+            'Nombre de la Finca (obligatorio).',
+            'Propietario / Responsable (obligatorio).',
+            'Imagen Representativa: una fotografía de la entrada o el paisaje principal (opcional).',
+            'Ubicación Exacta: dirección, municipio o referencia textual (obligatorio).',
+            'Coordenadas Geográficas (opcional): se pueden escribir directamente la latitud y la longitud, o marcarlas en el mapa incluido en el formulario. Si se indica una, debe indicarse también la otra. Las fincas con coordenadas se muestran automáticamente en el mapa de "Explorar"; si se dejan vacías, la finca solo se publica en el catálogo de "Fincas".',
           ],
         },
         {
+          type: 'subheading',
+          text: '2. Detalles Técnicos',
+        },
+        {
+          type: 'bullets',
+          items: [
+            'Tipo de Propiedad: Estatal o Privada.',
+            'Entidad Perteneciente: solo aplica si el tipo de propiedad es Estatal (por ejemplo, "Ministerio de Agricultura"); se deshabilita automáticamente si la propiedad es Privada.',
+            'Uso Actual del Suelo (obligatorio): Cultivos Varios, Ganadería, Forestal, Agroturismo u Otros (si se elige "Otros", se debe especificar el uso en un campo adicional).',
+            'Estado de Conservación (obligatorio): Muy Bueno, Bueno, Aceptable o Malo.',
+            'Descripción del Entorno: clima, relieve y belleza del lugar (opcional).',
+          ],
+        },
+        {
+          type: 'subheading',
+          text: '3. Análisis y Atractivos',
+        },
+        {
+          type: 'bullets',
+          items: [
+            'Problemática Detectada: por ejemplo, erosión o falta de riego (opcional).',
+            'Tradiciones e Historia: historias locales o cultura asociada a la finca (opcional).',
+          ],
+        },
+        {
+          type: 'subheading',
+          text: '4. Atributos y Sostenibilidad',
+        },
+        {
           type: 'paragraph',
-          text: 'Al enviar el formulario, la solicitud queda en estado "Pendiente" hasta que un administrador la revise y la apruebe o rechace. El progreso se guarda automáticamente como borrador en tu navegador mientras completas el formulario.',
+          text: 'Cuatro listas de etiquetas a las que se agregan elementos uno por uno (se escribe el texto y se presiona el botón "+" o la tecla Enter): Elementos de Interés, Actividades Ofrecidas, Principios Sustentables y Acciones Ambientales. Cada etiqueta agregada se puede quitar con el botón de cierre que aparece sobre ella.',
+        },
+        {
+          type: 'subheading',
+          text: 'Envío y seguimiento',
+        },
+        {
+          type: 'paragraph',
+          text: 'Al presionar "Finalizar Registro" se pide una confirmación antes de enviar. Mientras se completa el formulario, el progreso se guarda automáticamente como borrador en el navegador (aunque se cierre la pestaña o se recargue la página por error, los datos no se pierden hasta que el registro se envíe con éxito). Una vez enviada, la finca queda con estado "Pendiente" hasta que un administrador la revise y la apruebe o la rechace; recibirás una notificación por correo electrónico con la decisión.',
+        },
+      ],
+    },
+    {
+      title: 'Gestionar mis fincas registradas',
+      blocks: [
+        {
+          type: 'paragraph',
+          text: 'En "Registrar" también se muestra, debajo del botón para agregar una nueva finca, el listado de todas las fincas que has registrado (excepto las que fueron rechazadas). Desde cada tarjeta puedes:',
+        },
+        {
+          type: 'bullets',
+          items: [
+            'Editar: abre el mismo formulario de registro con los datos ya cargados para modificarlos.',
+            'Eliminar: solicita confirmación y borra la finca de forma permanente.',
+            'Expandir la tarjeta (flecha) para ver todos los detalles adicionales: descripción, tipo de propiedad, uso actual, estado de conservación, problemática, tradiciones y las listas de atributos.',
+          ],
+        },
+      ],
+    },
+    {
+      title: 'Ver el estado de mis solicitudes',
+      blocks: [
+        {
+          type: 'paragraph',
+          text: 'La sección "Mis solicitudes" muestra un listado de solo lectura de todas las fincas que has registrado, con su fotografía, nombre, ubicación, fecha de creación y una etiqueta de estado: "PENDING" (pendiente de revisión), "APPROVED" (aprobada) o "REJECTED" (rechazada).',
         },
       ],
     },
@@ -274,38 +439,32 @@ const manualUsuario: ManualDefinition = {
       blocks: [
         {
           type: 'paragraph',
-          text: 'La sección "Certificar" permite evaluar el potencial agroturístico de una finca aprobada. El formulario presenta 11 criterios (A a K); para cada uno selecciona la valoración que mejor describe la situación de la finca. Una barra de progreso indica cuántos criterios has completado.',
+          text: 'La sección "Certificar" permite evaluar el potencial agroturístico de una finca aprobada. Como usuario normal, solo puedes certificar fincas de tu propiedad que ya estén aprobadas por un administrador.',
+        },
+        {
+          type: 'numbered',
+          items: [
+            'Selecciona la finca a evaluar en el menú desplegable.',
+            'Completa los 11 criterios del diagnóstico (identificados de la A a la K: existencia de casa rural, capacidad de recibir clientes, accesibilidad, distribución de áreas, sustentabilidad agrícola, categorización del espacio rural, manejo sostenible de tierras, aprovechamiento de recursos, infraestructura disponible, cercanía a sitios de valor sociocultural y entorno atractivo). Cada criterio se responde eligiendo un número en un selector tipo pastilla; una barra de progreso indica cuántos criterios llevas completados.',
+            'Presiona "Obtener mi Diagnóstico" para enviar la evaluación.',
+          ],
         },
         {
           type: 'paragraph',
-          text: 'Al enviar el diagnóstico, el sistema calcula un puntaje y muestra el resultado. Si la finca resulta apta, podrás descargar de inmediato su certificado en formato PDF.',
+          text: 'El sistema calcula una puntuación ponderada (cada criterio tiene un peso distinto según su importancia relativa, y la suma de las 11 valoraciones ponderadas da la puntuación final). Si la puntuación es mayor a 2.02, la finca se clasifica como APTA para actividades de agroturismo; de lo contrario, se clasifica como NO APTA y el mensaje indica que se requieren mejoras.',
         },
-      ],
-    },
-    {
-      title: 'Mis solicitudes',
-      blocks: [
         {
           type: 'paragraph',
-          text: 'En "Mis solicitudes" puedes ver el listado de fincas que has registrado, junto con su estado actual (pendiente, aprobada o rechazada), y editar o eliminar tus solicitudes cuando corresponda.',
-        },
-      ],
-    },
-    {
-      title: 'Explorar fincas',
-      blocks: [
-        {
-          type: 'paragraph',
-          text: 'La sección "Explorar" muestra un mapa interactivo con las fincas aprobadas del sistema, con filtros por tipo de entidad, uso actual, estado de conservación y ubicación.',
+          text: 'Si la finca resulta apta, el resultado incluye el botón "Descargar Certificado": genera al instante un certificado en PDF con el nombre del propietario, el nombre de la finca, la fecha de emisión, la puntuación obtenida y un nivel de resultado (SATISFACTORIO, ALTO u ÓPTIMO según el puntaje alcanzado). Cada diagnóstico realizado queda registrado en tu historial y se refleja en las estadísticas de tu perfil.',
         },
       ],
     },
     {
-      title: 'Perfil de usuario',
+      title: 'Mi perfil',
       blocks: [
         {
           type: 'paragraph',
-          text: 'Desde tu perfil puedes consultar y actualizar tus datos de cuenta.',
+          text: 'La sección "Perfil" muestra tus datos de cuenta y tres indicadores sobre tu actividad en el sistema: Fincas Registradas (el total de fincas bajo tu gestión), Certificaciones (el total de diagnósticos realizados sobre tus fincas) y Última certificación (la fecha del diagnóstico más reciente).',
         },
       ],
     },
@@ -314,7 +473,7 @@ const manualUsuario: ManualDefinition = {
       blocks: [
         {
           type: 'paragraph',
-          text: 'El botón flotante en la esquina inferior derecha abre a SmartLiz 5.0, el asistente virtual del portal. Puedes escribirle preguntas sobre el registro de fincas, la certificación FPAT o el uso general del sistema, y te responderá de forma automática.',
+          text: 'El botón flotante con el ícono de robot, en la esquina inferior derecha de cualquier página, abre a SmartLiz 5.0, el asistente virtual del portal. Puedes escribirle preguntas sobre el registro de fincas, la certificación FPAT o el uso general del sistema y te responderá de forma automática. Si el servicio de chat no está disponible en un momento dado, se muestra un panel indicándolo, con la opción de reintentar la conexión.',
         },
       ],
     },
@@ -323,7 +482,7 @@ const manualUsuario: ManualDefinition = {
       blocks: [
         {
           type: 'paragraph',
-          text: 'Si encuentras algún problema con tu cuenta o con una solicitud, contacta al equipo administrador del portal o consulta la sección de Preguntas Frecuentes en la página de Información.',
+          text: 'Si encuentras algún problema con tu cuenta o con una solicitud, consulta primero la sección de Preguntas Frecuentes en la página de Información, prueba con el asistente virtual SmartLiz 5.0, o contacta al equipo administrador del portal.',
         },
       ],
     },
@@ -339,32 +498,32 @@ const manualAdministrador: ManualDefinition = {
       blocks: [
         {
           type: 'paragraph',
-          text: 'Además de todas las funciones disponibles para un usuario registrado, la cuenta de administrador tiene acceso a herramientas de moderación y gestión: revisión de solicitudes de registro de fincas y mantenimiento de usuarios del sistema.',
+          text: 'Una cuenta con rol de administrador tiene acceso a todas las funciones descritas en el Manual de Usuario (búsqueda, catálogo, mapa, registro y certificación de fincas, perfil, asistente virtual) más un conjunto de herramientas de moderación y gestión: revisión de solicitudes de registro, mantenimiento de cuentas de usuario y certificación sin restricciones de propiedad. Este manual se enfoca en esas funciones adicionales.',
         },
       ],
     },
     {
-      title: 'Acceso de administrador',
+      title: 'Acceso y permisos de administrador',
       blocks: [
         {
           type: 'paragraph',
-          text: 'Cuando inicias sesión con una cuenta con rol de administrador, el menú principal muestra opciones adicionales ("Solicitudes" y acceso a la gestión de usuarios) que no están disponibles para usuarios normales.',
+          text: 'El rol de administrador se asigna desde "Mantenimiento de usuarios" por otro administrador; no existe un registro público que otorgue este rol. Al iniciar sesión con una cuenta de administrador, el menú principal muestra una opción adicional, "Solicitudes", con un contador junto al ícono de notificaciones que indica cuántas solicitudes de registro están pendientes de revisión en ese momento (se actualiza automáticamente cada minuto).',
         },
       ],
     },
     {
-      title: 'Gestión de solicitudes pendientes',
+      title: 'Revisión y aprobación de solicitudes',
       blocks: [
         {
           type: 'paragraph',
-          text: 'En "Solicitudes" (/admin/request) se listan todas las fincas registradas por los usuarios que aún no han sido aprobadas ni rechazadas. Un contador en el menú principal indica cuántas solicitudes están pendientes de revisión.',
+          text: 'La sección "Solicitudes" (/admin/request) lista todas las fincas registradas por los usuarios que aún no han sido aprobadas ni rechazadas, con su nombre, ubicación, propietario e identificador. Si no hay ninguna, se muestra un aviso de que no existen solicitudes pendientes. Para cada solicitud hay tres acciones disponibles:',
         },
         {
           type: 'bullets',
           items: [
-            'Revisa los datos de cada solicitud (nombre, ubicación, propietario).',
-            'Usa los botones de acción para aprobar o rechazar la solicitud.',
-            'Puedes ver el detalle completo de la finca antes de decidir con "Ver Detalles".',
+            'Aprobar: cambia el estado de la finca a "Aprobada", la publica en el catálogo público de "Fincas" y en el mapa de "Explorar" (si tiene coordenadas), y envía automáticamente un correo de notificación al propietario.',
+            'Denegar: pide una confirmación explícita indicando que la acción enviará un correo y ELIMINARÁ la solicitud de forma permanente y no reversible. El propietario recibe un correo notificándole el resultado.',
+            'Ver Detalles: abre la ficha completa de la finca (misma vista que ve el público) para revisar toda la información antes de decidir.',
           ],
         },
       ],
@@ -374,16 +533,29 @@ const manualAdministrador: ManualDefinition = {
       blocks: [
         {
           type: 'paragraph',
-          text: 'En "Mantenimiento de usuarios" (/admin/users) puedes consultar el listado paginado de cuentas registradas en el sistema y administrarlas según sea necesario.',
+          text: 'La sección "Mantenimiento de usuarios" (/admin/users) muestra una tabla con todas las cuentas del sistema: correo electrónico, nombre completo y rol. El rol de cada usuario (Admin o User) se cambia directamente desde un menú desplegable en la misma tabla; el cambio se aplica de inmediato al seleccionarlo.',
+        },
+        {
+          type: 'paragraph',
+          text: 'La cuenta marcada como "usuario principal" del sistema tiene su selector de rol bloqueado (no se puede cambiar ni degradar desde la interfaz), como medida de seguridad para evitar quedarse sin ningún administrador.',
         },
       ],
     },
     {
-      title: 'Certificación FPAT como administrador',
+      title: 'Certificación FPAT sin restricciones',
       blocks: [
         {
           type: 'paragraph',
-          text: 'A diferencia de un usuario normal, que solo puede certificar sus propias fincas aprobadas, un administrador puede evaluar el diagnóstico FPAT de cualquier finca registrada en el sistema.',
+          text: 'A diferencia de un usuario normal, que en el formulario de "Certificar" solo puede elegir entre sus propias fincas aprobadas, un administrador ve en ese mismo selector TODAS las fincas registradas en el sistema (aprobadas, pendientes o rechazadas, de cualquier propietario) y puede generar un diagnóstico FPAT sobre cualquiera de ellas siguiendo el mismo procedimiento de 11 criterios descrito en el Manual de Usuario.',
+        },
+      ],
+    },
+    {
+      title: 'Mi perfil como administrador',
+      blocks: [
+        {
+          type: 'paragraph',
+          text: 'La sección "Perfil" de una cuenta administradora muestra estadísticas a nivel de todo el sistema, no solo de la propia cuenta: Fincas Registradas indica el total de fincas de todos los usuarios, Certificaciones indica el total de diagnósticos generados en el sistema, y Última certificación indica la fecha del diagnóstico más reciente registrado por cualquier usuario.',
         },
       ],
     },
@@ -393,9 +565,10 @@ const manualAdministrador: ManualDefinition = {
         {
           type: 'bullets',
           items: [
-            'Revisa que la ubicación de la finca sea coherente con la descripción antes de aprobarla.',
-            'Verifica que la información de contacto del propietario sea razonable.',
-            'Rechaza solicitudes incompletas o con datos claramente erróneos, e indica el motivo cuando sea posible.',
+            'Revisa que la ubicación y las coordenadas de la finca sean coherentes con la descripción antes de aprobarla.',
+            'Verifica que el nombre del propietario y la información general sean razonables y estén completos.',
+            'Recuerda que "Denegar" borra la solicitud de forma permanente y no se puede deshacer: úsalo solo cuando estés seguro de la decisión, ya que el usuario tendría que volver a registrar la finca desde cero si se equivoca la decisión.',
+            'Al cambiar el rol de un usuario a Admin, ten en cuenta que esa cuenta pasará a tener acceso a todas las herramientas descritas en este manual, incluida la gestión de otras cuentas.',
           ],
         },
       ],
@@ -405,7 +578,7 @@ const manualAdministrador: ManualDefinition = {
       blocks: [
         {
           type: 'paragraph',
-          text: 'SmartLiz 5.0, el asistente virtual del portal, también está disponible para los administradores como apoyo ante dudas sobre el funcionamiento del sistema.',
+          text: 'SmartLiz 5.0, el asistente virtual del portal, también está disponible para los administradores como apoyo ante dudas sobre el funcionamiento del sistema, de la misma forma descrita en el Manual de Usuario.',
         },
       ],
     },

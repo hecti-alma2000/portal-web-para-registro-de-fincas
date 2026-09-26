@@ -1,8 +1,108 @@
-/* Copia aquí el contenido de tu CSS personalizado para el chat tipo WhatsApp */
+/*
+ * Tema visual de SmartLiz 5.0 (widget de chat @n8n/chat).
+ *
+ * @n8n/chat expone su apariencia a través de variables CSS con prefijo
+ * --chat--* (definidas por la librería en :root cuando se inicializa).
+ * Las sobreescribimos aquí con la identidad visual del portal (verde,
+ * bordes redondeados). Se usa !important en cada variable porque el
+ * <style> que inyecta la propia librería se agrega al <head> DESPUÉS
+ * de este archivo (el script se carga de forma diferida), así que sin
+ * !important sus valores por defecto ganarían la cascada.
+ */
 
-/* Ejemplo de estilos mínimos, reemplaza por los tuyos si tienes uno personalizado */
-.n8n-chat-whatsapp {
-  background: #e5ddd5;
-  border-radius: 10px;
-  font-family: "Segoe UI", Arial, sans-serif;
+:root {
+  /* Paleta base (marca del portal: verde) */
+  --chat--color--primary: #16a34a !important; /* green-600 */
+  --chat--color--primary-shade-50: #15803d !important; /* green-700 */
+  --chat--color--primary--shade-100: #166534 !important; /* green-800 */
+  --chat--color--secondary: #22c55e !important; /* green-500 */
+  --chat--color-secondary-shade-50: #16a34a !important;
+  --chat--color-dark: #14532d !important; /* green-900 */
+  --chat--color-light: #f0fdf4 !important; /* green-50 */
+  --chat--color-light-shade-50: #dcfce7 !important; /* green-100 */
+  --chat--color-light-shade-100: #bbf7d0 !important; /* green-200 */
+  --chat--color-typing: #16a34a !important;
+
+  /* Tipografía y forma, alineadas al resto del sitio */
+  --chat--font-family: var(--font-roboto), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    sans-serif !important;
+  --chat--spacing: 1rem !important;
+  --chat--border-radius: 0.9rem !important;
+
+  /* Ventana del chat */
+  --chat--window--width: 380px !important;
+  --chat--window--height: 620px !important;
+  --chat--window--border: 1px solid #bbf7d0 !important;
+  --chat--window--border-radius: 1.25rem !important;
+  --chat--body--background: #f9fafb !important;
+
+  /* Encabezado */
+  --chat--header--background: linear-gradient(135deg, #16a34a, #15803d) !important;
+  --chat--header--color: #ffffff !important;
+  --chat--header--padding: 1.25rem !important;
+  --chat--heading--font-size: 1.4em !important;
+  --chat--subtitle--line-height: 1.5 !important;
+
+  /* Burbujas de mensaje */
+  --chat--message--border-radius: 1rem !important;
+  --chat--message--bot--background: #ffffff !important;
+  --chat--message--bot--color: #18181b !important;
+  --chat--message--bot--border: 1px solid #e4e4e7 !important;
+  --chat--message--user--background: #16a34a !important;
+  --chat--message--user--color: #ffffff !important;
+
+  /* Botón flotante (toggle) */
+  --chat--toggle--size: 60px !important;
+  --chat--toggle--background: #16a34a !important;
+  --chat--toggle--hover--background: #15803d !important;
+  --chat--toggle--active--background: #166534 !important;
+  --chat--toggle--color: #ffffff !important;
+
+  /* Entrada de texto y botones */
+  --chat--input--border-radius: 0.75rem !important;
+  --chat--input--button--border-radius: 0.75rem !important;
+  --chat--button--border-radius: 0.75rem !important;
+  --chat--button--background--primary: #16a34a !important;
+  --chat--button--background--primary--hover: #15803d !important;
+  --chat--input--send--button--color: #16a34a !important;
+  --chat--input--send--button--color-hover: #15803d !important;
+
+  /* Pie de ventana */
+  --chat--footer--background: #f9fafb !important;
+  --chat--footer--border-top: 1px solid #e4e4e7 !important;
+}
+
+/* Modo oscuro (se activa con la clase .dark en <html>, ver next-themes) */
+.dark {
+  --chat--color-dark: #052e16 !important;
+  --chat--color-light: #18181b !important;
+  --chat--color-light-shade-50: #27272a !important;
+  --chat--color-light-shade-100: #3f3f46 !important;
+  --chat--body--background: #18181b !important;
+  --chat--window--border: 1px solid #14532d !important;
+  --chat--message--bot--background: #27272a !important;
+  --chat--message--bot--color: #f4f4f5 !important;
+  --chat--message--bot--border: 1px solid #3f3f46 !important;
+  --chat--input--background: #27272a !important;
+  --chat--input--text-color: #f4f4f5 !important;
+  --chat--input--container--background: #27272a !important;
+  --chat--input--send--button--background: #27272a !important;
+  --chat--input--file--button--background: #27272a !important;
+  --chat--footer--background: #18181b !important;
+  --chat--footer--color: #e4e4e7 !important;
+  --chat--footer--border-top: 1px solid #3f3f46 !important;
+}
+
+/* El header usa --chat--header--background como color solido en algunos
+   markups internos; forzamos el degradado también por selector directo
+   como refuerzo (no rompe nada si la clase no existe todavía). */
+.chat-header {
+  background: linear-gradient(135deg, #16a34a, #15803d) !important;
+}
+
+/* Elevar el widget por encima de nuestros overlays (modales, mapa) */
+#n8n-chat,
+.chat-window-wrapper,
+.chat-window-toggle {
+  z-index: 1300 !important;
 }

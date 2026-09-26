@@ -2,7 +2,7 @@
 
 import Script from 'next/script';
 import { useEffect, useState } from 'react';
-import { MessageSquare, RefreshCw, X } from 'lucide-react';
+import { Bot, RefreshCw, X } from 'lucide-react';
 
 // URL principal del script de n8n
 const N8N_SCRIPT_URL = 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
@@ -10,9 +10,9 @@ const N8N_SCRIPT_URL = 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.
 interface N8nChatConfig {
   webhookUrl: string;
   webhookConfig: { method: 'POST' };
-  theme: string;
   title: string;
   subtitle: string;
+  initialMessages: string[];
   defaultOpen: boolean;
 }
 
@@ -50,9 +50,12 @@ export default function ChatWidget() {
         webhookUrl:
           'https://hecti-alma00.app.n8n.cloud/webhook/b02d7b64-fa54-4eda-a4d5-2d781041c918/chat',
         webhookConfig: { method: 'POST' },
-        theme: 'whatsapp',
         title: 'SmartLiz 5.0',
-        subtitle: '¿En qué puedo ayudarte?',
+        subtitle: 'Tu asistente virtual del Portal de Fincas',
+        initialMessages: [
+          '¡Hola! 👋 Soy SmartLiz 5.0, tu asistente virtual.',
+          '¿En qué puedo ayudarte hoy? Puedo orientarte sobre el registro de fincas, la certificación FPAT o el uso del portal.',
+        ],
         defaultOpen: false,
       });
     }
@@ -72,10 +75,10 @@ export default function ChatWidget() {
       {!isN8nWidgetLoaded && (
         <button
           onClick={handleFallbackClick}
-          className="fixed bottom-6 right-6 z-[100] p-4 bg-green-600 dark:bg-green-500 text-white rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all duration-300 group"
+          className="fixed bottom-6 right-6 z-[100] p-4 bg-linear-to-br from-green-500 to-green-700 text-white rounded-full shadow-2xl shadow-green-900/30 hover:scale-110 active:scale-95 transition-all duration-300 group"
           title="Abrir SmartLiz 5.0"
         >
-          <MessageSquare size={28} />
+          <Bot size={28} />
           <span className="sr-only">Cargando chat...</span>
           <RefreshCw
             size={16}
@@ -88,11 +91,17 @@ export default function ChatWidget() {
       {isFallbackChatOpen && (
         <div className="fixed inset-0 z-[110] flex items-end justify-end p-4 pointer-events-none sm:p-6">
           <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] w-full max-w-[350px] h-[450px] flex flex-col pointer-events-auto border border-zinc-200 dark:border-zinc-800 transition-all duration-500 overflow-hidden animate-in slide-in-from-bottom-5">
-            {/* Header Estilo WhatsApp con degradado */}
+            {/* Header con degradado de marca */}
             <div className="bg-linear-to-r from-green-600 to-green-700 dark:from-green-700 dark:to-green-800 text-white p-5 flex justify-between items-center">
-              <div>
-                <h3 className="text-lg font-bold">SmartLiz 5.0</h3>
-                <p className="text-xs text-green-100 opacity-80">No disponible</p>
+              <div className="flex items-center gap-3">
+                <div className="relative shrink-0 w-11 h-11 rounded-full bg-white/15 flex items-center justify-center">
+                  <Bot size={22} />
+                  <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-red-500 border-2 border-green-700" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold leading-tight">SmartLiz 5.0</h3>
+                  <p className="text-xs text-green-100 opacity-80">No disponible</p>
+                </div>
               </div>
               <button
                 onClick={() => setIsFallbackChatOpen(false)}
