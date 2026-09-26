@@ -2,17 +2,24 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { Download, ShieldCheck, User } from 'lucide-react';
 import { ActivityCard } from '@/components/ui/ActivityCard';
 import { ContentSection } from '@/components/ui/ContentSection';
 import { FAQSection } from '@/components/ui/FAQSection';
 import { SidebarNav } from '@/components/ui/SidebarNav';
+import { auth } from '@/auth.config';
 
 /**
  * Página principal de "Información sobre Agroturismo".
  * Utiliza un diseño de dos columnas (desktop) para el índice y el contenido.
  */
 
-export default function AgroturismoInfoPage() {
+export default async function AgroturismoInfoPage() {
+  const session = await auth();
+  const isAdmin = session?.user?.role === 'admin';
+  const manualHref = isAdmin ? '/manuales/manual-administrador.pdf' : '/manuales/manual-usuario.pdf';
+  const manualLabel = isAdmin ? 'Manual de Administrador' : 'Manual de Usuario';
+
   const CheckIcon = () => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -361,6 +368,33 @@ export default function AgroturismoInfoPage() {
             </Link>
           </div>
         </section>
+        {/* ==================== SECCIÓN 7: MANUAL DEL SISTEMA ==================== */}
+        <ContentSection id="manual" title="Manual del Sistema">
+          <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row items-center gap-6 shadow-sm">
+            <div className="h-16 w-16 shrink-0 rounded-xl bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 flex items-center justify-center">
+              {isAdmin ? <ShieldCheck size={32} /> : <User size={32} />}
+            </div>
+            <div className="flex-1 text-center sm:text-left">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                {manualLabel}
+              </h3>
+              <p className="text-gray-600 dark:text-slate-400 text-sm mt-1">
+                {isAdmin
+                  ? 'Incluye, además de las funciones de usuario, la gestión de solicitudes y de usuarios del portal.'
+                  : 'Guía paso a paso para registrar fincas, certificarlas y explorar el mapa de fincas aprobadas.'}
+              </p>
+            </div>
+            <a
+              href={manualHref}
+              download
+              className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition-colors shrink-0"
+            >
+              <Download size={18} />
+              Descargar manual
+            </a>
+          </div>
+        </ContentSection>
+
         {/* ==================== SECCIÓN FINAL: PREGUNTAS FRECUENTES (FAQ)  ==================== */}
         <ContentSection id="faq" title="Preguntas Frecuentes">
           <p className="text-lg mb-6 prose dark:prose-invert">

@@ -11,7 +11,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css,md}\""
+    "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css,md}\"",
+    "generate:manuals": "ts-node --compiler-options {\"module\":\"CommonJS\",\"types\":[\"node\"]} scripts/generate-manuals.ts"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.0",

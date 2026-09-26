@@ -11,6 +11,7 @@ const sections = [
   { id: 'fpat', title: 'FPAT' },
   { id: 'sostenibilidad', title: 'Sostenibilidad y Ambiente' },
   { id: 'certificacion', title: 'Sistema de Certificación' },
+  { id: 'manual', title: 'Manual del Sistema' },
   { id: 'faq', title: 'Preguntas Frecuentes (FAQ)' },
 ];
 

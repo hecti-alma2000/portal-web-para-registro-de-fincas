@@ -51,7 +51,7 @@ export default function ChatWidget() {
           'https://hecti-alma00.app.n8n.cloud/webhook/b02d7b64-fa54-4eda-a4d5-2d781041c918/chat',
         webhookConfig: { method: 'POST' },
         theme: 'whatsapp',
-        title: 'ChatBot Fincas',
+        title: 'SmartLiz 5.0',
         subtitle: '¿En qué puedo ayudarte?',
         defaultOpen: false,
       });
@@ -73,7 +73,7 @@ export default function ChatWidget() {
         <button
           onClick={handleFallbackClick}
           className="fixed bottom-6 right-6 z-[100] p-4 bg-green-600 dark:bg-green-500 text-white rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all duration-300 group"
-          title="Abrir Chat"
+          title="Abrir SmartLiz 5.0"
         >
           <MessageSquare size={28} />
           <span className="sr-only">Cargando chat...</span>
@@ -91,7 +91,7 @@ export default function ChatWidget() {
             {/* Header Estilo WhatsApp con degradado */}
             <div className="bg-linear-to-r from-green-600 to-green-700 dark:from-green-700 dark:to-green-800 text-white p-5 flex justify-between items-center">
               <div>
-                <h3 className="text-lg font-bold">ChatBot Fincas</h3>
+                <h3 className="text-lg font-bold">SmartLiz 5.0</h3>
                 <p className="text-xs text-green-100 opacity-80">No disponible</p>
               </div>
               <button
