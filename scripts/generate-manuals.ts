@@ -13,6 +13,7 @@ import fs from 'fs';
 import path from 'path';
 
 const OUTPUT_DIR = path.join(process.cwd(), 'public', 'manuales');
+const ASSETS_DIR = path.join(process.cwd(), 'scripts', 'manual-assets');
 
 const PAGE_WIDTH = 595.28; // A4
 const PAGE_HEIGHT = 841.89;
@@ -27,7 +28,8 @@ type Block =
   | { type: 'subheading'; text: string }
   | { type: 'paragraph'; text: string }
   | { type: 'bullets'; items: string[] }
-  | { type: 'numbered'; items: string[] };
+  | { type: 'numbered'; items: string[] }
+  | { type: 'image'; file: string; caption?: string };
 
 interface ManualSection {
   title: string;
@@ -213,6 +215,47 @@ class ManualWriter {
     this.y -= 6;
   }
 
+  async drawImage(fileName: string, caption?: string) {
+    const raw = fs.readFileSync(path.join(ASSETS_DIR, fileName));
+    // fs.readFileSync puede devolver un Buffer que apunta a un pool interno
+    // compartido (byteOffset != 0). pdf-lib construye un DataView sobre
+    // `buffer` a secas sin respetar ese offset, así que normalizamos a un
+    // Uint8Array propio antes de incrustarlo.
+    const bytes = Uint8Array.from(raw);
+    const img = await this.doc.embedJpg(bytes);
+    const maxWidth = CONTENT_WIDTH;
+    const maxHeight = 260;
+    const scale = Math.min(maxWidth / img.width, maxHeight / img.height, 1);
+    const width = img.width * scale;
+    const height = img.height * scale;
+
+    this.ensureSpace(height + (caption ? 34 : 20));
+    const x = MARGIN + (CONTENT_WIDTH - width) / 2;
+    this.page.drawRectangle({
+      x: x - 1,
+      y: this.y - height - 1,
+      width: width + 2,
+      height: height + 2,
+      borderColor: rgb(0.85, 0.87, 0.85),
+      borderWidth: 1,
+    });
+    this.page.drawImage(img, { x, y: this.y - height, width, height });
+    this.y -= height + 6;
+
+    if (caption) {
+      this.page.drawText(caption, {
+        x: MARGIN,
+        y: this.y,
+        size: 9,
+        font: this.regular,
+        color: MUTED_COLOR,
+      });
+      this.y -= 18;
+    } else {
+      this.y -= 10;
+    }
+  }
+
   drawFootnote(text: string) {
     this.ensureSpace(30);
     this.page.drawText(text, {
@@ -236,15 +279,17 @@ async function buildManual(def: ManualDefinition, filePath: string) {
   await writer.init();
   writer.drawCover(def.title, def.subtitle);
 
-  def.sections.forEach((section, index) => {
+  for (let index = 0; index < def.sections.length; index++) {
+    const section = def.sections[index];
     writer.drawSectionTitle(section.title, index + 1);
     for (const block of section.blocks) {
       if (block.type === 'paragraph') writer.drawParagraph(block.text);
       else if (block.type === 'bullets') writer.drawBullets(block.items);
       else if (block.type === 'numbered') writer.drawNumbered(block.items);
       else if (block.type === 'subheading') writer.drawSubheading(block.text);
+      else if (block.type === 'image') await writer.drawImage(block.file, block.caption);
     }
-  });
+  }
 
   writer.drawFootnote(
     `Portal de Registro de Fincas · Asistente virtual SmartLiz 5.0 · Generado automáticamente`
@@ -289,6 +334,7 @@ const manualUsuario: ManualDefinition = {
           type: 'paragraph',
           text: 'En la pantalla de acceso, introduce tu correo electrónico y contraseña y presiona "Iniciar sesión". Si tus datos son correctos, accederás a la página de inicio con tu sesión activa (verás tu nombre y tus opciones de cuenta en el menú superior).',
         },
+        { type: 'image', file: '14-login.jpg', caption: 'Pantalla de inicio de sesión.' },
         {
           type: 'subheading',
           text: 'Recuperar la contraseña',
@@ -302,6 +348,11 @@ const manualUsuario: ManualDefinition = {
             'Abre el enlace recibido, define tu nueva contraseña y vuelve a iniciar sesión con ella.',
           ],
         },
+        {
+          type: 'image',
+          file: '15-recuperar-contrasena.jpg',
+          caption: 'Pantalla de recuperación de contraseña.',
+        },
       ],
     },
     {
@@ -311,6 +362,7 @@ const manualUsuario: ManualDefinition = {
           type: 'paragraph',
           text: 'La página de inicio incluye un buscador rápido en la parte superior. A medida que escribes el nombre de una finca aparece un listado de sugerencias con coincidencias; puedes seleccionar una sugerencia o presionar "Buscar" para ver la ficha de resultado, con el nombre, la ubicación, el propietario y la descripción de la finca encontrada. Si no existe ninguna coincidencia, se muestra el mensaje "No encontrada". La ventana de resultado se puede cerrar con el botón de cierre, presionando la tecla Escape o haciendo clic fuera de ella.',
         },
+        { type: 'image', file: '01-home-hero.jpg', caption: 'Página de inicio con el buscador rápido.' },
       ],
     },
     {
@@ -333,6 +385,11 @@ const manualUsuario: ManualDefinition = {
           type: 'paragraph',
           text: 'Los filtros se aplican combinados; si ninguna finca cumple los criterios seleccionados, se muestra un aviso de "No se encontraron fincas con esos criterios."',
         },
+        {
+          type: 'image',
+          file: '02-catalogo-fincas.jpg',
+          caption: 'Catálogo de fincas con la barra de filtros.',
+        },
       ],
     },
     {
@@ -341,6 +398,11 @@ const manualUsuario: ManualDefinition = {
         {
           type: 'paragraph',
           text: 'La sección "Explorar" muestra un mapa interactivo con las fincas aprobadas que tienen coordenadas geográficas registradas. Al hacer clic en un marcador se abre una ficha emergente con la foto, el nombre y los datos principales de la finca. Solo se ubican en el mapa las fincas cuyo registro incluyó latitud y longitud; las que no tienen coordenadas siguen visibles en el catálogo de "Fincas" pero no aparecen en el mapa.',
+        },
+        {
+          type: 'image',
+          file: '03-explorar-mapa.jpg',
+          caption: 'Mapa interactivo con las fincas y rutas agroturísticas.',
         },
       ],
     },
@@ -366,6 +428,16 @@ const manualUsuario: ManualDefinition = {
           ],
         },
         {
+          type: 'image',
+          file: '05-registro-info-general.jpg',
+          caption: 'Formulario de registro: Información General.',
+        },
+        {
+          type: 'image',
+          file: '06-registro-coordenadas.jpg',
+          caption: 'Selector de coordenadas sobre el mapa.',
+        },
+        {
           type: 'subheading',
           text: '2. Detalles Técnicos',
         },
@@ -378,6 +450,11 @@ const manualUsuario: ManualDefinition = {
             'Estado de Conservación (obligatorio): Muy Bueno, Bueno, Aceptable o Malo.',
             'Descripción del Entorno: clima, relieve y belleza del lugar (opcional).',
           ],
+        },
+        {
+          type: 'image',
+          file: '07-registro-detalles-tecnicos.jpg',
+          caption: 'Formulario de registro: Detalles Técnicos.',
         },
         {
           type: 'subheading',
@@ -399,12 +476,22 @@ const manualUsuario: ManualDefinition = {
           text: 'Cuatro listas de etiquetas a las que se agregan elementos uno por uno (se escribe el texto y se presiona el botón "+" o la tecla Enter): Elementos de Interés, Actividades Ofrecidas, Principios Sustentables y Acciones Ambientales. Cada etiqueta agregada se puede quitar con el botón de cierre que aparece sobre ella.',
         },
         {
+          type: 'image',
+          file: '08-registro-atributos.jpg',
+          caption: 'Formulario de registro: Atributos y Sostenibilidad.',
+        },
+        {
           type: 'subheading',
           text: 'Envío y seguimiento',
         },
         {
           type: 'paragraph',
           text: 'Al presionar "Finalizar Registro" se pide una confirmación antes de enviar. Mientras se completa el formulario, el progreso se guarda automáticamente como borrador en el navegador (aunque se cierre la pestaña o se recargue la página por error, los datos no se pierden hasta que el registro se envíe con éxito). Una vez enviada, la finca queda con estado "Pendiente" hasta que un administrador la revise y la apruebe o la rechace; recibirás una notificación por correo electrónico con la decisión.',
+        },
+        {
+          type: 'image',
+          file: '13-popup-exito.jpg',
+          caption: 'Confirmación tras enviar el formulario.',
         },
       ],
     },
@@ -423,6 +510,11 @@ const manualUsuario: ManualDefinition = {
             'Expandir la tarjeta (flecha) para ver todos los detalles adicionales: descripción, tipo de propiedad, uso actual, estado de conservación, problemática, tradiciones y las listas de atributos.',
           ],
         },
+        {
+          type: 'image',
+          file: '04-gestionar-fincas.jpg',
+          caption: 'Listado de fincas propias con opciones de editar y eliminar.',
+        },
       ],
     },
     {
@@ -431,6 +523,11 @@ const manualUsuario: ManualDefinition = {
         {
           type: 'paragraph',
           text: 'La sección "Mis solicitudes" muestra un listado de solo lectura de todas las fincas que has registrado, con su fotografía, nombre, ubicación, fecha de creación y una etiqueta de estado: "PENDING" (pendiente de revisión), "APPROVED" (aprobada) o "REJECTED" (rechazada).',
+        },
+        {
+          type: 'image',
+          file: '09-mis-solicitudes.jpg',
+          caption: 'Listado de "Mis solicitudes" con su estado.',
         },
       ],
     },
@@ -442,6 +539,11 @@ const manualUsuario: ManualDefinition = {
           text: 'La sección "Certificar" permite evaluar el potencial agroturístico de una finca aprobada. Como usuario normal, solo puedes certificar fincas de tu propiedad que ya estén aprobadas por un administrador.',
         },
         {
+          type: 'image',
+          file: '10-certificacion-inicio.jpg',
+          caption: 'Formulario de certificación FPAT, con la barra de progreso.',
+        },
+        {
           type: 'numbered',
           items: [
             'Selecciona la finca a evaluar en el menú desplegable.',
@@ -450,12 +552,22 @@ const manualUsuario: ManualDefinition = {
           ],
         },
         {
+          type: 'image',
+          file: '11-certificacion-progreso.jpg',
+          caption: 'Selector de criterios tipo pastilla, con progreso parcial.',
+        },
+        {
           type: 'paragraph',
           text: 'El sistema calcula una puntuación ponderada (cada criterio tiene un peso distinto según su importancia relativa, y la suma de las 11 valoraciones ponderadas da la puntuación final). Si la puntuación es mayor a 2.02, la finca se clasifica como APTA para actividades de agroturismo; de lo contrario, se clasifica como NO APTA y el mensaje indica que se requieren mejoras.',
         },
         {
           type: 'paragraph',
           text: 'Si la finca resulta apta, el resultado incluye el botón "Descargar Certificado": genera al instante un certificado en PDF con el nombre del propietario, el nombre de la finca, la fecha de emisión, la puntuación obtenida y un nivel de resultado (SATISFACTORIO, ALTO u ÓPTIMO según el puntaje alcanzado). Cada diagnóstico realizado queda registrado en tu historial y se refleja en las estadísticas de tu perfil.',
+        },
+        {
+          type: 'image',
+          file: '12-certificacion-resultado.jpg',
+          caption: 'Resultado del diagnóstico: finca apta con opción de descargar el certificado.',
         },
       ],
     },
@@ -526,6 +638,20 @@ const manualAdministrador: ManualDefinition = {
             'Ver Detalles: abre la ficha completa de la finca (misma vista que ve el público) para revisar toda la información antes de decidir.',
           ],
         },
+        {
+          type: 'image',
+          file: '16-admin-solicitud-pendiente.jpg',
+          caption: 'Solicitud pendiente con las acciones Aprobar, Denegar y Ver Detalles.',
+        },
+        {
+          type: 'image',
+          file: '17-admin-aprobacion-exito.jpg',
+          caption: 'Confirmación al aprobar una solicitud.',
+        },
+        {
+          type: 'paragraph',
+          text: 'Nota: cuando un administrador registra una finca desde su propia cuenta (menú "Registrar"), esta se guarda directamente como "Aprobada" y no pasa por esta cola de solicitudes.',
+        },
       ],
     },
     {
@@ -538,6 +664,12 @@ const manualAdministrador: ManualDefinition = {
         {
           type: 'paragraph',
           text: 'La cuenta marcada como "usuario principal" del sistema tiene su selector de rol bloqueado (no se puede cambiar ni degradar desde la interfaz), como medida de seguridad para evitar quedarse sin ningún administrador.',
+        },
+        {
+          type: 'image',
+          file: '18-admin-usuarios.jpg',
+          caption:
+            'Mantenimiento de usuarios (correos y nombres de ejemplo; el primer usuario es el principal, con el rol bloqueado).',
         },
       ],
     },
@@ -556,6 +688,16 @@ const manualAdministrador: ManualDefinition = {
         {
           type: 'paragraph',
           text: 'La sección "Perfil" de una cuenta administradora muestra estadísticas a nivel de todo el sistema, no solo de la propia cuenta: Fincas Registradas indica el total de fincas de todos los usuarios, Certificaciones indica el total de diagnósticos generados en el sistema, y Última certificación indica la fecha del diagnóstico más reciente registrado por cualquier usuario.',
+        },
+        {
+          type: 'image',
+          file: '19-perfil.jpg',
+          caption: 'Vista de perfil (nombre y correo de ejemplo).',
+        },
+        {
+          type: 'image',
+          file: '20-perfil-estadisticas.jpg',
+          caption: 'Estadísticas del sistema visibles para un administrador.',
         },
       ],
     },

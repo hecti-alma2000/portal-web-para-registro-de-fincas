@@ -24,7 +24,7 @@ declare global {
 
 export default function ChatWidget() {
   const [isN8nWidgetLoaded, setIsN8nWidgetLoaded] = useState(false);
-  const [isFallbackChatOpen, setIsFallbackChatOpen] = useState(true);
+  const [isFallbackChatOpen, setIsFallbackChatOpen] = useState(false);
 
   useEffect(() => {
     if (typeof document === 'undefined') return;
@@ -68,7 +68,7 @@ export default function ChatWidget() {
   };
 
   return (
-    <>
+    <div id="chat-widget-root">
       <Script src={N8N_SCRIPT_URL} strategy="lazyOnload" onLoad={initializeN8nChat} />
 
       {/* 1. Botón Flotante de Carga/Fallback */}
@@ -145,6 +145,6 @@ export default function ChatWidget() {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }
