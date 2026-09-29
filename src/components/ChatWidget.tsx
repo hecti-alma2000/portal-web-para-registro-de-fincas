@@ -48,7 +48,7 @@ export default function ChatWidget() {
       setIsN8nWidgetLoaded(true);
       window.createChat({
         webhookUrl:
-          'https://hecti-alma00.app.n8n.cloud/webhook/b02d7b64-fa54-4eda-a4d5-2d781041c918/chat',
+          'https://luisn8n77.app.n8n.cloud/webhook/f5907f5e-eb1e-4e1d-b9ed-71af506f142d/chat',
         webhookConfig: { method: 'POST' },
         title: 'SmartLiz 5.0',
         subtitle: 'Tu asistente virtual del Portal de Fincas',
