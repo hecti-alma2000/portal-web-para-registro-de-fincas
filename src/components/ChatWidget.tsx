@@ -4,8 +4,11 @@ import Script from 'next/script';
 import { useEffect, useState } from 'react';
 import { Bot, RefreshCw, X } from 'lucide-react';
 
-// URL principal del script de n8n
-const N8N_SCRIPT_URL = 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
+// URL principal del script de n8n.
+// Usamos el build UMD (no el .es.js, que es un módulo ES con `export`
+// y no se ejecuta correctamente como <script> clásico). El build UMD
+// expone su API bajo window.N8nChat.createChat(...), no window.createChat.
+const N8N_SCRIPT_URL = 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.umd.js';
 
 interface N8nChatConfig {
   webhookUrl: string;
@@ -18,7 +21,9 @@ interface N8nChatConfig {
 
 declare global {
   interface Window {
-    createChat?: (config: N8nChatConfig) => void;
+    // El build UMD expone todo bajo un namespace global `N8nChat`
+    // (no `window.createChat` directo).
+    N8nChat?: { createChat: (config: N8nChatConfig) => void };
   }
 }
 
@@ -44,9 +49,9 @@ export default function ChatWidget() {
   }, []);
 
   const initializeN8nChat = () => {
-    if (typeof window.createChat === 'function') {
+    if (typeof window.N8nChat?.createChat === 'function') {
       setIsN8nWidgetLoaded(true);
-      window.createChat({
+      window.N8nChat.createChat({
         webhookUrl:
           'https://luisn8n77.app.n8n.cloud/webhook/f5907f5e-eb1e-4e1d-b9ed-71af506f142d/chat',
         webhookConfig: { method: 'POST' },
