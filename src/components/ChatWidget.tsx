@@ -9,6 +9,9 @@ import { Bot, RefreshCw, X } from 'lucide-react';
 // y no se ejecuta correctamente como <script> clásico). El build UMD
 // expone su API bajo window.N8nChat.createChat(...), no window.createChat.
 const N8N_SCRIPT_URL = 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.umd.js';
+const N8N_WEBHOOK_URL =
+  process.env.NEXT_PUBLIC_N8N_CHAT_WEBHOOK_URL ||
+  'https://luisn8n77.app.n8n.cloud/webhook/f5907f5e-eb1e-4e1d-b9ed-71af506f142d/chat';
 
 interface N8nChatConfig {
   webhookUrl: string;
@@ -29,6 +32,7 @@ declare global {
 
 export default function ChatWidget() {
   const [isN8nWidgetLoaded, setIsN8nWidgetLoaded] = useState(false);
+  const [isN8nLoadFailed, setIsN8nLoadFailed] = useState(false);
   const [isFallbackChatOpen, setIsFallbackChatOpen] = useState(false);
 
   useEffect(() => {
@@ -50,19 +54,26 @@ export default function ChatWidget() {
 
   const initializeN8nChat = () => {
     if (typeof window.N8nChat?.createChat === 'function') {
-      setIsN8nWidgetLoaded(true);
-      window.N8nChat.createChat({
-        webhookUrl:
-          'https://luisn8n77.app.n8n.cloud/webhook/f5907f5e-eb1e-4e1d-b9ed-71af506f142d/chat',
-        webhookConfig: { method: 'POST' },
-        title: 'SmartLiz 5.0',
-        subtitle: 'Tu asistente virtual del Portal de Fincas',
-        initialMessages: [
-          '¡Hola! 👋 Soy SmartLiz 5.0, tu asistente virtual.',
-          '¿En qué puedo ayudarte hoy? Puedo orientarte sobre el registro de fincas, la certificación FPAT o el uso del portal.',
-        ],
-        defaultOpen: false,
-      });
+      try {
+        window.N8nChat.createChat({
+          webhookUrl: N8N_WEBHOOK_URL,
+          webhookConfig: { method: 'POST' },
+          title: 'SmartLiz 5.0',
+          subtitle: 'Tu asistente virtual del Portal de Fincas',
+          initialMessages: [
+            '¡Hola! 👋 Soy SmartLiz 5.0, tu asistente virtual.',
+            '¿En qué puedo ayudarte hoy? Puedo orientarte sobre el registro de fincas, la certificación FPAT o el uso del portal.',
+          ],
+          defaultOpen: false,
+        });
+        setIsN8nWidgetLoaded(true);
+        setIsN8nLoadFailed(false);
+      } catch (error) {
+        console.error('No se pudo inicializar el chat de n8n:', error);
+        setIsN8nLoadFailed(true);
+      }
+    } else {
+      setIsN8nLoadFailed(true);
     }
   };
 
@@ -74,21 +85,28 @@ export default function ChatWidget() {
 
   return (
     <div id="chat-widget-root">
-      <Script src={N8N_SCRIPT_URL} strategy="lazyOnload" onLoad={initializeN8nChat} />
+      <Script
+        src={N8N_SCRIPT_URL}
+        strategy="lazyOnload"
+        onLoad={initializeN8nChat}
+        onError={() => setIsN8nLoadFailed(true)}
+      />
 
       {/* 1. Botón Flotante de Carga/Fallback */}
       {!isN8nWidgetLoaded && (
         <button
           onClick={handleFallbackClick}
           className="fixed bottom-6 right-6 z-[100] p-4 bg-linear-to-br from-green-500 to-green-700 text-white rounded-full shadow-2xl shadow-green-900/30 hover:scale-110 active:scale-95 transition-all duration-300 group"
-          title="Abrir SmartLiz 5.0"
+          title={isN8nLoadFailed ? 'SmartLiz 5.0 no disponible' : 'Abrir SmartLiz 5.0'}
         >
           <Bot size={28} />
           <span className="sr-only">Cargando chat...</span>
-          <RefreshCw
-            size={16}
-            className="absolute -top-1 -right-1 animate-spin text-yellow-400 bg-white dark:bg-zinc-800 rounded-full border border-zinc-200 dark:border-zinc-700 p-0.5"
-          />
+          {!isN8nLoadFailed && (
+            <RefreshCw
+              size={16}
+              className="absolute -top-1 -right-1 animate-spin text-yellow-400 bg-white dark:bg-zinc-800 rounded-full border border-zinc-200 dark:border-zinc-700 p-0.5"
+            />
+          )}
         </button>
       )}
 
