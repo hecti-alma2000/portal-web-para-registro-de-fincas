@@ -106,3 +106,7 @@
 .chat-window-toggle {
   z-index: 1300 !important;
 }
+
+.chat-window-wrapper .chat-window-toggle {
+  display: none !important;
+}

@@ -9,6 +9,7 @@ import { Bot, RefreshCw, X } from 'lucide-react';
 // y no se ejecuta correctamente como <script> clásico). El build UMD
 // expone su API bajo window.N8nChat.createChat(...), no window.createChat.
 const N8N_SCRIPT_URL = 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.umd.js';
+const N8N_STYLES_URL = 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css';
 const N8N_WEBHOOK_URL =
   process.env.NEXT_PUBLIC_N8N_CHAT_WEBHOOK_URL ||
   'https://luisn8n77.app.n8n.cloud/webhook/f5907f5e-eb1e-4e1d-b9ed-71af506f142d/chat';
@@ -38,17 +39,21 @@ export default function ChatWidget() {
   useEffect(() => {
     if (typeof document === 'undefined') return;
 
-    if (!document.getElementById('n8n-chat-custom')) {
-      const customStyle = document.createElement('link');
-      customStyle.id = 'n8n-chat-custom';
-      customStyle.rel = 'stylesheet';
-      customStyle.href = '/n8n-chat-whatsapp.css';
-      document.head.appendChild(customStyle);
-    }
+    const n8nStyle = document.createElement('link');
+    n8nStyle.id = 'n8n-chat-base';
+    n8nStyle.rel = 'stylesheet';
+    n8nStyle.href = N8N_STYLES_URL;
+    document.head.appendChild(n8nStyle);
+
+    const customStyle = document.createElement('link');
+    customStyle.id = 'n8n-chat-custom';
+    customStyle.rel = 'stylesheet';
+    customStyle.href = '/n8n-chat-whatsapp.css';
+    document.head.appendChild(customStyle);
 
     return () => {
-      const c = document.getElementById('n8n-chat-custom');
-      if (c && c.parentNode) c.parentNode.removeChild(c);
+      n8nStyle.remove();
+      customStyle.remove();
     };
   }, []);
 
@@ -77,8 +82,10 @@ export default function ChatWidget() {
     }
   };
 
-  const handleFallbackClick = () => {
-    if (!isN8nWidgetLoaded) {
+  const handleLauncherClick = () => {
+    if (isN8nWidgetLoaded) {
+      document.querySelector<HTMLElement>('.chat-window-toggle')?.click();
+    } else if (isN8nLoadFailed) {
       setIsFallbackChatOpen(true);
     }
   };
@@ -92,23 +99,20 @@ export default function ChatWidget() {
         onError={() => setIsN8nLoadFailed(true)}
       />
 
-      {/* 1. Botón Flotante de Carga/Fallback */}
-      {!isN8nWidgetLoaded && (
-        <button
-          onClick={handleFallbackClick}
-          className="fixed bottom-6 right-6 z-[100] p-4 bg-linear-to-br from-green-500 to-green-700 text-white rounded-full shadow-2xl shadow-green-900/30 hover:scale-110 active:scale-95 transition-all duration-300 group"
-          title={isN8nLoadFailed ? 'SmartLiz 5.0 no disponible' : 'Abrir SmartLiz 5.0'}
-        >
-          <Bot size={28} />
-          <span className="sr-only">Cargando chat...</span>
-          {!isN8nLoadFailed && (
-            <RefreshCw
-              size={16}
-              className="absolute -top-1 -right-1 animate-spin text-yellow-400 bg-white dark:bg-zinc-800 rounded-full border border-zinc-200 dark:border-zinc-700 p-0.5"
-            />
-          )}
-        </button>
-      )}
+      <button
+        onClick={handleLauncherClick}
+        className="fixed bottom-6 right-6 z-[1301] p-4 bg-linear-to-br from-green-500 to-green-700 text-white rounded-full shadow-2xl shadow-green-900/30 hover:scale-110 active:scale-95 transition-all duration-300 group"
+        title={isN8nLoadFailed ? 'SmartLiz 5.0 no disponible' : 'Abrir SmartLiz 5.0'}
+        aria-label={isN8nLoadFailed ? 'SmartLiz 5.0 no disponible' : 'Abrir chat SmartLiz 5.0'}
+      >
+        <Bot size={28} />
+        {!isN8nWidgetLoaded && !isN8nLoadFailed && (
+          <RefreshCw
+            size={16}
+            className="absolute -top-1 -right-1 animate-spin text-yellow-400 bg-white dark:bg-zinc-800 rounded-full border border-zinc-200 dark:border-zinc-700 p-0.5"
+          />
+        )}
+      </button>
 
       {/* 2. Modal de Error (Fallback) Adaptable */}
       {isFallbackChatOpen && (
