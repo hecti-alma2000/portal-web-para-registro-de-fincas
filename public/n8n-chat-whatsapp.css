@@ -110,3 +110,14 @@
 .chat-window-wrapper .chat-window-toggle {
   display: none !important;
 }
+
+/* En móvil la ventana ocupa casi todo el ancho y, al ocultar el toggle
+   nativo, baja hasta el borde inferior: nuestro launcher (60px, a 24px del
+   borde) tapaba el botón de enviar. Reservamos su espacio debajo de la
+   ventana, igual que hace n8n con su propio toggle. */
+@media (max-width: 640px) {
+  .chat-window-wrapper .chat-window {
+    margin-bottom: 80px !important;
+    height: calc(100dvh - 112px) !important;
+  }
+}
