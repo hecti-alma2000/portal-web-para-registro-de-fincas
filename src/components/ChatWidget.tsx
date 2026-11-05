@@ -14,11 +14,23 @@ const N8N_WEBHOOK_URL =
   process.env.NEXT_PUBLIC_N8N_CHAT_WEBHOOK_URL ||
   'https://luisn8n77.app.n8n.cloud/webhook/f5907f5e-eb1e-4e1d-b9ed-71af506f142d/chat';
 
+interface N8nChatI18n {
+  title: string;
+  subtitle: string;
+  footer: string;
+  getStarted: string;
+  inputPlaceholder: string;
+  closeButtonTooltip: string;
+}
+
 interface N8nChatConfig {
   webhookUrl: string;
   webhookConfig: { method: 'POST' };
-  title: string;
-  subtitle: string;
+  // @n8n/chat ignora `title`/`subtitle` sueltos: los textos del encabezado
+  // se leen de `i18n[defaultLanguage]`. Sin esto aparecen los textos por
+  // defecto en inglés ("Hi there! 👋", "Start a chat...").
+  defaultLanguage: 'en';
+  i18n: { en: N8nChatI18n };
   initialMessages: string[];
   defaultOpen: boolean;
 }
@@ -63,8 +75,19 @@ export default function ChatWidget() {
         window.N8nChat.createChat({
           webhookUrl: N8N_WEBHOOK_URL,
           webhookConfig: { method: 'POST' },
-          title: 'SmartLiz 5.0',
-          subtitle: 'Tu asistente virtual del Portal de Fincas',
+          // La librería solo admite 'en' como clave de idioma; el contenido va en español.
+          defaultLanguage: 'en',
+          i18n: {
+            en: {
+              title: 'SmartLiz 5.0 🌱',
+              subtitle:
+                'Tu asistente virtual del Portal de Registro de Fincas. Te guío paso a paso para registrar tu finca, entender la certificación FPAT y resolver dudas sobre el portal, disponible las 24 horas.',
+              footer: '',
+              getStarted: 'Nueva conversación',
+              inputPlaceholder: 'Escribe tu pregunta...',
+              closeButtonTooltip: 'Cerrar chat',
+            },
+          },
           initialMessages: [
             '¡Hola! 👋 Soy SmartLiz 5.0, tu asistente virtual.',
             '¿En qué puedo ayudarte hoy? Puedo orientarte sobre el registro de fincas, la certificación FPAT o el uso del portal.',

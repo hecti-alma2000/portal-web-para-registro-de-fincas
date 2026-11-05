@@ -100,6 +100,42 @@
   background: linear-gradient(135deg, #16a34a, #15803d) !important;
 }
 
+/* La librería pone `margin-top: auto` en la lista de mensajes, lo que
+   empuja la bienvenida a la parte baja y deja un hueco en blanco arriba.
+   La anclamos arriba, justo debajo del encabezado. */
+.chat-messages-list {
+  margin-top: 0 !important;
+}
+
+/* Marca de agua sutil (brote + leyenda) en el espacio libre del cuerpo
+   del chat. Va como fondo, así queda detrás de los mensajes y no
+   interfiere con el scroll ni con los clics. */
+.chat-layout .chat-body.chat-body {
+  background-color: var(--chat--body--background) !important;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='190' viewBox='0 0 240 190'><g fill='none' stroke='%2316a34a' stroke-width='3' stroke-linecap='round' stroke-linejoin='round' opacity='0.18'><circle cx='120' cy='62' r='54' stroke-dasharray='4 8'/><path d='M120 98V58'/><path d='M120 70c-4-18-20-26-34-24 0 16 14 28 34 24z' fill='%2316a34a' fill-opacity='0.35'/><path d='M120 60c3-20 20-30 36-28 0 18-16 32-36 28z' fill='%2316a34a' fill-opacity='0.35'/><path d='M96 98h48'/></g><g font-family='Segoe UI,Roboto,sans-serif' text-anchor='middle' fill='%2316a34a' opacity='0.4'><text x='120' y='148' font-size='15' font-weight='600'>SmartLiz 5.0</text><text x='120' y='170' font-size='11'>Registro de fincas · FPAT · Portal</text></g></svg>") !important;
+  background-repeat: no-repeat !important;
+  /* Sin !important: si no, la animación no podría moverla. */
+  background-position: center 62%;
+  background-size: 220px auto !important;
+  animation: smartliz-watermark-float 6s ease-in-out infinite;
+}
+
+@keyframes smartliz-watermark-float {
+  0%,
+  100% {
+    background-position: center 62%;
+  }
+  50% {
+    background-position: center 59%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chat-layout .chat-body.chat-body {
+    animation: none;
+  }
+}
+
 /* Elevar el widget por encima de nuestros overlays (modales, mapa) */
 #n8n-chat,
 .chat-window-wrapper,
