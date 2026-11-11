@@ -1,19 +1,36 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from 'react-leaflet';
 import { divIcon } from 'leaflet';
 import { MapTileWatch } from '@/components/maps/location/MapTileWatch';
 import 'leaflet/dist/leaflet.css';
 import { LocateFixed, WifiOff, X } from 'lucide-react';
+import { DEFAULT_COUNTRY_CODE, getCountry } from '@/lib/countries';
 
 interface CoordinatePickerProps {
   latitude: string;
   longitude: string;
   onChange: (lat: string, lng: string) => void;
+  /** País seleccionado (ISO alfa-2): el mapa se mueve allí al cambiar de país */
+  countryCode?: string;
 }
 
 const DEFAULT_CENTER: [number, number] = [20.886992464628573, -76.5981011376514];
+
+// Al cambiar el país (no en el montaje inicial) llevamos el mapa a ese país
+const CountryRecenter = ({ center, zoom }: { center?: [number, number]; zoom?: number }) => {
+  const map = useMap();
+  const isFirst = useRef(true);
+  useEffect(() => {
+    if (isFirst.current) {
+      isFirst.current = false;
+      return;
+    }
+    if (center) map.flyTo(center, zoom ?? 6, { duration: 0.8 });
+  }, [center, zoom, map]);
+  return null;
+};
 
 const getPinIcon = () =>
   divIcon({
@@ -46,7 +63,13 @@ const Recenter = ({ lat, lng }: { lat: number | null; lng: number | null }) => {
   return null;
 };
 
-export const CoordinatePicker = ({ latitude, longitude, onChange }: CoordinatePickerProps) => {
+export const CoordinatePicker = ({
+  latitude,
+  longitude,
+  onChange,
+  countryCode,
+}: CoordinatePickerProps) => {
+  const country = getCountry(countryCode);
   const [noTiles, setNoTiles] = useState(false);
 
   const parsedLat = latitude.trim() === '' ? null : Number(latitude);
@@ -57,7 +80,11 @@ export const CoordinatePicker = ({ latitude, longitude, onChange }: CoordinatePi
     Number.isFinite(parsedLat) &&
     Number.isFinite(parsedLng);
 
-  const center: [number, number] = hasPoint ? [parsedLat!, parsedLng!] : DEFAULT_CENTER;
+  // Sin punto marcado: Cuba conserva la vista local histórica; otros países usan su centro
+  const isDefaultCountry = country.code === DEFAULT_COUNTRY_CODE;
+  const emptyCenter: [number, number] = isDefaultCountry ? DEFAULT_CENTER : country.center;
+  const emptyZoom = isDefaultCountry ? 11 : country.zoom;
+  const center: [number, number] = hasPoint ? [parsedLat!, parsedLng!] : emptyCenter;
 
   const handlePick = (lat: number, lng: number) => {
     onChange(lat.toFixed(6), lng.toFixed(6));
@@ -106,7 +133,7 @@ export const CoordinatePicker = ({ latitude, longitude, onChange }: CoordinatePi
       >
         <MapContainer
           center={center}
-          zoom={hasPoint ? 14 : 11}
+          zoom={hasPoint ? 14 : emptyZoom}
           className="w-full h-full z-0"
           scrollWheelZoom={true}
         >
@@ -115,6 +142,7 @@ export const CoordinatePicker = ({ latitude, longitude, onChange }: CoordinatePi
             attribution="&copy; OpenStreetMap contributors"
           />
           <MapTileWatch onStatusChange={setNoTiles} />
+          <CountryRecenter center={country.center} zoom={country.zoom} />
           <ClickHandler onPick={handlePick} />
           <Recenter lat={parsedLat} lng={parsedLng} />
           {hasPoint && <Marker position={[parsedLat!, parsedLng!]} icon={getPinIcon()} />}

@@ -22,11 +22,15 @@ export async function getPublicFincas(filters?: {
   usoActual?: string;
   estadoConservacion?: string;
   direccion?: string; // Nuevo campo
+  pais?: string;
 }) {
   try {
     const where: any = { status: 'APPROVED' };
 
     if (filters) {
+      if (filters.pais) {
+        where.pais = filters.pais.toUpperCase();
+      }
       if (filters.tipoEntidad) {
         where.tipoPropiedad = filters.tipoEntidad;
       }
@@ -71,6 +75,21 @@ export async function getPublicFincas(filters?: {
   } catch (error) {
     console.error('Error filtrando fincas:', error);
     return [];
+  }
+}
+
+// Países que tienen fincas aprobadas, con su conteo (para el filtro del catálogo)
+export async function getPublicFincaCountries(): Promise<Record<string, number>> {
+  try {
+    const rows = await prisma.finca.groupBy({
+      by: ['pais'],
+      where: { status: 'APPROVED' },
+      _count: { _all: true },
+    });
+    return Object.fromEntries(rows.map((r) => [r.pais, r._count._all]));
+  } catch (error) {
+    console.error('Error obteniendo países de fincas:', error);
+    return {};
   }
 }
 
@@ -139,6 +158,7 @@ export async function getPublicMapFincas(): Promise<MapFinca[]> {
         nombre: true,
         fotoUrl: true,
         localizacion: true,
+        pais: true,
         propietario: true,
         tipoPropiedad: true,
         usoActual: true,
@@ -158,6 +178,7 @@ export async function getPublicMapFincas(): Promise<MapFinca[]> {
       nombre: f.nombre,
       fotoUrl: f.fotoUrl,
       localizacion: f.localizacion,
+      pais: f.pais,
       propietario: f.propietario,
       tipoPropiedad: f.tipoPropiedad,
       usoActual: f.usoActual,

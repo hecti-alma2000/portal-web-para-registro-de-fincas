@@ -6,6 +6,8 @@ import { MapPin, MapPinned, Landmark, Leaf, Award, ArrowRight } from 'lucide-rea
 import Link from 'next/link';
 import { importantPoints } from '../marker-trails/markerTrails.data';
 import type { MapFinca } from '@/interfaces/finca-map.interface';
+import { getCountry, getFlagUrl } from '@/lib/countries';
+import { CountryFlag } from '@/components/ui/CountryFlag';
 
 interface FincaMarkersProps {
   fincas: MapFinca[];
@@ -24,11 +26,14 @@ const getTrailPoint = (nombre: string) => {
   );
 };
 
-const getPinIcon = (nombre: string) => {
+const getPinIcon = (nombre: string, pais: string) => {
   const initial = nombre.trim().charAt(0).toUpperCase() || 'F';
+  const country = getCountry(pais);
   const html = `
     <div class="flex flex-col items-center">
-      <div class="finca-pin w-10 h-10 rounded-full bg-green-600 border-[2.5px] border-white dark:border-slate-900 shadow-lg flex items-center justify-center text-white font-extrabold text-lg">${initial}</div>
+      <div class="finca-pin relative w-10 h-10 rounded-full bg-green-600 border-[2.5px] border-white dark:border-slate-900 shadow-lg flex items-center justify-center text-white font-extrabold text-lg">${initial}
+        <img src="${getFlagUrl(country.code)}" alt="${country.name}" title="${country.name}" class="absolute -bottom-1 -right-2 w-[18px] h-auto rounded-[2px] ring-1 ring-white dark:ring-slate-900 shadow" />
+      </div>
       <div class="w-0 h-0 border-l-[6px] border-r-[6px] border-t-[9px] border-l-transparent border-r-transparent border-t-green-600 -mt-[3px]"></div>
     </div>`;
   return divIcon({
@@ -51,7 +56,7 @@ export const FincaMarkers = ({ fincas }: FincaMarkersProps) => {
           <Marker
             key={finca.id}
             position={[finca.latitude, finca.longitude]}
-            icon={getPinIcon(finca.nombre)}
+            icon={getPinIcon(finca.nombre, finca.pais)}
             eventHandlers={{
               click: () => map.flyTo([finca.latitude, finca.longitude], 15, { duration: 0.8 }),
             }}
@@ -88,6 +93,9 @@ export const FincaMarkers = ({ fincas }: FincaMarkersProps) => {
                 <p className="text-xs text-zinc-500 dark:text-zinc-400 flex items-start gap-1 mt-1">
                   <MapPin size={12} className="mt-0.5 shrink-0" />
                   {finca.localizacion}
+                </p>
+                <p className="text-xs text-zinc-600 dark:text-zinc-300 mt-1">
+                  <CountryFlag code={finca.pais} withName className="w-4 h-auto" />
                 </p>
 
                 <div className="flex flex-wrap gap-1.5 mt-2">

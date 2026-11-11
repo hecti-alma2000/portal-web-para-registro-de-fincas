@@ -4,6 +4,7 @@ import { ChevronDown, ChevronUp, Pencil, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
+import { CountryFlag } from '@/components/ui/CountryFlag';
 
 interface FincaCardProps {
   finca: any;
@@ -70,6 +71,10 @@ const FincaCardComponent = ({ finca, onEdit, onDelete }: FincaCardProps) => {
           )}
           <div className="text-zinc-600 dark:text-zinc-400 text-sm mt-1">
             <span className="font-medium">Ubicación:</span> {finca.ubicacion || finca.localizacion}
+          </div>
+          <div className="text-zinc-600 dark:text-zinc-400 text-sm flex items-center gap-1">
+            <span className="font-medium">País:</span>
+            <CountryFlag code={finca.pais} withName className="w-5 h-auto" />
           </div>
           <div className="text-zinc-600 dark:text-zinc-400 text-sm">
             <span className="font-medium">Propietario:</span> {finca.propietario}

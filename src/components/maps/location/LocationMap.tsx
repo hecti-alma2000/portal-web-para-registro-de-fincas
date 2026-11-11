@@ -23,6 +23,8 @@ import {
   X,
 } from 'lucide-react';
 import type { MapFinca } from '@/interfaces/finca-map.interface';
+import { CountrySelect } from '@/components/ui/CountrySelect';
+import { DEFAULT_COUNTRY_CODE, getCountry } from '@/lib/countries';
 
 interface LocationMapProps {
   fincas: MapFinca[];
@@ -82,6 +84,7 @@ export const LocationMap = ({ fincas }: LocationMapProps) => {
   const [filterTipo, setFilterTipo] = useState('');
   const [filterUso, setFilterUso] = useState('');
   const [filterEstado, setFilterEstado] = useState('');
+  const [filterPais, setFilterPais] = useState('');
   const [onlyCertificadas, setOnlyCertificadas] = useState(false);
   const [showFincas, setShowFincas] = useState(true);
   const [showRoutes, setShowRoutes] = useState(true);
@@ -100,21 +103,34 @@ export const LocationMap = ({ fincas }: LocationMapProps) => {
     [fincas]
   );
 
+  // Países presentes en el mapa con su número de fincas
+  const countryCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const f of fincas) counts[f.pais] = (counts[f.pais] ?? 0) + 1;
+    return counts;
+  }, [fincas]);
+
+  // Las rutas dibujadas pertenecen a Calixto García (Cuba)
+  const routesVisible = showRoutes && (!filterPais || filterPais === DEFAULT_COUNTRY_CODE);
+
   // --- Fincas filtradas ---
   const filteredFincas = useMemo(() => {
     const term = searchTerm.trim().toLowerCase();
     return fincas.filter((f) => {
+      if (filterPais && f.pais !== filterPais) return false;
       if (filterTipo && f.tipoPropiedad !== filterTipo) return false;
       if (filterUso && f.usoActual !== filterUso) return false;
       if (filterEstado && f.estadoConservacion !== filterEstado) return false;
       if (onlyCertificadas && !f.certificada) return false;
       if (term) {
-        const hayable = `${f.nombre} ${f.localizacion} ${f.propietario}`.toLowerCase();
+        const hayable = `${f.nombre} ${f.localizacion} ${f.propietario} ${
+          getCountry(f.pais).name
+        }`.toLowerCase();
         if (!hayable.includes(term)) return false;
       }
       return true;
     });
-  }, [fincas, searchTerm, filterTipo, filterUso, filterEstado, onlyCertificadas]);
+  }, [fincas, searchTerm, filterPais, filterTipo, filterUso, filterEstado, onlyCertificadas]);
 
   // --- Bounds del mapa (se ajusta a los resultados del filtro) ---
   const bounds = useMemo(() => {
@@ -124,10 +140,16 @@ export const LocationMap = ({ fincas }: LocationMapProps) => {
       );
       if (b.isValid()) return b;
     }
+    // Sin resultados en un país distinto de Cuba: encuadrar el país completo
+    if (filterPais && filterPais !== DEFAULT_COUNTRY_CODE) {
+      const c = getCountry(filterPais);
+      return L.latLng(c.center).toBounds((4e7 / 2 ** c.zoom) * 4);
+    }
     return L.latLngBounds(FALLBACK_BOUNDS);
-  }, [filteredFincas]);
+  }, [filteredFincas, filterPais]);
 
   const countActiveFilters =
+    (filterPais ? 1 : 0) +
     (filterTipo ? 1 : 0) +
     (filterUso ? 1 : 0) +
     (filterEstado ? 1 : 0) +
@@ -138,6 +160,7 @@ export const LocationMap = ({ fincas }: LocationMapProps) => {
 
   const clearFilters = () => {
     setSearchTerm('');
+    setFilterPais('');
     setFilterTipo('');
     setFilterUso('');
     setFilterEstado('');
@@ -199,7 +222,17 @@ export const LocationMap = ({ fincas }: LocationMapProps) => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+          {/* País */}
+          <CountrySelect
+            value={filterPais}
+            onChange={setFilterPais}
+            allLabel="Todos los países"
+            allowedCodes={Object.keys(countryCounts)}
+            counts={countryCounts}
+            className={selectClasses}
+          />
+
           {/* Búsqueda */}
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -357,7 +390,7 @@ export const LocationMap = ({ fincas }: LocationMapProps) => {
 
           <MapFlyTo targetZoom={15} />
 
-          {showRoutes && (
+          {routesVisible && (
             <>
               <Marker position={[20.87, -76.568]} icon={labels.agroalimentaria} />
               <Marker position={[20.8777, -76.68]} icon={labels.agroganadera} />
@@ -416,7 +449,7 @@ export const LocationMap = ({ fincas }: LocationMapProps) => {
       </div>
 
       {/* Leyenda */}
-      {showRoutes && (
+      {routesVisible && (
         <div className="mt-4 flex flex-wrap items-center gap-4 text-xs text-gray-600 dark:text-slate-300">
           <span className="inline-flex items-center gap-2">
             <span className="w-6 h-1.5 rounded-full bg-[#1A237E] dark:bg-[#5C6BC0]" />

@@ -49,6 +49,8 @@ model Finca {
   nombre                      String   @unique
   descripcion                 String?
   localizacion                String
+  // País de la finca (código ISO 3166-1 alfa-2). Las fincas existentes quedan como Cuba.
+  pais                        String   @default("CU")
   propietario                 String
   // URL pública opcional a la foto de la finca (guardada en /public/uploads)
   fotoUrl                     String?
@@ -75,6 +77,8 @@ model Finca {
   principiosSustentabilidad   PrincipioSustentabilidad[]
   accionesAmbientales         AccionAmbiental[]
   diagnosticos                Diagnostico[]
+
+  @@index([pais])
 }
 
 model ElementoInteres {

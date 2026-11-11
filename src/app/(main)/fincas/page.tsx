@@ -1,5 +1,6 @@
 import dynamic from 'next/dynamic';
-import { getPublicFincas } from '@/actions/registro-finca/finca-actions';
+import { getPublicFincas, getPublicFincaCountries } from '@/actions/registro-finca/finca-actions';
+import { isValidCountryCode } from '@/lib/countries';
 import { FincaGrid } from '@/components/finca/FincaGrid';
 import { Title } from '@/components/ui/Title';
 
@@ -15,7 +16,7 @@ const FincasFilterBar = dynamic(
 // Pequeño componente visual para el estado de carga
 function FilterBarSkeleton() {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8 p-4 bg-gray-100 dark:bg-slate-800/50 rounded-xl animate-pulse h-22" />
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8 p-4 bg-gray-100 dark:bg-slate-800/50 rounded-xl animate-pulse h-22" />
   );
 }
 
@@ -46,14 +47,23 @@ export default async function FincasPage({ searchParams }: SearchParamsProps) {
   const rawDireccion = resolvedSearchParams.direccion;
   const direccion = Array.isArray(rawDireccion) ? rawDireccion[0] : rawDireccion;
 
+  // 5. Extraer País (código ISO)
+  const rawPais = resolvedSearchParams.pais;
+  const paisStr = Array.isArray(rawPais) ? rawPais[0] : rawPais;
+  const pais = isValidCountryCode(paisStr) ? paisStr.toUpperCase() : undefined;
+
   const filters = {
     tipoEntidad,
     usoActual,
     estadoConservacion,
     direccion: direccion || undefined,
+    pais,
   };
 
-  const fincas = await getPublicFincas(filters);
+  const [fincas, countryCounts] = await Promise.all([
+    getPublicFincas(filters),
+    getPublicFincaCountries(),
+  ]);
 
   return (
     <div className="container mx-auto px-4 pb-10">
@@ -64,7 +74,7 @@ export default async function FincasPage({ searchParams }: SearchParamsProps) {
       />
 
       {/* Este componente se cargará de forma independiente */}
-      <FincasFilterBar />
+      <FincasFilterBar countryCounts={countryCounts} />
 
       {fincas.length > 0 ? (
         <FincaGrid fincas={fincas} />

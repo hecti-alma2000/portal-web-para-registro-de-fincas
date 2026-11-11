@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { CountrySelect } from '@/components/ui/CountrySelect';
 
 const USO_ACTUAL_OPTIONS = ['Cultivos Varios', 'Ganadería', 'Forestal', 'Agroturismo', 'Otros'];
 const ESTADO_CONSERVACION_OPTIONS = ['Muy Bueno', 'Bueno', 'Aceptable', 'Malo'];
@@ -10,9 +11,21 @@ const TIPO_ENTIDAD_OPTIONS = [
   { value: 'PRIVADA', label: 'Privada' },
 ];
 
-export function FincasFilterBar() {
+interface FincasFilterBarProps {
+  /** Países con fincas aprobadas y su conteo (código ISO -> nº de fincas) */
+  countryCounts?: Record<string, number>;
+}
+
+export function FincasFilterBar({ countryCounts = {} }: FincasFilterBarProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  const handlePaisChange = (code: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (code) params.set('pais', code);
+    else params.delete('pais');
+    router.replace(`?${params.toString()}`, { scroll: false });
+  };
 
   // Estado local para el input de texto (para evitar lag al escribir)
   const [direccionInput, setDireccionInput] = useState(searchParams.get('direccion') || '');
@@ -53,7 +66,20 @@ export function FincasFilterBar() {
     'block text-xs font-bold mb-1.5 text-gray-600 dark:text-slate-400 uppercase tracking-wider';
 
   return (
-    <form className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8 p-4 bg-gray-50 dark:bg-slate-900/50 rounded-xl border border-gray-200 dark:border-slate-800">
+    <form className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8 p-4 bg-gray-50 dark:bg-slate-900/50 rounded-xl border border-gray-200 dark:border-slate-800">
+      {/* Filtro: País */}
+      <div>
+        <label className={labelClasses}>País</label>
+        <CountrySelect
+          value={searchParams.get('pais') || ''}
+          onChange={handlePaisChange}
+          allLabel="Todos los países"
+          allowedCodes={Object.keys(countryCounts)}
+          counts={countryCounts}
+          className={selectClasses}
+        />
+      </div>
+
       {/* Filtro: Tipo de Entidad */}
       <div>
         <label className={labelClasses}>Propiedad</label>

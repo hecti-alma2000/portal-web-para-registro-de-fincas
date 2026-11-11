@@ -2,11 +2,13 @@
 import { TipoPropiedad, RequestStatus } from '@prisma/client';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { CountryFlag } from '@/components/ui/CountryFlag';
 
 type FincaWithRelations = {
   id: number;
   nombre: string;
   localizacion: string;
+  pais: string;
   propietario: string;
   descripcion: string | null;
   fotoUrl: string | null;
@@ -139,6 +141,8 @@ export const FincaDetails = ({ finca }: Props) => {
           </h1>
           <p className="text-slate-500 dark:text-slate-400 mt-2 flex items-center">
             <span className="mr-2">📍</span> {finca.localizacion}
+            <span className="mx-2 text-slate-300 dark:text-slate-600">•</span>
+            <CountryFlag code={finca.pais} withName className="w-6 h-auto" />
           </p>
         </div>
         <StatusBadge status={finca.status} />
@@ -212,6 +216,12 @@ export const FincaDetails = ({ finca }: Props) => {
                       : 'text-blue-600 dark:text-blue-400'
                   }
                 />
+                <div className="flex justify-between items-start border-b border-gray-100 dark:border-slate-700 pb-3">
+                  <span className="text-sm font-medium text-gray-500 dark:text-slate-400">País</span>
+                  <span className="text-base font-semibold text-right text-gray-700 dark:text-slate-300">
+                    <CountryFlag code={finca.pais} withName className="w-6 h-auto" />
+                  </span>
+                </div>
                 <DetailItem label="Propietario" value={finca.propietario} icon="👨‍🌾" />
                 <DetailItem label="Uso Principal" value={finca.usoActual || 'N/A'} icon="🌽" />
                 <DetailItem

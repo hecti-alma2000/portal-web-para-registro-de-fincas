@@ -7,6 +7,8 @@ import { ImagePlus, Trash2, Plus, X, MapPin } from 'lucide-react';
 
 import { submitFincaRequest, FincaFormData } from '@/actions/registro-finca/submit-request';
 import { useFincaEditStore } from '@/store/modal/fincaEdit.store';
+import { CountrySelect } from '@/components/ui/CountrySelect';
+import { DEFAULT_COUNTRY_CODE, isValidCountryCode } from '@/lib/countries';
 
 const DynamicCoordinatePicker = dynamic(
   () => import('./CoordinatePicker').then((mod) => mod.CoordinatePicker),
@@ -35,6 +37,7 @@ export default function RegistroFincaForm({
 
   const [nombre, setNombre] = useState('');
   const [localizacion, setLocalizacion] = useState('');
+  const [pais, setPais] = useState(DEFAULT_COUNTRY_CODE);
   const [propietario, setPropietario] = useState('');
   const [descripcion, setDescripcion] = useState('');
   const [fotoFile, setFotoFile] = useState<File | null>(null);
@@ -66,6 +69,7 @@ export default function RegistroFincaForm({
       // Modo Edición: Cargar datos del servidor
       setNombre(fincaToEdit.nombre || '');
       setLocalizacion(fincaToEdit.localizacion || '');
+      setPais(isValidCountryCode(fincaToEdit.pais) ? fincaToEdit.pais : DEFAULT_COUNTRY_CODE);
       setPropietario(fincaToEdit.propietario || '');
       setDescripcion(fincaToEdit.descripcion || '');
       setTipoPropiedad(fincaToEdit.tipoPropiedad || 'ESTATAL');
@@ -100,6 +104,7 @@ export default function RegistroFincaForm({
           const parsed = JSON.parse(savedDraft);
           setNombre(parsed.nombre || '');
           setLocalizacion(parsed.localizacion || '');
+          setPais(isValidCountryCode(parsed.pais) ? parsed.pais : DEFAULT_COUNTRY_CODE);
           setPropietario(parsed.propietario || '');
           setDescripcion(parsed.descripcion || '');
           setTipoPropiedad(parsed.tipoPropiedad || 'ESTATAL');
@@ -129,6 +134,7 @@ export default function RegistroFincaForm({
       const formDraft = {
         nombre,
         localizacion,
+        pais,
         propietario,
         descripcion,
         tipoPropiedad,
@@ -150,6 +156,7 @@ export default function RegistroFincaForm({
   }, [
     nombre,
     localizacion,
+    pais,
     propietario,
     descripcion,
     tipoPropiedad,
@@ -290,6 +297,7 @@ export default function RegistroFincaForm({
         const baseFincaData: FincaFormData = {
           nombre,
           localizacion,
+          pais,
           propietario,
           elementosInteres,
           actividadesAgroturisticas,
@@ -428,7 +436,21 @@ export default function RegistroFincaForm({
         </div>
       </div>
 
-      <div className="col-span-1 md:col-span-2">
+      <div className="col-span-1">
+        <label htmlFor="pais-select" className={labelClasses}>
+          País
+        </label>
+        <div className="mt-1.5">
+          <CountrySelect
+            id="pais-select"
+            value={pais}
+            onChange={(code) => setPais(code || DEFAULT_COUNTRY_CODE)}
+            className={inputClasses.replace('mt-1.5 ', '')}
+          />
+        </div>
+      </div>
+
+      <div className="col-span-1">
         <label className={labelClasses}>Ubicación Exacta</label>
         <input
           type="text"
@@ -436,7 +458,7 @@ export default function RegistroFincaForm({
           required
           value={localizacion}
           onChange={(e) => setLocalizacion(e.target.value)}
-          placeholder="Dirección, municipio o coordenadas"
+          placeholder="Dirección, municipio o provincia"
         />
       </div>
 
@@ -472,6 +494,7 @@ export default function RegistroFincaForm({
         <DynamicCoordinatePicker
           latitude={latitude}
           longitude={longitude}
+          countryCode={pais}
           onChange={(lat, lng) => {
             setLatitude(lat);
             setLongitude(lng);

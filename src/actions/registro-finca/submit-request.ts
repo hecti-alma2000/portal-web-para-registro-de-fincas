@@ -5,6 +5,7 @@ import { auth } from '@/auth.config';
 import { RequestStatus } from '@prisma/client';
 import { Resend } from 'resend'; // 1. Importar Resend
 import { AdminAlertEmail } from '@/components/emails/AdminAlertEmail'; // 2. Importar tu template
+import { isValidCountryCode } from '@/lib/countries';
 
 // Inicializar Resend
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -13,6 +14,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 export type FincaFormData = {
   nombre: string;
   localizacion: string;
+  pais: string;
   propietario: string;
   descripcion?: string | null;
   fotoUrl?: string | null;
@@ -36,6 +38,10 @@ export async function submitFincaRequest(data: FincaFormData, fincaId?: number) 
 
   const { user } = session;
 
+  if (!isValidCountryCode(data.pais)) {
+    return { ok: false, message: 'Seleccione un país válido para la finca.' };
+  }
+
   try {
     // 1. LÓGICA DE ESTADO CONDICIONAL
     let newStatus: RequestStatus;
@@ -50,6 +56,7 @@ export async function submitFincaRequest(data: FincaFormData, fincaId?: number) 
     const baseData = {
       nombre: data.nombre,
       localizacion: data.localizacion,
+      pais: data.pais.toUpperCase(),
       propietario: data.propietario,
       descripcion: data.descripcion,
       fotoUrl: data.fotoUrl,

@@ -3,6 +3,7 @@
 import { Finca } from '@prisma/client';
 import Image from 'next/image';
 import Link from 'next/link';
+import { CountryFlag } from '@/components/ui/CountryFlag';
 
 interface Props {
   finca: Finca;
@@ -42,6 +43,9 @@ export const FincaGridItem = ({ finca }: Props) => {
             {/* Localización */}
             <p className="mt-1 text-sm text-gray-500 dark:text-gray-300 line-clamp-1">
               📍 {finca.localizacion}
+            </p>
+            <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
+              <CountryFlag code={finca.pais} withName className="w-5 h-auto" />
             </p>
           </div>
 

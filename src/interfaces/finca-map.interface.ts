@@ -3,6 +3,7 @@ export interface MapFinca {
   nombre: string;
   fotoUrl: string | null;
   localizacion: string;
+  pais: string;
   propietario: string;
   tipoPropiedad: 'ESTATAL' | 'PRIVADA';
   usoActual: string | null;
